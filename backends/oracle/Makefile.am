@@ -1,0 +1,13 @@
+AM_CPPFLAGS = -I../../lib
+
+if SINGLELIB
+noinst_LTLIBRARIES = liboraclebackend.la
+liboraclebackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
+else
+pkglib_LTLIBRARIES = liboraclebackend.la
+liboraclebackend_la_CPPFLAGS = $(AM_CPPFLAGS)
+liboraclebackend_la_LDFLAGS = -module -version-info @APIVERSION@
+endif
+
+liboraclebackend_la_SOURCES = oraclebackend.h oraclebackend.c oracle_basic.h oracle_basic.c oracle_lo.h oracle_lo.c
+liboraclebackend_la_LIBADD = -lclntsh

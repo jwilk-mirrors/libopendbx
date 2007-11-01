@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenDBX 1.3.0\n"
+"Report-Msgid-Bugs-To: http://bugs.linuxnetworks.de/\n"
+"POT-Creation-Date: 2007-07-10 09:43+0200\n"
+"PO-Revision-Date: 2007-02-18 00:00+0100\n"
+"Last-Translator: Norbert Sendetzky <norbert@linuxnetworks.de>\n"
+"Language-Team: de <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lib/odbx.c:18
+msgid "Success"
+msgstr "Aufruf erfolgreich abgeschlossen"
+
+#: lib/odbx.c:19
+msgid "Backend error occured"
+msgstr "Ein Fehler trat in der Datenbankbibliothek auf"
+
+#: lib/odbx.c:20
+msgid "Invalid capability"
+msgstr "Fähigkeit ist unbekannt"
+
+#: lib/odbx.c:21
+msgid "Invalid parameter"
+msgstr "Ungültiges Argument übergeben"
+
+#: lib/odbx.c:22
+msgid "Out of memory"
+msgstr "Kein weiterer Speicher vorhanden"
+
+#: lib/odbx.c:23
+msgid "Incorrect size of allocated memory"
+msgstr "Reservierter Speicher hat falsche Grösse"
+
+#: lib/odbx.c:24 lib/odbxlib.c:143
+msgid "Loading backend library failed"
+msgstr "Das Laden der Datenbankbibliothek schlug fehl"
+
+#: lib/odbx.c:25
+msgid "Operation is not available"
+msgstr "Funktion ist nicht vorhanden"
+
+#: lib/odbx.c:26
+msgid "Invalid option"
+msgstr "Ungültige Option übergeben"
+
+#: lib/odbx.c:27
+msgid "Option is read only"
+msgstr "Option ist nicht veränderbar"
+
+#: lib/odbx.c:28
+msgid "Setting option failed"
+msgstr "Option konnte nicht gesetzt werden"
+
+#: lib/odbx.c:29
+msgid "Waiting for result failed"
+msgstr "Auf den Server zu warten schlug fehl"
+
+#: lib/odbx.c:30
+msgid "Not supported"
+msgstr "Wird nicht unterstützt"
+
+#: lib/odbx.c:31
+msgid "Invalid handle"
+msgstr "Ungültige Datenbankreferenz übergeben"
+
+#: backends/mssql/mssql_basic.c:52
+msgid "Connecting to server failed"
+msgstr "Keine Verbindung zum Server möglich"
+
+#: backends/sqlite/sqlite_basic.c:53
+msgid "Opening database failed"
+msgstr "Das Öffnen der Datenbank schlug fehl"

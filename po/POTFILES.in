@@ -1,0 +1,7 @@
+# List of source files which contain translatable strings.
+
+lib/odbx.c
+lib/odbxlib.c
+
+backends/mssql/mssql_basic.c
+backends/sqlite/sqlite_basic.c
