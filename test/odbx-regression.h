@@ -10,7 +10,7 @@
 
 struct odbxtest
 {
-	char* name;
+	const char* name;
 	int value;
 	int result;
 	int tryit;
@@ -42,7 +42,7 @@ static struct odbxtest opt[] = {
 struct odbxstmt
 {
 	int num;
-	char* str;
+	const char* str;
 };
 
 

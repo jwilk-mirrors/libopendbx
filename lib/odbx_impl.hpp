@@ -19,7 +19,7 @@
 
 
 
-namespace
+namespace OpenDBX
 {
 	using std::string;
 	using std::vector;

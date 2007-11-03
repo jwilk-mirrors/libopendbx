@@ -36,7 +36,7 @@ extern "C++" {
 
 
 
-namespace
+namespace OpenDBX
 {
 	class Lob_Impl;
 	class Result_Impl;

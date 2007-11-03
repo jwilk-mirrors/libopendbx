@@ -429,7 +429,7 @@ namespace OpenDBX
  *  Private C++ OpenDBX library impementation
  */
 
-namespace
+namespace OpenDBX
 {
 	using OpenDBX::Exception;
 
