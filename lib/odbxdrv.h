@@ -9,6 +9,8 @@
 
 
 #include "opendbx/api.h"
+#include <stddef.h>
+
 
 
 #ifdef HAVE_CONFIG_H
