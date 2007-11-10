@@ -8,6 +8,10 @@
 
 
 
+#include <stddef.h>
+
+
+
 struct odbxtest
 {
 	const char* name;
