@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.3.4], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.3.5], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -87,7 +87,7 @@ do
 
 	case $backend in
 		firebird)
-			AC_CHECK_HEADERS([ibase.h], , [AC_MSG_ERROR([firebird header not found])])
+			AC_CHECK_HEADERS([ibase.h], , [AC_MSG_ERROR([firebird header (ibase.h) not found])])
 			AC_SUBST([LIBFIREBIRD])
 			AC_CHECK_LIB(
 				[fbclient], [isc_attach_database],
@@ -96,7 +96,7 @@ do
 			)
 		;;
 		mssql)
-			AC_CHECK_HEADERS([sybfront.h], , [AC_MSG_ERROR([mssql header not found])])
+			AC_CHECK_HEADERS([sybfront.h], , [AC_MSG_ERROR([mssql header (sybfront.h) not found])])
 			AC_SUBST([LIBMSSQL])
 			AC_CHECK_LIB(
 				[sybdb], [dbresults],
@@ -105,7 +105,7 @@ do
 			)
 		;;
 		mysql)
-			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header not found])])
+			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header (mysql.h) not found])])
 			AC_SUBST([LIBMYSQL])
 			AC_CHECK_LIB(
 				[mysqlclient_r], [mysql_init],
@@ -126,8 +126,17 @@ do
 				[AC_MSG_ERROR([zlib not found])]
 			)
 		;;
+		odbc)
+			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])])
+			AC_SUBST([LIBODBC])
+			AC_CHECK_LIB(
+				[iodbc], [SQLConnect],
+				[AC_DEFINE([HAVE_LIBODBC], 1, [Have -liodbc]) LIBODBC="iodbc"],
+				[AC_MSG_ERROR([odbc library (libiodbc) not found])]
+			)
+		;;
 		oracle)
-			AC_CHECK_HEADERS([oci.h], , [AC_MSG_ERROR([oracle header not found])])
+			AC_CHECK_HEADERS([oci.h], , [AC_MSG_ERROR([oracle header (oci.h) not found])])
 			AC_SUBST([LIBORACLE])
 #			AC_CHECK_LIB(
 #				[clntsh], [OCIInitialize],
@@ -136,7 +145,7 @@ do
 #			)
 		;;
 		pgsql)
-			AC_CHECK_HEADERS([libpq-fe.h], , [AC_MSG_ERROR([postgresql header not found])])
+			AC_CHECK_HEADERS([libpq-fe.h], , [AC_MSG_ERROR([postgresql header (libpq-fe.h) not found])])
 			AC_CHECK_HEADERS([limits.h], , [AC_MSG_ERROR([system limits not found])])
 			AC_SUBST([LIBPGSQL])
 			AC_CHECK_LIB(
@@ -150,7 +159,7 @@ do
 			)
 		;;
 		sqlite)
-			AC_CHECK_HEADERS([sqlite.h], , [AC_MSG_ERROR([sqlite header not found])])
+			AC_CHECK_HEADERS([sqlite.h], , [AC_MSG_ERROR([sqlite header (sqlite.h) not found])])
 			AC_SUBST([LIBSQLITE])
 			AC_CHECK_LIB(
 				[sqlite], [sqlite_get_table],
@@ -159,7 +168,7 @@ do
 			)
 		;;
 		sqlite3)
-			AC_CHECK_HEADERS([sqlite3.h], , [AC_MSG_ERROR([sqlite3 header not found])])
+			AC_CHECK_HEADERS([sqlite3.h], , [AC_MSG_ERROR([sqlite3 header (sqlite3.h) not found])])
 			AC_SUBST([LIBSQLITE3])
 			AC_CHECK_LIB(
 				[sqlite3], [sqlite3_prepare],
@@ -168,7 +177,7 @@ do
 			)
 		;;
 		sybase)
-			AC_CHECK_HEADERS([ctpublic.h], , [AC_MSG_ERROR([sybase ctlib header not found])])
+			AC_CHECK_HEADERS([ctpublic.h], , [AC_MSG_ERROR([sybase header (ctpublic.h) not found])])
 			AC_SUBST([LIBSYBASE])
 			AC_CHECK_LIB(
 				[ct], [ct_init],
@@ -195,6 +204,7 @@ AC_CONFIG_FILES([
 	backends/firebird/Makefile
 	backends/mssql/Makefile
 	backends/mysql/Makefile
+	backends/odbc/Makefile
 	backends/oracle/Makefile
 	backends/pgsql/Makefile
 	backends/sqlite/Makefile
