@@ -61,7 +61,10 @@ AC_CHECK_FUNCS([getopt memmove memset select setenv strdup strncasecmp strtol st
 
 
 # Checks for additional libraries
+AC_SUBST([MAINLIBS])
+ORIGLIBS=${LIBS}; LIBS=""
 AC_SEARCH_LIBS([dlopen], [dl], [AC_DEFINE([HAVE_LIBDL], 1, [Have -ldl])], [AC_MSG_ERROR([dynamic linking (-ldl) library not found])])
+MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 
 # Checks for additional programs
@@ -120,19 +123,23 @@ do
 				[$LIBMYSQL], [mysql_next_result],
 				[AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Define to 1 if you have mysql_next_result])]
 			)
-			AC_CHECK_LIB(
-				[z], [compress],
-				[AC_DEFINE([HAVE_LIBZ], 1, [Have -lz)]) LIBMYSQL="$LIBMYSQL -lz"],
-				[AC_MSG_ERROR([zlib not found])]
-			)
+#			AC_CHECK_LIB(
+#				[z], [compress],
+#				[AC_DEFINE([HAVE_LIBZ], 1, [Have -lz)]) LIBMYSQL="$LIBMYSQL -lz"],
+#				[AC_MSG_ERROR([zlib not found])]
+#			)
 		;;
 		odbc)
 			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])])
 			AC_SUBST([LIBODBC])
 			AC_CHECK_LIB(
-				[iodbc], [SQLConnect],
-				[AC_DEFINE([HAVE_LIBODBC], 1, [Have -liodbc]) LIBODBC="iodbc"],
-				[AC_MSG_ERROR([odbc library (libiodbc) not found])]
+				[odbc], [SQLConnect],
+				[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc]) LIBODBC="odbc"],
+				AC_CHECK_LIB(
+					[iodbc], [SQLConnect],
+					[AC_DEFINE([HAVE_LIBODBC], 1, [Have -liodbc]) LIBODBC="iodbc"],
+					[AC_MSG_ERROR([odbc library (libodbc or libiodbc) not found])]
+				)
 			)
 		;;
 		oracle)

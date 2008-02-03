@@ -1,3 +1,12 @@
+2008-02-03 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: ODBC backend prototype
+	* Feature: Added header file names to ./configure error output if not found
+	* Change: Fixed warnings displayed by new gcc compiler
+	* Bugfix: wrong errors in odbx-regression.c were possible
+	* Bugfix: removed unnecessary -ldl for backends and -lz for libmysqlbackend
+	* Bugfix: documentation updates
+
 2007-08-06 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: C++ API for large object functions

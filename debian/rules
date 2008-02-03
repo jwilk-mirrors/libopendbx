@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 package		:= libopendbx1
-backends		:= firebird mssql mysql pgsql sqlite sqlite3 sybase
+backends		:= firebird mssql mysql pgsql odbc sqlite sqlite3 sybase
 includes		:= -I/usr/include/mysql -I/usr/include/postgresql
 tmpdir			:= debian/tmp
 
