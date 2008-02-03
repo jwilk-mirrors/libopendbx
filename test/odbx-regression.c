@@ -13,7 +13,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <odbx.h>
+
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -98,6 +101,7 @@ int main( int argc, char* argv[] )
 	if( !strncmp( backend, "firebird", 8 ) ) { stmts = firebird_stmt; }
 	if( !strncmp( backend, "mssql", 5 ) ) { stmts = mssql_stmt; }
 	if( !strncmp( backend, "mysql", 5 ) ) { stmts = mysql_stmt; }
+	if( !strncmp( backend, "odbc", 4 ) ) { stmts = odbc_stmt; }
 	if( !strncmp( backend, "oracle", 6 ) ) { stmts = oracle_stmt; }
 	if( !strncmp( backend, "pgsql", 5 ) ) { stmts = pgsql_stmt; }
 	if( !strncmp( backend, "sqlite", 6 ) ) { stmts = sqlite_stmt; }
@@ -199,7 +203,7 @@ int main( int argc, char* argv[] )
 		for( k = 0; k < 2; k++ )
 		{
 			if( verbose ) { fprintf( stdout, "  odbx_unbind()\n" ); }
-			if( odbx_unbind( handle[k] ) < 0 )
+			if( ( err = odbx_unbind( handle[k] ) ) < 0 )
 			{
 					fprintf( stderr, "Error in odbx_unbind(): %s\n", odbx_error( handle[k], err ) );
 			}
@@ -210,7 +214,7 @@ ERROR:
 		for( k = 0; k < 2; k++ )
 		{
 			if( verbose && handle[k] ) { fprintf( stdout, "  odbx_finish()\n" ); }
-			if( handle[k] && odbx_finish( handle[k] ) < 0 )
+			if( handle[k] && ( err = odbx_finish( handle[k] ) ) < 0 )
 			{
 					fprintf( stderr, "Error in odbx_finish(): %s\n", odbx_error( handle[k], err ) );
 			}
