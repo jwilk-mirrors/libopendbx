@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://bugs.linuxnetworks.de/\n"
-"POT-Creation-Date: 2007-07-10 09:43+0200\n"
+"POT-Creation-Date: 2008-02-03 17:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,59 +16,59 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/odbx.c:18
+#: lib/odbx.c:20
 msgid "Success"
 msgstr ""
 
-#: lib/odbx.c:19
+#: lib/odbx.c:21
 msgid "Backend error occured"
 msgstr ""
 
-#: lib/odbx.c:20
+#: lib/odbx.c:22
 msgid "Invalid capability"
 msgstr ""
 
-#: lib/odbx.c:21
+#: lib/odbx.c:23
 msgid "Invalid parameter"
 msgstr ""
 
-#: lib/odbx.c:22
+#: lib/odbx.c:24
 msgid "Out of memory"
 msgstr ""
 
-#: lib/odbx.c:23
+#: lib/odbx.c:25
 msgid "Incorrect size of allocated memory"
 msgstr ""
 
-#: lib/odbx.c:24 lib/odbxlib.c:143
+#: lib/odbx.c:26 lib/odbxlib.c:143
 msgid "Loading backend library failed"
 msgstr ""
 
-#: lib/odbx.c:25
+#: lib/odbx.c:27
 msgid "Operation is not available"
 msgstr ""
 
-#: lib/odbx.c:26
+#: lib/odbx.c:28
 msgid "Invalid option"
 msgstr ""
 
-#: lib/odbx.c:27
+#: lib/odbx.c:29
 msgid "Option is read only"
 msgstr ""
 
-#: lib/odbx.c:28
+#: lib/odbx.c:30
 msgid "Setting option failed"
 msgstr ""
 
-#: lib/odbx.c:29
+#: lib/odbx.c:31
 msgid "Waiting for result failed"
 msgstr ""
 
-#: lib/odbx.c:30
+#: lib/odbx.c:32
 msgid "Not supported"
 msgstr ""
 
-#: lib/odbx.c:31
+#: lib/odbx.c:33
 msgid "Invalid handle"
 msgstr ""
 
