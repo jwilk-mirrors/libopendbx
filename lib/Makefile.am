@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
 libopendbx_la_SOURCES =  odbxlib.c odbxlib.h odbx.c odbxdrv.h
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbx_la_LDFLAGS = -version-info @APIVERSION@
-libopendbx_la_LIBADD = $(LTLIBINTL)
+libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL)
 
 libopendbxplus_la_SOURCES =  odbx.cpp odbx_impl.hpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@

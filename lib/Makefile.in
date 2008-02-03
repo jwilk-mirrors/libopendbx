@@ -69,7 +69,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libopendbx_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libopendbx_la_OBJECTS = libopendbx_la-odbxlib.lo \
 	libopendbx_la-odbx.lo
 libopendbx_la_OBJECTS = $(am_libopendbx_la_OBJECTS)
@@ -153,6 +153,7 @@ LIBINTL = @LIBINTL@
 LIBMSSQL = @LIBMSSQL@
 LIBMYSQL = @LIBMYSQL@
 LIBOBJS = @LIBOBJS@
+LIBODBC = @LIBODBC@
 LIBORACLE = @LIBORACLE@
 LIBPGSQL = @LIBPGSQL@
 LIBS = @LIBS@
@@ -165,6 +166,7 @@ LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
 LTLIBOBJS = @LTLIBOBJS@
+MAINLIBS = @MAINLIBS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
@@ -183,6 +185,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SINGLELIB_FALSE = @SINGLELIB_FALSE@
@@ -249,7 +252,7 @@ libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ $(am__append_1) \
 	$(am__append_5)
 libopendbx_la_LDFLAGS = -version-info @APIVERSION@
-libopendbx_la_LIBADD = $(LTLIBINTL) $(am__append_2)
+libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
 libopendbxplus_la_SOURCES = odbx.cpp odbx_impl.hpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@ $(am__append_3) \
 	$(am__append_6)

@@ -45,7 +45,7 @@ extern struct odbx_ops sybase_odbx_ops;
 
 struct odbx_backend_syms
 {
-	char* name;
+	const char* name;
 	struct odbx_ops* ops;
 };
 
