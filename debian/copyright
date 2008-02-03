@@ -8,7 +8,7 @@ Copyright Holder: Norbert Sendetzky <norbert@linuxnetworks.de>
 License:
 
 libopendbx: A lightweight C library for accessing databases with a single API
-Copyright 2004, 2005  Norbert Sendetzky
+Copyright 2004-2008  Norbert Sendetzky
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Library General Public License as published by

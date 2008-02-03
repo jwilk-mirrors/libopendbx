@@ -1,9 +1,9 @@
 Source: libopendbx
 Priority: optional
 Maintainer: Norbert Sendetzky <norbert@linuxnetworks.de>
-Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient15-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev, freetds-dev
+Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev | firebird2.0-dev, freetds-dev
 Build-Conflicts: autoconf2.13, automake1.4
-Standards-Version: 3.7.2.2
+Standards-Version: 3.7.3.0
 Section: libs
 
 Package: libopendbx1
@@ -20,7 +20,7 @@ Package: libopendbx1-dev
 Priority: optional
 Section: libdevel
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version})
+Depends: libopendbx1 (= ${binary:Version})
 Provides: libopendbx-dev
 Conflicts: libopendbx-dev
 Description: Lightweight database access abstraction layer (dev)
@@ -33,7 +33,7 @@ Package: libopendbx1-firebird
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: Firebird backend for OpenDBX
  This package contains the Firebird backend for the OpenDBX
@@ -43,7 +43,7 @@ Package: libopendbx1-mssql
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: MSSQL backend for OpenDBX
  This package contains the MSSQL backend for the OpenDBX
@@ -53,17 +53,27 @@ Package: libopendbx1-mysql
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: MySQL backend for OpenDBX
  This package contains the MySQL backend for the OpenDBX
+ database access abstaction layer.
+
+Package: libopendbx1-odbc
+Priority: optional
+Section: libs
+Architecture: any
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
+Provides: libopendbx1-backend
+Description: ODBC backend for OpenDBX
+ This package contains the ODBC backend for the OpenDBX
  database access abstaction layer.
 
 Package: libopendbx1-pgsql
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: PostgreSQL backend for OpenDBX
  This package contains the PostgreSQL backend for the OpenDBX
@@ -73,7 +83,7 @@ Package: libopendbx1-sqlite
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: SQLite backend for OpenDBX
  This package contains the SQLite backend for the OpenDBX
@@ -83,7 +93,7 @@ Package: libopendbx1-sqlite3
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: SQLite3 backend for OpenDBX
  This package contains the SQLite3 backend for the OpenDBX
@@ -93,7 +103,7 @@ Package: libopendbx1-sybase
 Priority: optional
 Section: libs
 Architecture: any
-Depends: libopendbx1 (= ${Source-Version}), ${shlibs:Depends}
+Depends: libopendbx1 (= ${binary:Version}), ${shlibs:Depends}
 Provides: libopendbx1-backend
 Description: Sybase ctlib backend for OpenDBX
  This package contains the Sybase backend for the OpenDBX
