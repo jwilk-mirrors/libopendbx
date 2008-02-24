@@ -40,6 +40,7 @@ build:
 	CXXFLAGS="${CXXFLAGS}" \
 	./configure ${CONFFLAGS} \
 		--prefix=/usr \
+		--enable-utils \
 		--with-backends="${backends}"
 
 	$(MAKE)
@@ -67,8 +68,8 @@ binary-arch: build install
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbx.so.*" "usr/lib/"
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbxplus.so.*" "usr/lib/"
 	dh_install -p${package} "${tmpdir}/usr/share/locale/*" "usr/share/locale/"
+	dh_install -p${package}-dev "${tmpdir}/usr/include/opendbx/api" "usr/include/opendbx"
 	dh_install -p${package}-dev "${tmpdir}/usr/include/opendbx/api.h" "usr/include/opendbx"
-	dh_install -p${package}-dev "${tmpdir}/usr/include/opendbx/api.hpp" "usr/include/opendbx"
 	dh_install -p${package}-dev "${tmpdir}/usr/lib/libopendbx.so" "${tmpdir}/usr/lib/libopendbx.*a" "usr/lib/"
 	dh_install -p${package}-dev "${tmpdir}/usr/lib/libopendbxplus.so" "${tmpdir}/usr/lib/libopendbxplus.*a" "usr/lib/"
 	dh_install -p${package}-dev "opendbx.pc" "usr/lib/pkgconfig/"
@@ -79,6 +80,7 @@ binary-arch: build install
 		dh_install  -p${package}-$${be} "${tmpdir}/usr/lib/opendbx/lib$${be}backend.so*" "usr/lib/opendbx/" ; \
 		dh_link -p${package}-$${be} "usr/share/doc/${package}" "usr/share/doc/${package}-$${be}" ; \
 	done
+	dh_install -popendbx-utils "${tmpdir}/usr/bin/odbx-sql" "usr/bin/"
 
 	dh_link
 	dh_strip
@@ -99,6 +101,8 @@ binary-arch: build install
 		dh_gencontrol -p${package}-$${be} ; \
 		dh_builddeb  -p${package}-$${be} ; \
 	done
+	dh_gencontrol -popendbx-utils
+	dh_builddeb -popendbx-utils
 
 
 binary-indep:

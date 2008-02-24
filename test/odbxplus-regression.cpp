@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2004-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -8,11 +8,11 @@
 
 
 
-#include <opendbx/api.hpp>
-#include "odbx-regression.h"
 #include <string>
 #include <vector>
 #include <iostream>
+#include <opendbx/api>
+#include "odbx-regression.h"
 
 
 
@@ -194,7 +194,7 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 	{
 		if( verbose ) { cout << "  Stmt::execute(" << qptr->num << "): '" << qptr->str << "'" << endl; }
 
-		Stmt stmt = conn[qptr->num].create( string( qptr->str ), Stmt::Simple );
+		Stmt stmt = conn[qptr->num].create( Stmt::Simple, string( qptr->str ) );
 		Result result = stmt.execute();
 
 		tv.tv_sec = 3;

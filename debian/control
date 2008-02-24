@@ -1,7 +1,7 @@
 Source: libopendbx
 Priority: optional
 Maintainer: Norbert Sendetzky <norbert@linuxnetworks.de>
-Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev | firebird2.0-dev, freetds-dev, unixodbc-dev | libiodbc2-dev
+Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev | firebird2.0-dev, freetds-dev, unixodbc-dev | libiodbc2-dev, libconfuse-dev
 Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.7.3.0
 Section: libs
@@ -108,3 +108,13 @@ Provides: libopendbx1-backend
 Description: Sybase ctlib backend for OpenDBX
  This package contains the Sybase backend for the OpenDBX
  database access abstraction layer.
+
+Package: opendbx-utils
+Priority: optional
+Section: utils
+Architecture: any
+Depends: libopendbx1 (>= ${binary:Version})
+Provides: opendbx-utils
+Description: Utility applications using libopendbx
+ This package provides utility applications for accessing database content
+ directly via libopendbx

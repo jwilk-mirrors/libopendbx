@@ -1,7 +1,10 @@
 TODO for the next releases
 
 Release 1.3.x
-- ODBC bridge
+- Complete ODBC backend
+- Check tests for more result sets (may be wrong if called twice after no more result sets are available)
+- Can firebird use DSQL for transactions only or is a new TLB for each SET TRANSACTION necessary?
+- isc_commit_retaining leads to "unsuccessful metadata updates". Is there a better method to implement autocommit mode?
 
 Release 1.5.x
 - Prepared statement interface

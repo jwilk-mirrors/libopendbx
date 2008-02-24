@@ -26,6 +26,9 @@ extern struct odbx_ops mssql_odbx_ops;
 #if defined( HAVE_LIBMYSQLCLIENT_R ) || defined( HAVE_LIBMYSQLCLIENT )
 extern struct odbx_ops mysql_odbx_ops;
 #endif
+#if defined( HAVE_LIBODBC )
+extern struct odbx_ops odbc_odbx_ops;
+#endif
 #if defined( HAVE_LIBCLNTSH )
 extern struct odbx_ops oracle_odbx_ops;
 #endif
@@ -62,6 +65,9 @@ struct odbx_backend_syms odbx_lib_ops[] = {
 #endif
 #if defined( HAVE_LIBFBCLIENT )
 	{ "firebird", &firebird_odbx_ops },
+#endif
+#if defined( HAVE_LIBODBC )
+	{ "odbc", &odbc_odbx_ops },
 #endif
 #if defined( HAVE_LIBCLNTSH )
 	{ "oracle", &oracle_odbx_ops },

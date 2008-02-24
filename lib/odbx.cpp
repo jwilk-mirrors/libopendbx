@@ -8,7 +8,7 @@
 
 
 
-#include "opendbx/api.hpp"
+#include "opendbx/api"
 #include "odbx_impl.hpp"
 #include "odbxdrv.h"
 #include <cstdlib>
@@ -66,7 +66,7 @@ namespace OpenDBX
 		m_impl = impl;
 		m_ref = new int;
 
-		++(*m_ref);
+		*m_ref = 1;
 	}
 
 
@@ -119,7 +119,7 @@ namespace OpenDBX
 		m_impl = impl;
 		m_ref = new int;
 
-		++(*m_ref);
+		*m_ref = 1;
 	}
 
 
@@ -260,9 +260,9 @@ namespace OpenDBX
 
 
 
-	void Stmt::bind( const string& data, int flags, size_t pos )
+	void Stmt::bind( const void* data, unsigned long size, size_t pos, int flags )
 	{
-		m_impl->bind( data, flags, pos );
+		m_impl->bind( data, size, pos, flags );
 	}
 
 
@@ -309,9 +309,18 @@ namespace OpenDBX
 	}
 
 
-	Conn::Conn( const string& backend, const string& host, const string& port )
+	Conn::Conn( const char* backend, const char* host, const char* port )
 	{
 		m_impl = new Conn_Impl( backend, host, port );
+		m_ref = new int;
+
+		*m_ref = 1;
+	}
+
+
+	Conn::Conn( const string& backend, const string& host, const string& port )
+	{
+		m_impl = new Conn_Impl( backend.c_str(), host.c_str(), port.c_str() );
 		m_ref = new int;
 
 		*m_ref = 1;
@@ -347,7 +356,7 @@ namespace OpenDBX
 
 
 
-	void Conn::bind( const string& database, const string& who, const string& cred, odbxbind method )
+	void Conn::bind( const char* database, const char* who, const char* cred, odbxbind method )
 	{
 		if( m_impl == NULL )
 		{
@@ -355,6 +364,18 @@ namespace OpenDBX
 		}
 
 		m_impl->bind( database, who, cred, method );
+	}
+
+
+
+	void Conn::bind( const string& database, const string& who, const string& cred, odbxbind method )
+	{
+		if( m_impl == NULL )
+		{
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
+		}
+
+		m_impl->bind( database.c_str(), who.c_str(), cred.c_str(), method );
 	}
 
 
@@ -407,14 +428,26 @@ namespace OpenDBX
 
 
 
-	Stmt Conn::create( const string& sql, Stmt::Type type )
+	Stmt Conn::create( Stmt::Type type, const char* sql, unsigned long length )
 	{
 		if( m_impl == NULL )
 		{
 			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
-		return Stmt( m_impl->create( sql, type ) );
+		return Stmt( m_impl->create( type, string( sql, length ) ) );
+	}
+
+
+
+	Stmt Conn::create( Stmt::Type type, const string& sql )
+	{
+		if( m_impl == NULL )
+		{
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
+		}
+
+		return Stmt( m_impl->create( type, sql ) );
 	}
 
 
@@ -619,7 +652,7 @@ namespace OpenDBX
 
 
 
-	Stmt_Impl* Stmt_Impl::instance( odbx_t* handle, const string& sql, Stmt::Type type )
+	Stmt_Impl* Stmt_Impl::instance( odbx_t* handle, Stmt::Type type, const string& sql )
 	{
 		switch( type )
 		{
@@ -717,14 +750,18 @@ namespace OpenDBX
 
 
 
-	void StmtSimple_Impl::bind( const string& data, int flags, size_t pos )
+	void StmtSimple_Impl::bind( const void* data, unsigned long size, size_t pos, int flags )
 	{
 		if( pos >= m_pos.size() )
 		{
 			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
 		}
 
-		if( ( flags & Stmt::Null ) == 0 ) { m_binds[pos] = &data; }
+		if( ( flags & Stmt::Null ) == 0 )
+		{
+			m_binds[pos] = data;
+			m_bindsize[pos] = size;
+		}
 		m_flags[pos] = flags;
 	}
 
@@ -767,7 +804,7 @@ namespace OpenDBX
 
 		for( i = 0; i < m_binds.size(); i++ )
 		{
-			if( m_binds[i] != NULL ) { max += m_binds[i]->size() * 2 + 2; }
+			if( m_binds[i] != NULL ) { max += m_bindsize[i] * 2 + 2; }
 			else { max += 4; }
 		}
 		m_buffer = _resize( m_buffer, max );
@@ -785,13 +822,13 @@ namespace OpenDBX
 				if( ( m_flags[i] & Stmt::Quote ) > 0 ) { m_buffer[bufpos++] = '\''; }
 				esclen = max - bufpos;
 
-				if( (err = odbx_escape( m_handle, m_binds[i]->c_str(), m_binds[i]->size(), m_buffer + bufpos, &esclen ) ) < 0 )
+				if( (err = odbx_escape( m_handle, (const char*) m_binds[i], m_bindsize[i], m_buffer + bufpos, &esclen ) ) < 0 )
 				{
 					throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 				}
 
 				bufpos += esclen;
-				if( ( m_flags[i] & Stmt::Quote ) > 0 ) { m_buffer[bufpos++] = '\''; }
+				if( ( m_flags[i] & Stmt::Quote ) != 0 ) { m_buffer[bufpos++] = '\''; }
 			}
 			else
 			{
@@ -822,11 +859,11 @@ namespace OpenDBX
 
 
 
-	Conn_Impl::Conn_Impl( const string& backend, const string& host, const string& port )
+	Conn_Impl::Conn_Impl( const char* backend, const char* host, const char* port )
 	{
 		int err;
 
-		if( ( err =  odbx_init( &m_handle, backend.c_str(), host.c_str(), port.c_str() ) ) < 0 )
+		if( ( err =  odbx_init( &m_handle, backend, host, port ) ) < 0 )
 		{
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 		}
@@ -841,11 +878,11 @@ namespace OpenDBX
 
 
 
-	void Conn_Impl::bind( const string& database, const string& who, const string& cred, odbxbind method )
+	void Conn_Impl::bind( const char* database, const char* who, const char* cred, odbxbind method )
 	{
 		int err;
 
-		if( ( err = odbx_bind( m_handle, database.c_str(), who.c_str(), cred.c_str(), method ) ) < 0 )
+		if( ( err = odbx_bind( m_handle, database, who, cred, method ) ) < 0 )
 		{
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 		}
@@ -906,9 +943,9 @@ namespace OpenDBX
 
 
 
-	Stmt_Impl* Conn_Impl::create( const string& sql, Stmt::Type type )
+	Stmt_Impl* Conn_Impl::create( Stmt::Type type, const string& sql )
 	{
-		return Stmt_Impl::instance( m_handle, sql, type );
+		return Stmt_Impl::instance( m_handle, type, sql );
 	}
 
 

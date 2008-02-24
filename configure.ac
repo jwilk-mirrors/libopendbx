@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.3.5], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.3.6], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -76,6 +76,25 @@ AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes])
 # Build options
 AC_ARG_ENABLE([singlelib], [AS_HELP_STRING([--enable-singlelib], [build single library including backends])], [singlelib="${enableval}"], [singlelib=no])
 AM_CONDITIONAL([SINGLELIB], [test "x${singlelib}" = xyes])
+
+AC_ARG_ENABLE([utils], [AS_HELP_STRING([--enable-utils], [build OpenDBX utility applications])], [utils="${enableval}"], [utils=no])
+AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
+
+if test "x${utils}" = xyes; then
+	AC_CHECK_HEADERS([confuse.h], , [AC_MSG_ERROR([libconfuse header (confuse.h) not found])])
+	AC_CHECK_HEADERS([readline/readline.h], , [AC_MSG_ERROR([libreadline header (readline.h) not found])])
+	AC_CHECK_HEADERS([readline/history.h], , [AC_MSG_ERROR([libreadline header (history.h) not found])])
+	AC_CHECK_LIB(
+		[confuse], [cfg_init],
+		[AC_DEFINE([HAVE_LIBCONFUSE], 1, [Have -lconfuse])],
+		[AC_MSG_ERROR([configuration parser library (libconfuse) not found])]
+	)
+	AC_CHECK_LIB(
+		[readline], [readline],
+		[AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])],
+		[AC_MSG_ERROR([readline library (libreadline) not found])]
+	)
+fi
 
 
 # Conditional builds
@@ -221,6 +240,7 @@ AC_CONFIG_FILES([
 	lib/Makefile
 	po/Makefile.in
 	test/Makefile
+	utils/Makefile
 	opendbx.spec
 	opendbx.pc
 ])

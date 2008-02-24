@@ -8,7 +8,7 @@
 
 
 
-#include "lib/opendbx/api.hpp"
+#include "lib/opendbx/api"
 #include <string>
 #include <vector>
 
@@ -79,11 +79,11 @@ namespace OpenDBX
 		Stmt_Impl( odbx_t* handle );
 		virtual ~Stmt_Impl();
 
-		static Stmt_Impl* instance( odbx_t* handle, const string& sql, Stmt::Type type );
+		static Stmt_Impl* instance( odbx_t* handle, Stmt::Type type, const string& sql );
 
 		string& escape( const char* from, unsigned long fromlen, string& to );
 
-		virtual void bind( const string& data, int flags, size_t pos ) = 0;
+		virtual void bind( const void* data, unsigned long size, size_t pos, int flags ) = 0;
 
 		virtual size_t count() = 0;
 		virtual Result_Impl* execute() = 0;
@@ -98,7 +98,8 @@ namespace OpenDBX
 		string m_sql;
 		vector<int> m_flags;
 		vector<size_t> m_pos;
-		vector<const string*> m_binds;
+		vector<const void*> m_binds;
+		vector<unsigned long> m_bindsize;
 		size_t m_bufsize;
 		char* m_buffer;
 
@@ -107,7 +108,7 @@ namespace OpenDBX
 		StmtSimple_Impl();
 		~StmtSimple_Impl();
 
-		void bind( const string& data, int flags, size_t pos );
+		void bind( const void* data, unsigned long size, size_t pos, int flags );
 
 		size_t count();
 		Result_Impl* execute();
@@ -123,10 +124,10 @@ namespace OpenDBX
 		odbx_t* m_handle;
 
 
-		Conn_Impl( const string& backend, const string& host, const string& port );
+		Conn_Impl( const char* backend, const char* host, const char* port );
 		~Conn_Impl();
 
-		void bind( const string& database, const string& who, const string& cred, odbxbind method = ODBX_BIND_SIMPLE );
+		void bind( const char* database, const char* who, const char* cred, odbxbind method = ODBX_BIND_SIMPLE );
 		void unbind();
 
 		bool getCapability( odbxcap cap );
@@ -134,7 +135,8 @@ namespace OpenDBX
 		void getOption( odbxopt option, void* value );
 		void setOption( odbxopt option, void* value );
 
-		Stmt_Impl* create( const string& sql, Stmt::Type type );
+		Stmt_Impl* create( Stmt::Type type, const char* sql, unsigned long length );
+		Stmt_Impl* create( Stmt::Type type, const string& sql );
 	};
 
 }   // namespace

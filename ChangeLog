@@ -1,3 +1,10 @@
+2008-02-09 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Richer API for libopendbxplus
+	* Change: Moved opendbx/api.hpp to opendbx/api
+	* Change: Switched parameter position for Conn::create()
+	* Change: Changed signature for Stmt::bind()
+
 2008-02-03 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: ODBC backend prototype

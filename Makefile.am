@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = backends doc lib po test
+SUBDIRS = backends doc lib po test utils
 
 EXTRA_DIST = config.rpath \
 	debian/changelog \

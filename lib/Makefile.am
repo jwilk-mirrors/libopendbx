@@ -1,5 +1,5 @@
 include_HEADERS = odbx.h
-nobase_include_HEADERS = opendbx/api.h opendbx/api.hpp
+nobase_include_HEADERS = opendbx/api.h opendbx/api
 
 
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
