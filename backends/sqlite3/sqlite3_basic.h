@@ -41,7 +41,7 @@ static int sqlite3_odbx_query( odbx_t* handle, const char* query, unsigned long 
 
 static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk );
 
-static void sqlite3_odbx_result_free( odbx_result_t* result );
+static int sqlite3_odbx_result_finish( odbx_result_t* result );
 
 static int sqlite3_odbx_row_fetch( odbx_result_t* result );
 

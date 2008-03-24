@@ -34,7 +34,7 @@ struct odbx_basic_ops oracle_odbx_basic_ops = {
 	.escape = NULL,
 	.query = oracle_odbx_query,
 	.result = oracle_odbx_result,
-	.result_free = oracle_odbx_result_free,
+	.result_finish = oracle_odbx_result_finish,
 	.rows_affected = oracle_odbx_rows_affected,
 	.row_fetch = oracle_odbx_row_fetch,
 	.column_count = oracle_odbx_column_count,
@@ -434,7 +434,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 	if( ( conn->errcode = OCIAttrGet( (dvoid*) conn->stmt, OCI_HTYPE_STMT, (dvoid*) &type, 0, OCI_ATTR_STMT_TYPE, conn->err ) ) != OCI_SUCCESS )
 	{
-		oracle_odbx_result_free( *result );
+		oracle_odbx_result_finish( *result );
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -442,7 +442,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 	{
 		if( ( conn->errcode = OCIStmtExecute( conn->ctx, conn->stmt, conn->err, 1, 0, NULL, NULL, conn->mode ) ) != OCI_SUCCESS )
 		{
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 		}
 
@@ -455,13 +455,13 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		case OCI_NO_DATA:
 			break;
 		default:
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 	}
 
 	if( ( (*result)->aux = malloc( sizeof( struct oraraux ) ) ) == NULL )
 	{
-		oracle_odbx_result_free( *result );
+		oracle_odbx_result_finish( *result );
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -469,13 +469,13 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 	if( ( conn->errcode = OCIAttrGet( conn->stmt, OCI_HTYPE_STMT, &cols, 0, OCI_ATTR_PARAM_COUNT, conn->err ) ) != OCI_SUCCESS )
 	{
-		oracle_odbx_result_free( *result );
+		oracle_odbx_result_finish( *result );
 		return -ODBX_ERR_BACKEND;
 	}
 
 	if( ( (*result)->generic = malloc( cols * sizeof( struct orargen ) ) ) == NULL )
 	{
-		oracle_odbx_result_free( *result );
+		oracle_odbx_result_finish( *result );
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -495,7 +495,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 		if( ( conn->errcode = OCIParamGet( conn->stmt, OCI_HTYPE_STMT, conn->err, &param, i + 1 ) ) != OCI_SUCCESS )
 		{
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 		}
 
@@ -504,14 +504,14 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		if( ( conn->errcode = OCIAttrGet( (dvoid*) rgen[i].param, OCI_DTYPE_PARAM, (dvoid*) &(rgen[i].type), NULL, OCI_ATTR_DATA_TYPE, conn->err ) ) != OCI_SUCCESS )
 		{
 			free( rgen[i].param );
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 		}
 
 		if( ( conn->errcode = OCIAttrGet( (dvoid*) rgen[i].param, OCI_DTYPE_PARAM, (dvoid*) &len, NULL, OCI_ATTR_DATA_SIZE, conn->err ) ) != OCI_SUCCESS )
 		{
 			free( rgen[i].param );
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 		}
 
@@ -520,7 +520,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		if( ( data = (dvoid*) malloc( len ) ) == NULL )
 		{
 			free( rgen[i].param );
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_NOMEM;
 		}
 
@@ -538,7 +538,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 				{
 					free( data );
 					free( rgen[i].param );
-					oracle_odbx_result_free( *result );
+					oracle_odbx_result_finish( *result );
 					return -ODBX_ERR_BACKEND;
 				}
 		}
@@ -547,7 +547,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		{
 			free( data );
 			free( rgen[i].param );
-			oracle_odbx_result_free( *result );
+			oracle_odbx_result_finish( *result );
 			return -ODBX_ERR_BACKEND;
 		}
 
@@ -557,7 +557,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 	if( ( conn->errcode = OCIAttrSet( (dvoid*) conn->stmt, OCI_HTYPE_STMT, (dvoid*) &chunk, sizeof( unsigned long ), OCI_ATTR_PREFETCH_ROWS, conn->err ) ) != OCI_SUCCESS )
 	{
-		oracle_odbx_result_free( *result );
+		oracle_odbx_result_finish( *result );
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -566,7 +566,7 @@ static int oracle_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 
 
-static void oracle_odbx_result_free( odbx_result_t* result )
+static int oracle_odbx_result_finish( odbx_result_t* result )
 {
 	struct orargen* rgen = (struct orargen*) result->generic;
 	struct oraraux* raux = (struct oraraux*) result->aux;
@@ -598,6 +598,8 @@ static void oracle_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

@@ -34,7 +34,7 @@ struct odbx_lo_ops oracle_odbx_lo_ops = {
 static int oracle_odbx_lo_open( odbx_result_t* result, odbx_lo_t** lo, const char* value )
 {
 	struct oralob* oralob;
-	struct oraconn* conn = (struct oraconn*) handle->aux;
+	struct oraconn* conn = (struct oraconn*) result->handle->aux;
 
 
 	if( ( *lo = (odbx_lo_t*) malloc( sizeof( struct odbx_lo_t ) ) ) == NULL )

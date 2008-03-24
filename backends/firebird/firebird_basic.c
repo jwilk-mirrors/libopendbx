@@ -34,7 +34,7 @@ struct odbx_basic_ops firebird_odbx_basic_ops = {
 	.escape = NULL,
 	.query = firebird_odbx_query,
 	.result = firebird_odbx_result,
-	.result_free = firebird_odbx_result_free,
+	.result_finish = firebird_odbx_result_finish,
 	.rows_affected = firebird_odbx_rows_affected,
 	.row_fetch = firebird_odbx_row_fetch,
 	.column_count = firebird_odbx_column_count,
@@ -463,20 +463,30 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 
 
 
-static void firebird_odbx_result_free( odbx_result_t* result )
+static int firebird_odbx_result_finish( odbx_result_t* result )
 {
 	struct fbconn* fbc = (struct fbconn*) result->handle->aux;
 
 	if( fbc != NULL )
 	{
-		isc_dsql_free_statement( fbc->status, &(fbc->stmt), DSQL_drop );
+		if( isc_dsql_free_statement( fbc->status, &(fbc->stmt), DSQL_drop ) != 0 )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
 
 		if( fbc->trlevel == 0 )
 		{
 			static char tbuf[] = { isc_tpb_version3, isc_tpb_write, isc_tpb_read_committed, isc_tpb_rec_version };
 
-			isc_commit_transaction( fbc->status, fbc->tr );
-			isc_start_transaction( fbc->status, fbc->tr + fbc->trlevel, 1, &(result->handle->generic), sizeof( tbuf ), tbuf );
+			if( isc_commit_transaction( fbc->status, fbc->tr ) != 0 )
+			{
+				return -ODBX_ERR_BACKEND;
+			}
+
+			if( isc_start_transaction( fbc->status, fbc->tr + fbc->trlevel, 1, &(result->handle->generic), sizeof( tbuf ), tbuf ) != 0 )
+			{
+				return -ODBX_ERR_BACKEND;
+			}
 		}
 	}
 
@@ -492,6 +502,8 @@ static void firebird_odbx_result_free( odbx_result_t* result )
 	}
 
 	firebird_priv_result_free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

@@ -32,7 +32,7 @@ struct odbx_basic_ops odbc_odbx_basic_ops = {
 	.escape = NULL,
 	.query = odbc_odbx_query,
 	.result = odbc_odbx_result,
-	.result_free = odbc_odbx_result_free,
+	.result_finish = odbc_odbx_result_finish,
 	.rows_affected = odbc_odbx_rows_affected,
 	.row_fetch = odbc_odbx_row_fetch,
 	.column_count = odbc_odbx_column_count,
@@ -416,7 +416,7 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 
 
 
-static void odbc_odbx_result_free( odbx_result_t* result )
+static int odbc_odbx_result_finish( odbx_result_t* result )
 {
 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
 // 	struct odbcres* res = (struct odbcres*) result->generic;
@@ -434,6 +434,8 @@ static void odbc_odbx_result_free( odbx_result_t* result )
 // 	}
 
 	result->generic = NULL;
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

@@ -32,7 +32,7 @@ struct odbx_basic_ops sybase_odbx_basic_ops = {
 	.escape = NULL,
 	.query = sybase_odbx_query,
 	.result = sybase_odbx_result,
-	.result_free = sybase_odbx_result_free,
+	.result_finish = sybase_odbx_result_finish,
 	.rows_affected = sybase_odbx_rows_affected,
 	.row_fetch = sybase_odbx_row_fetch,
 	.column_count = sybase_odbx_column_count,
@@ -429,13 +429,13 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 			if( ( (*result)->generic = malloc( cols * sizeof( struct sybres ) ) ) == NULL )
 			{
-				sybase_odbx_result_free( *result );
+				sybase_odbx_result_finish( *result );
 				return -ODBX_ERR_NOMEM;
 			}
 
 			if( ( ((struct sybares*) (*result)->aux)->fmt = (CS_DATAFMT*) malloc( cols * sizeof( CS_DATAFMT ) ) ) == NULL )
 			{
-				sybase_odbx_result_free( *result );
+				sybase_odbx_result_finish( *result );
 				return -ODBX_ERR_NOMEM;
 			}
 
@@ -448,7 +448,7 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 			{
 				if( ct_describe( (CS_COMMAND*) handle->generic, i + 1, fmt + i ) != CS_SUCCEED )
 				{
-					sybase_odbx_result_free( *result );
+					sybase_odbx_result_finish( *result );
 					return -ODBX_ERR_BACKEND;
 				}
 
@@ -457,13 +457,13 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 				if( ( val[i].value = (CS_CHAR*) malloc( fmt[i].maxlength ) ) == NULL )
 				{
-					sybase_odbx_result_free( *result );
+					sybase_odbx_result_finish( *result );
 					return -ODBX_ERR_NOMEM;
 				}
 
 				if( ct_bind( (CS_COMMAND*) handle->generic, i+1, fmt + i, val[i].value, &(val[i].length), &(val[i].status) ) != CS_SUCCEED )
 				{
-					sybase_odbx_result_free( *result );
+					sybase_odbx_result_finish( *result );
 					return -ODBX_ERR_BACKEND;
 				}
 			}
@@ -485,7 +485,7 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 
 
-static void sybase_odbx_result_free( odbx_result_t* result )
+static int sybase_odbx_result_finish( odbx_result_t* result )
 {
 	unsigned long i;
 	struct sybres* val = (struct sybres*) result->generic;
@@ -516,6 +516,8 @@ static void sybase_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

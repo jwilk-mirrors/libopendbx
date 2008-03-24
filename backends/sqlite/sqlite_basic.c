@@ -33,7 +33,7 @@ struct odbx_basic_ops sqlite_odbx_basic_ops = {
 	.escape = NULL,
 	.query = sqlite_odbx_query,
 	.result = sqlite_odbx_result,
-	.result_free = sqlite_odbx_result_free,
+	.result_finish = sqlite_odbx_result_finish,
 	.rows_affected = sqlite_odbx_rows_affected,
 	.row_fetch = sqlite_odbx_row_fetch,
 	.column_count = sqlite_odbx_column_count,
@@ -369,7 +369,7 @@ static int sqlite_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 
 
-static void sqlite_odbx_result_free( odbx_result_t* result )
+static int sqlite_odbx_result_finish( odbx_result_t* result )
 {
 	if( result->handle != NULL && result->handle->aux != NULL )
 	{
@@ -385,6 +385,8 @@ static void sqlite_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

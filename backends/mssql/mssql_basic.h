@@ -43,7 +43,7 @@ static int mssql_odbx_query( odbx_t* handle, const char* query, unsigned long le
 
 static int mssql_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk );
 
-static void mssql_odbx_result_free( odbx_result_t* result );
+static int mssql_odbx_result_finish( odbx_result_t* result );
 
 static int mssql_odbx_row_fetch( odbx_result_t* result );
 

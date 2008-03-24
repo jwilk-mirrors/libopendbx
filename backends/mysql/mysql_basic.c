@@ -33,7 +33,7 @@ struct odbx_basic_ops mysql_odbx_basic_ops = {
 	.escape = mysql_odbx_escape,
 	.query = mysql_odbx_query,
 	.result = mysql_odbx_result,
-	.result_free = mysql_odbx_result_free,
+	.result_finish = mysql_odbx_result_finish,
 	.rows_affected = mysql_odbx_rows_affected,
 	.row_fetch = mysql_odbx_row_fetch,
 	.column_count = mysql_odbx_column_count,
@@ -482,7 +482,7 @@ static int mysql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 
 
-static void mysql_odbx_result_free( odbx_result_t* result )
+static int mysql_odbx_result_finish( odbx_result_t* result )
 {
 	if( result->generic != NULL )
 	{
@@ -497,6 +497,8 @@ static void mysql_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

@@ -35,7 +35,7 @@ struct odbx_basic_ops pgsql_odbx_basic_ops = {
 	.escape = pgsql_odbx_escape,
 	.query = pgsql_odbx_query,
 	.result = pgsql_odbx_result,
-	.result_free = pgsql_odbx_result_free,
+	.result_finish = pgsql_odbx_result_finish,
 	.rows_affected = pgsql_odbx_rows_affected,
 	.row_fetch = pgsql_odbx_row_fetch,
 	.column_count = pgsql_odbx_column_count,
@@ -384,7 +384,7 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 
 
-static void pgsql_odbx_result_free( odbx_result_t* result )
+static int pgsql_odbx_result_finish( odbx_result_t* result )
 {
 	if( result->generic != NULL )
 	{
@@ -399,6 +399,8 @@ static void pgsql_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

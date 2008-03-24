@@ -32,7 +32,7 @@ struct odbx_basic_ops mssql_odbx_basic_ops = {
 	.escape = mssql_odbx_escape,
 	.query = mssql_odbx_query,
 	.result = mssql_odbx_result,
-	.result_free = mssql_odbx_result_free,
+	.result_finish = mssql_odbx_result_finish,
 	.rows_affected = mssql_odbx_rows_affected,
 	.row_fetch = mssql_odbx_row_fetch,
 	.column_count = mssql_odbx_column_count,
@@ -382,7 +382,7 @@ static int mssql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		if( ( gres[i].value = malloc( gres[i].mlen ) ) == NULL )
 		{
 			gres[i].mlen = 0;
-			mssql_odbx_result_free( *result );
+			mssql_odbx_result_finish( *result );
 			return -ODBX_ERR_NOMEM;
 		}
 	}
@@ -392,7 +392,7 @@ static int mssql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 
 
-static void mssql_odbx_result_free( odbx_result_t* result )
+static int mssql_odbx_result_finish( odbx_result_t* result )
 {
 	DBINT i, cols = 0;
 
@@ -421,6 +421,8 @@ static void mssql_odbx_result_free( odbx_result_t* result )
 	}
 
 	free( result );
+
+	return ODBX_ERR_SUCCESS;
 }
 
 
