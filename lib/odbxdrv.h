@@ -83,7 +83,7 @@ struct odbx_basic_ops
 	int (*escape) ( odbx_t* handle, const char* from, unsigned long fromlen, char* to, unsigned long* tolen );
 	int (*query) ( odbx_t* handle, const char* query, unsigned long length );
 	int (*result) ( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk );
-	void (*result_free) ( odbx_result_t* result );
+	int (*result_finish) ( odbx_result_t* result );
 	int (*row_fetch) ( odbx_result_t* result );
 	uint64_t (*rows_affected) ( odbx_result_t* result );
 	unsigned long (*column_count) ( odbx_result_t* result );
@@ -91,7 +91,6 @@ struct odbx_basic_ops
 	int (*column_type) ( odbx_result_t* result, unsigned long pos );
 	unsigned long (*field_length) ( odbx_result_t* result, unsigned long pos );
 	const char* (*field_value) ( odbx_result_t* result, unsigned long pos );
-	int (*field_bind) ( odbx_result_t* result, unsigned long pos, int type, void* buffer, unsigned long* buflen );
 };
 
 

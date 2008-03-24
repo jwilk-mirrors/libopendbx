@@ -280,7 +280,7 @@ int odbx_query( odbx_t* handle, const char* query, unsigned long length );
 
 int odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk );
 
-void odbx_result_free( odbx_result_t* result );
+int odbx_result_finish( odbx_result_t* result );
 
 int odbx_row_fetch( odbx_result_t* result );
 
@@ -372,6 +372,8 @@ int odbx_lo_close( odbx_lo_t* lo );
  */
 
 int odbx_bind_simple( odbx_t* handle, const char* database, const char* username, const char* password );
+
+void odbx_result_free( odbx_result_t* result );
 
 
 

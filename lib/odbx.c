@@ -326,13 +326,24 @@ int odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout
 
 
 
-void odbx_result_free( odbx_result_t* result )
+int odbx_result_finish( odbx_result_t* result )
 {
 	if( result != NULL && result->handle != NULL && result->handle->ops != NULL &&
-		result->handle->ops->basic != NULL && result->handle->ops->basic->result_free != NULL )
+		result->handle->ops->basic != NULL && result->handle->ops->basic->result_finish != NULL )
 	{
-		result->handle->ops->basic->result_free( result );
+		return result->handle->ops->basic->result_finish( result );
 	}
+
+	return -ODBX_ERR_HANDLE;
+}
+
+
+
+/* Depricated: odbx_result_free() */
+
+void odbx_result_free( odbx_result_t* result )
+{
+	odbx_result_finish( result );
 }
 
 
