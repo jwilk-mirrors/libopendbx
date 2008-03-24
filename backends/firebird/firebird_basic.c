@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2005-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2005-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -194,11 +194,6 @@ static int firebird_odbx_bind( odbx_t* handle, const char* database, const char*
 		return -ODBX_ERR_BACKEND;
 	}
 
-	if( isc_dsql_allocate_statement( fbc->status, &(handle->generic), &(fbc->stmt) ) != 0 )
-	{
-		return -ODBX_ERR_BACKEND;
-	}
-
 	return ODBX_ERR_SUCCESS;
 }
 
@@ -213,16 +208,10 @@ static int firebird_odbx_unbind( odbx_t* handle )
 		return -ODBX_ERR_PARAM;
 	}
 
-	if( isc_commit_transaction( fbc->status, fbc->tr ) != 0 )
+	if( isc_rollback_transaction( fbc->status, fbc->tr ) != 0 )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
-
-	if( isc_dsql_free_statement( fbc->status, &(fbc->stmt), DSQL_drop ) != 0 )
-	{
-		return -ODBX_ERR_BACKEND;
-	}
-	fbc->stmt = NULL;
 
 	if( isc_detach_database( fbc->status, &(handle->generic) ) != 0 )
 	{
@@ -355,6 +344,12 @@ static int firebird_odbx_query( odbx_t* handle, const char* query, unsigned long
 
 	fbc->qda->sqld = 0;
 
+	fbc->stmt = NULL;
+	if( isc_dsql_allocate_statement( fbc->status, &(handle->generic), &(fbc->stmt) ) != 0 )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
 	if( isc_dsql_prepare( fbc->status, fbc->tr + fbc->trlevel, &(fbc->stmt), (short) length, (char*) query, SQL_DIALECT_V6, fbc->qda ) != 0 )
 	{
 		return -ODBX_ERR_BACKEND;
@@ -474,7 +469,15 @@ static void firebird_odbx_result_free( odbx_result_t* result )
 
 	if( fbc != NULL )
 	{
-		isc_dsql_free_statement( fbc->status, &(fbc->stmt), DSQL_close );
+		isc_dsql_free_statement( fbc->status, &(fbc->stmt), DSQL_drop );
+
+		if( fbc->trlevel == 0 )
+		{
+			static char tbuf[] = { isc_tpb_version3, isc_tpb_write, isc_tpb_read_committed, isc_tpb_rec_version };
+
+			isc_commit_transaction( fbc->status, fbc->tr );
+			isc_start_transaction( fbc->status, fbc->tr + fbc->trlevel, 1, &(result->handle->generic), sizeof( tbuf ), tbuf );
+		}
 	}
 
 	if( result->generic != NULL )
@@ -557,7 +560,6 @@ static int firebird_odbx_row_fetch( odbx_result_t* result )
 				da->sqlvar[i].sqldata[len+2] = 0;
 				break;
 			case SQL_BLOB:
-// 				snprintf( da->sqlvar[i].sqldata, firebird_priv_collength( da->sqlvar + i ), "%lld", *((uint64_t*) da->sqlvar[i].sqldata) );
 				break;
 			default:
 				da->sqlvar[i].sqldata[da->sqlvar[i].sqllen] = 0;
@@ -805,22 +807,6 @@ static int firebird_priv_execute_stmt( odbx_t* handle, struct fbconn* fbc )
 	if( isc_dsql_execute( fbc->status, fbc->tr + fbc->trlevel, &(fbc->stmt), SQL_DIALECT_V6, NULL ) != 0 )
 	{
 		return -ODBX_ERR_BACKEND;
-	}
-
-	switch( type )
-	{
-		case isc_info_sql_stmt_insert:
-		case isc_info_sql_stmt_update:
-		case isc_info_sql_stmt_delete:
-		case isc_info_sql_stmt_ddl:
-
-			if( !(fbc->trlevel) )
-			{
-				if( isc_commit_retaining( fbc->status, fbc->tr ) != 0 )
-				{
-					return -ODBX_ERR_BACKEND;
-				}
-			}
 	}
 
 	return ODBX_ERR_SUCCESS;
