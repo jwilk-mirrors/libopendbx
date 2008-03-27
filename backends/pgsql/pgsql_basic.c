@@ -344,11 +344,13 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 	if( ( *result = (odbx_result_t*) malloc( sizeof( odbx_result_t ) ) ) == NULL )
 	{
+		PQclear( res );
 		return -ODBX_ERR_NOMEM;
 	}
 
 	if( ( (*result)->aux = malloc( sizeof( struct pgres ) ) ) == NULL )
 	{
+		PQclear( res );
 		free( *result );
 		*result = NULL;
 
@@ -372,12 +374,20 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		case PGRES_COPY_IN:
 			return ODBX_RES_ROWS;   /* result is available*/
 		case PGRES_FATAL_ERROR:
-			conn->errtype = -1;
-			break;
+
+			if( PQstatus( (PGconn*) handle->generic ) != CONNECTION_OK )
+			{
+				conn->errtype = -1;
+				break;
+			}
+
 		default:
 			conn->errtype = 1;
 			break;
 	}
+
+	pgsql_odbx_result_finish( *result );
+	*result = NULL;
 
 	return -ODBX_ERR_BACKEND;
 }
