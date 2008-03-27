@@ -520,7 +520,7 @@ namespace OpenDBX
 
 	Result_Impl::~Result_Impl()
 	{
-		if( m_result != NULL ) { odbx_result_free( m_result ); }
+		if( m_result != NULL ) { odbx_result_finish( m_result ); }
 	}
 
 
@@ -529,7 +529,16 @@ namespace OpenDBX
 	{
 		int err;
 
-		if( m_result != NULL ) { odbx_result_free( m_result ); }
+		if( m_result != NULL )
+		{
+			int err;
+
+			if( ( err = odbx_result_finish( m_result ) ) != ODBX_ERR_SUCCESS )
+			{
+				throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			}
+			m_result = NULL;
+		}
 
 		if( ( err = odbx_result( m_handle, &m_result, timeout, chunk ) ) < 0 )
 		{
