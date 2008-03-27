@@ -109,23 +109,16 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 	{
 		len = strlen( line );
 		if( len == 0 ) { free( line ); continue;}
-
-		if( iactive )
-		{
-			add_history( line );
-			if( line[0] == '.' ) { cmd.exec( string( line ) ); continue; }
-		}
+		if( line[0] == '.' ) { cmd.exec( string( line ) ); continue; }
 
 		sql = string( line, len );
 		free( line );
 
-		if( line[len-1] != ';' )
+		if( sql[len-1] != ';' )
 		{
 			while( ( line = readline( cprompt ) ) != NULL )
 			{
 				len = strlen( line );
-				if( len > 0 && iactive ) { add_history( line ); }
-
 				sql += "\n" + string( line, len );
 				free( line );
 
@@ -133,7 +126,8 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 			}
 		}
 
-		if( sql[sql.size()-1] == ';' ) { sql.erase( sql.size()-1, 1 ); }
+		if( iactive ) { add_history( sql.c_str() ); }
+		sql.erase( sql.size()-1, 1 );
 
 		try
 		{
@@ -145,6 +139,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		catch( OpenDBX::Exception& oe )
 		{
 			std::cerr << "Error: " << oe.what() << std::endl;
+			if( oe.getSeverity() < 0 ) { return; }
 		}
 	}
 }
