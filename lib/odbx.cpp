@@ -520,8 +520,10 @@ namespace OpenDBX
 
 	Result_Impl::~Result_Impl()
 	{
+		int err;
+
 		if( m_result != NULL ) { odbx_result_finish( m_result ); }
-		while( odbx_result( m_handle, &m_result, NULL, 0 ) > 0 );
+		while( ( err = odbx_result( m_handle, &m_result, NULL, 0 ) ) != ODBX_RES_DONE && odbx_error_type( m_handle, err ) >= 0 );
 	}
 
 
