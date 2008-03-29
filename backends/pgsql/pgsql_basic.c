@@ -114,7 +114,7 @@ static int pgsql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_NOMEM;
 	}
 
-	if( PQstatus( (const PGconn*) handle->generic ) == CONNECTION_BAD )
+	if( PQstatus( (PGconn*) handle->generic ) != CONNECTION_OK )
 	{
 		conn->errtype = -1;
 		return -ODBX_ERR_BACKEND;
