@@ -83,9 +83,9 @@ namespace OpenDBX
 
 		string& escape( const char* from, unsigned long fromlen, string& to );
 
-		virtual void bind( const void* data, unsigned long size, size_t pos, int flags ) = 0;
+// 		virtual void bind( const void* data, unsigned long size, size_t pos, int flags ) = 0;
 
-		virtual size_t count() = 0;
+// 		virtual size_t count() = 0;
 		virtual Result_Impl* execute() = 0;
 
 		inline char* _resize( char* buffer, size_t size );

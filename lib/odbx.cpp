@@ -260,10 +260,10 @@ namespace OpenDBX
 
 
 
-	void Stmt::bind( const void* data, unsigned long size, size_t pos, int flags )
-	{
-		m_impl->bind( data, size, pos, flags );
-	}
+// 	void Stmt::bind( const void* data, unsigned long size, size_t pos, int flags )
+// 	{
+// 		m_impl->bind( data, size, pos, flags );
+// 	}
 
 
 
@@ -281,10 +281,10 @@ namespace OpenDBX
 
 
 
-	size_t Stmt::count()
-	{
-		return m_impl->count();
-	}
+// 	size_t Stmt::count()
+// 	{
+// 		return m_impl->count();
+// 	}
 
 
 
@@ -724,7 +724,7 @@ namespace OpenDBX
 		m_sql = sql;
 		m_buffer = NULL;
 		m_bufsize = 0;
-		size_t pos = 0;
+/*		size_t pos = 0;
 
 		while( ( pos = m_sql.find( "?", pos ) ) != string::npos )
 		{
@@ -739,7 +739,7 @@ namespace OpenDBX
 		{
 			m_binds[i] = NULL;
 			m_flags[i] = Stmt::None;
-		}
+		}*/
 	}
 
 
@@ -759,34 +759,35 @@ namespace OpenDBX
 
 
 
-	void StmtSimple_Impl::bind( const void* data, unsigned long size, size_t pos, int flags )
-	{
-		if( pos >= m_pos.size() )
-		{
-			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
-		}
+// 	void StmtSimple_Impl::bind( const void* data, unsigned long size, size_t pos, int flags )
+// 	{
+// 		if( pos >= m_pos.size() )
+// 		{
+// 			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+// 		}
+//
+// 		if( ( flags & Stmt::Null ) == 0 )
+// 		{
+// 			m_binds[pos] = data;
+// 			m_bindsize[pos] = size;
+// 		}
+// 		m_flags[pos] = flags;
+// 	}
 
-		if( ( flags & Stmt::Null ) == 0 )
-		{
-			m_binds[pos] = data;
-			m_bindsize[pos] = size;
-		}
-		m_flags[pos] = flags;
-	}
 
 
-
-	size_t StmtSimple_Impl::count()
-	{
-		return m_pos.size();
-	}
+// 	size_t StmtSimple_Impl::count()
+// 	{
+// 		return m_pos.size();
+// 	}
 
 
 
 	Result_Impl* StmtSimple_Impl::execute()
 	{
-		if( m_binds.size() ) { _exec_params(); }
-		else { _exec_noparams(); }
+// 		if( m_binds.size() ) { _exec_params(); }
+// 		else { _exec_noparams(); }
+		_exec_noparams();
 
 		return new Result_Impl( m_handle );
 	}
@@ -805,58 +806,58 @@ namespace OpenDBX
 
 
 
-	inline void StmtSimple_Impl::_exec_params()
-	{
-		int err;
-		unsigned long esclen;
-		size_t i, sqlpos = 0, bufpos = 0, lastpos = 0, max = m_sql.size() + 1;
-
-		for( i = 0; i < m_binds.size(); i++ )
-		{
-			if( m_binds[i] != NULL ) { max += m_bindsize[i] * 2 + 2; }
-			else { max += 4; }
-		}
-		m_buffer = _resize( m_buffer, max );
-
-		for( i = 0; i < m_binds.size(); i++ )
-		{
-			sqlpos = m_pos[i];
-
-			memcpy( m_buffer + bufpos, m_sql.c_str() + lastpos, sqlpos - lastpos );
-			bufpos += sqlpos - lastpos;
-			lastpos = sqlpos + 1;
-
-			if( m_binds[i] != NULL )
-			{
-				if( ( m_flags[i] & Stmt::Quote ) > 0 ) { m_buffer[bufpos++] = '\''; }
-				esclen = max - bufpos;
-
-				if( (err = odbx_escape( m_handle, (const char*) m_binds[i], m_bindsize[i], m_buffer + bufpos, &esclen ) ) < 0 )
-				{
-					throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
-				}
-
-				bufpos += esclen;
-				if( ( m_flags[i] & Stmt::Quote ) != 0 ) { m_buffer[bufpos++] = '\''; }
-			}
-			else
-			{
-				memcpy( m_buffer + bufpos, "NULL", 4 );
-				bufpos += 4;
-			}
-
-			sqlpos += 1;
-		}
-
-		memcpy( m_buffer + bufpos, m_sql.c_str() + lastpos, m_sql.size() - lastpos );
-		bufpos += m_sql.size() - lastpos;
-		m_buffer[bufpos] = 0;
-
-		if( ( err = odbx_query( m_handle, m_buffer, bufpos ) ) < 0 )
-		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
-		}
-	}
+// 	inline void StmtSimple_Impl::_exec_params()
+// 	{
+// 		int err;
+// 		unsigned long esclen;
+// 		size_t i, sqlpos = 0, bufpos = 0, lastpos = 0, max = m_sql.size() + 1;
+//
+// 		for( i = 0; i < m_binds.size(); i++ )
+// 		{
+// 			if( m_binds[i] != NULL ) { max += m_bindsize[i] * 2 + 2; }
+// 			else { max += 4; }
+// 		}
+// 		m_buffer = _resize( m_buffer, max );
+//
+// 		for( i = 0; i < m_binds.size(); i++ )
+// 		{
+// 			sqlpos = m_pos[i];
+//
+// 			memcpy( m_buffer + bufpos, m_sql.c_str() + lastpos, sqlpos - lastpos );
+// 			bufpos += sqlpos - lastpos;
+// 			lastpos = sqlpos + 1;
+//
+// 			if( m_binds[i] != NULL )
+// 			{
+// 				if( ( m_flags[i] & Stmt::Quote ) > 0 ) { m_buffer[bufpos++] = '\''; }
+// 				esclen = max - bufpos;
+//
+// 				if( (err = odbx_escape( m_handle, (const char*) m_binds[i], m_bindsize[i], m_buffer + bufpos, &esclen ) ) < 0 )
+// 				{
+// 					throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+// 				}
+//
+// 				bufpos += esclen;
+// 				if( ( m_flags[i] & Stmt::Quote ) != 0 ) { m_buffer[bufpos++] = '\''; }
+// 			}
+// 			else
+// 			{
+// 				memcpy( m_buffer + bufpos, "NULL", 4 );
+// 				bufpos += 4;
+// 			}
+//
+// 			sqlpos += 1;
+// 		}
+//
+// 		memcpy( m_buffer + bufpos, m_sql.c_str() + lastpos, m_sql.size() - lastpos );
+// 		bufpos += m_sql.size() - lastpos;
+// 		m_buffer[bufpos] = 0;
+//
+// 		if( ( err = odbx_query( m_handle, m_buffer, bufpos ) ) < 0 )
+// 		{
+// 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+// 		}
+// 	}
 
 
 
