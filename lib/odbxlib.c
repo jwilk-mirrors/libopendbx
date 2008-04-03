@@ -140,13 +140,14 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 	}
 	lib[len] = '\0';
 
-	if( ( handle->backend = dlopen( lib, RTLD_LAZY ) ) == NULL )
+	if( ( handle->backend = dlopen( backend, RTLD_LAZY ) ) == NULL )
 	{
 		if( ( handle->backend = dlopen( lib + plen, RTLD_LAZY ) ) == NULL )
 		{
-			if( ( handle->backend = dlopen( backend, RTLD_LAZY ) ) == NULL )
+			if( ( handle->backend = dlopen( lib, RTLD_LAZY ) ) == NULL )
 			{
-				fprintf( stderr, "_odbx_lib_open(): %s: %s, %s, %s\n", gettext_noop("Loading backend library failed"), lib, lib + plen, dlerror() );
+				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen, lib );
+				fprintf( stderr, "\n%s\n", dlerror() );
 				return -ODBX_ERR_NOTEXIST;
 			}
 		}

@@ -45,6 +45,10 @@ int odbx_init( odbx_t** handle, const char* backend, const char* host, const cha
 {
 	int err;
 
+	if( bindtextdomain( "opendbx", LOCALEDIR ) == NULL )
+	{
+		return -ODBX_ERR_NOMEM;
+	}
 
 	if( handle == NULL || backend == NULL )
 	{
@@ -296,6 +300,8 @@ int odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* 
 
 int odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
+	if( length < 0 ) { return ODBX_ERR_PARAM; }
+
 	if( handle != NULL && handle->ops != NULL && handle->ops->basic != NULL && handle->ops->basic->query != NULL )
 	{
 		return handle->ops->basic->query( handle, query, length );
