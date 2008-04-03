@@ -271,24 +271,11 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 	struct sconn* aux = (struct sconn*) handle->aux;
 
 
-	if( aux == NULL || aux->stmt == NULL )
-	{
-		return -ODBX_ERR_PARAM;
-	}
-
-	if( *(aux->tail) == 0 )
-	{
-		free( aux->stmt );
-		aux->stmt = NULL;
-
-		return ODBX_RES_DONE;   /* no more results */
-	}
+	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
+	if( aux->length == 0 ) { return ODBX_RES_DONE; }    /* no more results */
 
 	if( ( *result = (odbx_result_t*) malloc( sizeof( struct odbx_result_t ) ) ) == NULL )
 	{
-		free( aux->stmt );
-		aux->stmt = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -297,21 +284,36 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec );
 	}
 
-	// FIXME: Using timeout this way is not 100% clean
-
-	if( sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, -1, &res, (const char**) &(aux->tail) ) != SQLITE_OK )
+	switch( sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) )
 	{
-		free( *result );
-		*result = NULL;
+		case SQLITE_OK:
+			break;
+		case SQLITE_BUSY:
+#ifdef SQLITE_IOERR_BLOCKED
+		case SQLITE_IOERR_BLOCKED:
+#endif
+			return ODBX_RES_TIMEOUT;
+		default:
+			aux->length = 0;
+			free( *result );
+			*result = NULL;
 
-		return -ODBX_ERR_BACKEND;
+			return -ODBX_ERR_BACKEND;
 	}
+	aux->length = strlen( aux->tail );
 
 	(*result)->generic = res;
 
 	if( sqlite3_column_count( res ) == 0 )
 	{
-		sqlite3_step( res );
+		if( sqlite3_step( res ) != SQLITE_DONE )
+		{
+			free( *result );
+			*result = NULL;
+
+			return ODBX_ERR_BACKEND;
+		}
+
 		return ODBX_RES_NOROWS;   /* empty or not SELECT like query */
 	}
 
@@ -329,6 +331,14 @@ static int sqlite3_odbx_result_finish( odbx_result_t* result )
 			return -ODBX_ERR_BACKEND;
 		}
 		result->generic = NULL;
+	}
+
+	struct sconn* aux = (struct sconn*) result->handle->aux;
+
+	if( aux->stmt != NULL && aux->length == 0 )
+	{
+		free( aux->stmt );
+		aux->stmt = NULL;
 	}
 
 	free( result );
