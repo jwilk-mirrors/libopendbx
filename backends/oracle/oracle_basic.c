@@ -7,6 +7,9 @@
  */
 
 
+// required for setenv()
+#define _POSIX_C_SOURCE 200112L
+
 
 #include "oracle_basic.h"
 
