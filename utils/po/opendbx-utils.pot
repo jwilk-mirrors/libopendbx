@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opendbx 1.3.7\n"
+"Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
+"POT-Creation-Date: 2008-04-05 00:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: utils/commands.cpp:29
+msgid "Unknown command, use .help to list available commands"
+msgstr ""
+
+#: utils/commands.cpp:39
+msgid "Available commands:"
+msgstr ""
+
+#: utils/commands.cpp:40
+msgid "print this help"
+msgstr ""
+
+#: utils/commands.cpp:41
+msgid "exit program"
+msgstr ""
+
+#: utils/commands.cpp:48
+msgid "Good bye"
+msgstr ""
+
+#: utils/config.cpp:9
+msgid "Configuration file parameter is mandatory"
+msgstr ""
+
+#: utils/config.cpp:14
+msgid "Configuration options are mandatory"
+msgstr ""
+
+#: utils/config.cpp:19
+msgid "Unable to initialize configuration file parser"
+msgstr ""
+
+#: utils/config.cpp:27
+msgid "Unable to open configuration file: "
+msgstr ""
+
+#: utils/config.cpp:29
+msgid "Unable to parse configuration file: "
+msgstr ""
+
+#: utils/config.cpp:31
+msgid "Unknown error returned from configuration parser. File name: "
+msgstr ""
+
+#: utils/odbx-sql.cpp:47
+msgid "Read and execute semicolon-terminated SQL statements from stdin"
+msgstr ""
+
+#: utils/odbx-sql.cpp:49
+msgid "Usage: "
+msgstr ""
+
+#: utils/odbx-sql.cpp:49
+msgid "<options>"
+msgstr ""
+
+#: utils/odbx-sql.cpp:51
+msgid "read configuration from file"
+msgstr ""
+
+#: utils/odbx-sql.cpp:52
+msgid "start/end delimiter for fields in output"
+msgstr ""
+
+#: utils/odbx-sql.cpp:53
+msgid "print help"
+msgstr ""
+
+#: utils/odbx-sql.cpp:54
+msgid "interactive mode"
+msgstr ""
+
+#: utils/odbx-sql.cpp:55
+msgid "separator between fields in output"
+msgstr ""
+
+#: utils/odbx-sql.cpp:112
+msgid "Interactive SQL shell, use .help to list available commands"
+msgstr ""
+
+#: utils/odbx-sql.cpp:151 utils/odbx-sql.cpp:222 utils/odbx-sql.cpp:227
+#: utils/odbx-sql.cpp:233
+msgid "Error: "
+msgstr ""
+
+#: utils/odbx-sql.cpp:238
+msgid "Error: Caught unknown exception"
+msgstr ""

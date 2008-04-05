@@ -1,0 +1,5 @@
+# List of source files which contain translatable strings.
+
+utils/commands.cpp
+utils/config.cpp
+utils/odbx-sql.cpp
