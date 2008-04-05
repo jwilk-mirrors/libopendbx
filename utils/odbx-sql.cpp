@@ -3,11 +3,14 @@
 #include <opendbx/api>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <locale.h>
+#include <libintl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -23,6 +26,10 @@
 
 using namespace OpenDBX;
 
+using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 
 struct format
@@ -35,16 +42,19 @@ struct format
 
 const string help( const string& filename )
 {
-	return
-		"Read and execute semicolon-terminated SQL statements from stdin\n"
-		"\n"
-		"Usage: " + filename + " <options>\n"
-		"\n"
-		"    -c      read configuration from file\n"
-		"    -d      start/end delimiter for fields in output\n"
-		"    -h      print help\n"
-		"    -i      interactive mode\n"
-		"    -s      separator between fields in output\n";
+	std::ostringstream help;
+
+	help << gettext( "Read and execute semicolon-terminated SQL statements from stdin" ) << endl;
+	help << endl;
+	help << gettext( "Usage: " ) << filename << " " << gettext( "<options>" ) << endl;
+	help << endl;
+	help << "    -c      " << gettext( "read configuration from file" ) << endl;
+	help << "    -d      " << gettext( "start/end delimiter for fields in output" ) << endl;
+	help << "    -h      " << gettext( "print help" ) << endl;
+	help << "    -i      " << gettext( "interactive mode" ) << endl;
+	help << "    -s      " << gettext( "separator between fields in output" ) << endl;
+
+	return help.str();
 }
 
 
@@ -71,16 +81,16 @@ void output( Result& result, struct format* fparam )
 		{
 			if( fields > 0 )
 			{
-				if( result.getFieldValue( 0 ) == NULL ) { std::cout << "NULL"; }
-				else { std::cout << fparam->separator << result.getFieldValue( 0 ) << fparam->separator; }
+				if( result.getFieldValue( 0 ) == NULL ) { cout << "NULL"; }
+				else { cout << fparam->separator << result.getFieldValue( 0 ) << fparam->separator; }
 
 				for( unsigned long i = 1; i < fields; i++ )
 				{
-					if( result.getFieldValue( i ) == NULL ) { std::cout << fparam->delimiter << "NULL"; }
-					else { std::cout << fparam->delimiter << fparam->separator << result.getFieldValue( i ) << fparam->separator; }
+					if( result.getFieldValue( i ) == NULL ) { cout << fparam->delimiter << "NULL"; }
+					else { cout << fparam->delimiter << fparam->separator << result.getFieldValue( i ) << fparam->separator; }
 				}
 			}
-			std::cout << std::endl;
+			cout << endl;
 		}
 	}
 }
@@ -91,7 +101,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 {
 	char* line;
 	size_t len;
-	std::string sql;
+	string sql;
 	const char* fprompt = "";
 	const char* cprompt = "";
 	Commands cmd( conn );
@@ -99,7 +109,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 
 	if( iactive )
 	{
-		std::cout << "Interactive SQL shell, use .help to list available commands" << std::endl;
+		cout << gettext( "Interactive SQL shell, use .help to list available commands" ) << endl;
 		fprompt = "sql> ";
 		cprompt = "  -> ";
 		using_history();
@@ -138,7 +148,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		}
 		catch( OpenDBX::Exception& oe )
 		{
-			std::cerr << "Error: " << oe.what() << std::endl;
+			cerr << gettext( "Error: " ) << oe.what() << endl;
 			if( oe.getSeverity() < 0 ) { return; }
 		}
 	}
@@ -155,6 +165,10 @@ int main( int argc, char* argv[] )
 		char* filename = NULL;
 		struct format fparam;
 
+
+		setlocale( LC_ALL, "" );
+		textdomain( "opendbx-utils" );
+		bindtextdomain( "opendbx-utils", LOCALEDIR );
 
 		fparam.delimiter = "\t";
 		fparam.separator = "";
@@ -181,7 +195,7 @@ int main( int argc, char* argv[] )
 					fparam.delimiter = optarg;
 					break;
 				case 'h':
-					std::cout << help( std::string( argv[0] ) ) << std::endl;
+					cout << help( string( argv[0] ) ) << endl;
 					return 0;
 				case 'i':
 					iactive = true;
@@ -191,7 +205,7 @@ int main( int argc, char* argv[] )
 					break;
 				default:
 					const char tmp = (char) param;
-					throw std::runtime_error( "Unknown option '" + std::string( &tmp ) + "' with value '" + std::string( optarg ) + "'" );
+					throw std::runtime_error( "Unknown option '" + string( &tmp ) + "' with value '" + string( optarg ) + "'" );
 			}
 		}
 
@@ -205,23 +219,23 @@ int main( int argc, char* argv[] )
 	}
 	catch( OpenDBX::Exception& oe )
 	{
-		std::cerr << "Error: " << oe.what() << std::endl;
+		cerr << gettext( "Error: " ) << oe.what() << endl;
 		return 1;
 	}
 	catch( ConfigException& ce )
 	{
-		std::cerr << "Error: " << ce.what() << std::endl;
-		std::cerr << help( string( argv[0] ) ) << std::endl;
+		cerr << gettext( "Error: " ) << ce.what() << endl;
+		cerr << help( string( argv[0] ) ) << endl;
 		return 1;
 	}
 	catch( runtime_error& e )
 	{
-		std::cerr << "Error: " << e.what() << std::endl;
+		cerr << gettext( "Error: " ) << e.what() << endl;
 		return 1;
 	}
 	catch( ... )
 	{
-		std::cerr << "Error: Caught unknown exception" << std::endl;
+		cerr << gettext( "Error: Caught unknown exception" ) << endl;
 		return 1;
 	}
 
