@@ -22,7 +22,11 @@ extern struct odbx_basic_ops oracle_odbx_basic_ops;
 
 struct odbx_ops oracle_odbx_ops = {
 	.basic = &oracle_odbx_basic_ops,
+#ifdef HAVE_OCILOBWRITE2
 	.lo = NULL,
+#else
+	.lo = NULL,
+#endif
 };
 
 

@@ -13,6 +13,14 @@
 
 
 
+#ifdef HAVE_OCILOBWRITE2
+
+// Oracle 10.2.0 workaround, bug 4901517
+#ifndef oraub8
+typedef unsigned long long oraub8;
+#endif
+
+
 /*
  *  Declaration of Oracle capabilities
  */
@@ -21,6 +29,7 @@ struct odbx_lo_ops oracle_odbx_lo_ops = {
 	.open = oracle_odbx_lo_open,
 	.close = oracle_odbx_lo_close,
 	.read = oracle_odbx_lo_read,
+	.write = oracle_odbx_lo_write,
 };
 
 
@@ -51,7 +60,8 @@ static int oracle_odbx_lo_open( odbx_result_t* result, odbx_lo_t** lo, const cha
 	}
 
 	oralob->lob = (OCILobLocator*) value;
-	oralob->offset = 0;
+	oralob->rpiece = OCI_FIRST_PIECE;
+	oralob->wpiece = OCI_FIRST_PIECE;
 
 	(*lo)->result = result;
 	(*lo)->generic = (void*) oralob;
@@ -80,6 +90,19 @@ static int oracle_odbx_lo_close( odbx_lo_t* lo )
 	}
 
 	struct oraconn* conn = (struct oraconn*) lo->result->handle->aux;
+	struct oralob* oralob = (struct oralob*) lo->generic;
+
+	if( oralob->wpiece == OCI_NEXT_PIECE )
+	{
+		oraub8 blen = 0;
+		oraub8 clen = 0;
+		int buffer = 0;
+
+		if( ( conn->errcode = OCILobWrite2( conn->ctx, conn->err, lo->generic, &blen, &clen, 1, (dvoid*) &buffer, 0, OCI_LAST_PIECE, NULL, NULL, 0, SQLCS_IMPLICIT ) ) != OCI_SUCCESS )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
+	}
 
 	if( ( conn->errcode = OCILobClose( conn->ctx, conn->err, lo->generic ) ) != OCI_SUCCESS )
 	{
@@ -97,22 +120,64 @@ static int oracle_odbx_lo_close( odbx_lo_t* lo )
 
 static ssize_t oracle_odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen )
 {
-	ub4 len = 0;
+	oraub8 blen = 0;
+	oraub8 clen = 0;
 	struct oraconn* conn = (struct oraconn*) lo->result->handle->aux;
 	struct oralob* oralob = (struct oralob*) lo->generic;
 
 
 	if( lo->generic == NULL ) { return -ODBX_ERR_HANDLE; }
 
-	conn->errcode = OCILobRead( conn->ctx, conn->err, lo->generic, &len, oralob->offset, buffer, buflen, NULL, NULL, 0, SQLCS_IMPLICIT );
+	if( buflen > 0x7FFFFFFF ) { buflen = 0x7FFFFFFF; }   // we can only return ssize_t
+
+	conn->errcode = OCILobRead2( conn->ctx, conn->err, lo->generic, &blen, &clen, 1, buffer, (oraub8) buflen, oralob->rpiece, NULL, NULL, 0, SQLCS_IMPLICIT );
+
+	switch( conn->errcode )
+	{
+		case OCI_SUCCESS:
+			return (ssize_t) 0;
+		case OCI_NEED_DATA:
+			oralob->rpiece = OCI_NEXT_PIECE;
+			return (ssize_t) blen;
+	}
+
+	return -ODBX_ERR_BACKEND;
+}
+
+
+
+static ssize_t oracle_odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen )
+{
+	oraub8 blen = 0;
+	oraub8 clen = 0;
+	struct oraconn* conn = (struct oraconn*) lo->result->handle->aux;
+	struct oralob* oralob = (struct oralob*) lo->generic;
+
+
+	if( lo->generic == NULL ) { return -ODBX_ERR_HANDLE; }
+
+	if( buflen > 0x7FFFFFFF ) { buflen = 0x7FFFFFFF; }   // we can only return ssize_t
+
+	if( oralob->wpiece == OCI_FIRST_PIECE )
+	{
+		if( ( conn->errcode = OCILobTrim2( conn->ctx, conn->err, lo->generic, 0 ) ) != OCI_SUCCESS )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
+	}
+
+	conn->errcode = OCILobWrite2( conn->ctx, conn->err, lo->generic, &blen, &clen, 1, buffer, (oraub8) buflen, oralob->wpiece, NULL, NULL, 0, SQLCS_IMPLICIT );
 
 	switch( conn->errcode )
 	{
 		case OCI_SUCCESS:
 		case OCI_NEED_DATA:
-			oralob->offset += len;
-			return (ssize_t) len;
-		default:
-			return -ODBX_ERR_BACKEND;
+			oralob->wpiece = OCI_NEXT_PIECE;
+			return (ssize_t) blen;
 	}
+
+	return -ODBX_ERR_BACKEND;
 }
+
+
+#endif

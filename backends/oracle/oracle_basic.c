@@ -49,6 +49,12 @@ struct odbx_basic_ops oracle_odbx_basic_ops = {
 
 
 
+static const char* oracle_odbx_errmsg[] = {
+	gettext_noop("Invalid handle"),
+};
+
+
+
 /*
  *  ODBX basic operations
  *  Oracle OCI8 style
@@ -172,19 +178,16 @@ static int oracle_odbx_bind( odbx_t* handle, const char* database, const char* w
 
 	if( ( len = snprintf( server, 384, connstr, conn->host, conn->port, database ) ) > 384 )
 	{
-		oracle_priv_handle_cleanup( handle );
 		return -ODBX_ERR_SIZE;
 	}
 
 	if( ( conn->errcode = OCIServerAttach( conn->srv, conn->err, (text*) server, len, OCI_DEFAULT ) ) != OCI_SUCCESS )
 	{
-		oracle_priv_handle_cleanup( handle );
 		return -ODBX_ERR_BACKEND;
 	}
 
 	if( ( conn->errcode = OCIAttrSet( conn->ctx, OCI_HTYPE_SVCCTX, conn->srv, 0, OCI_ATTR_SERVER, conn->err ) ) != OCI_SUCCESS )
 	{
-		oracle_priv_handle_cleanup( handle );
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -323,7 +326,10 @@ static const char* oracle_odbx_error( odbx_t* handle )
 	sb4 error;
 	struct oraconn* conn = (struct oraconn*) handle->aux;
 
-	if( conn == NULL ) { return NULL; }   // TODO: Return custom string
+	if( conn == NULL )
+	{
+		return dgettext( "opendbx", oracle_odbx_errmsg[0]  );
+	}
 
 	switch( conn->errcode )
 	{
