@@ -22,9 +22,8 @@
 struct odbx_lo_ops firebird_odbx_lo_ops = {
 	.open = firebird_odbx_lo_open,
 	.close = firebird_odbx_lo_close,
-// 	.length = firebird_odbx_lo_length,
 	.read = firebird_odbx_lo_read,
-// 	.write = firebird_odbx_lo_write,
+	.write = firebird_odbx_lo_write,
 };
 
 
@@ -114,14 +113,14 @@ static ssize_t firebird_odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen
 }
 
 
-/*
+
 static ssize_t firebird_odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen )
 {
 	unsigned short len;
-	struct fbconn* fbc = (struct fbconn*) lo->handle->aux;
+	struct fbconn* fbc = (struct fbconn*) lo->result->handle->aux;
 
 	if( buflen > 0xFFFF ) { len = 0xFFFF; }
-	else { len = buflen; }
+	else { len = (unsigned short) buflen; }
 
 	if( isc_put_segment( fbc->status, &(lo->generic), len, (char*) buffer ) != 0 )
 	{
@@ -130,4 +129,3 @@ static ssize_t firebird_odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t bufle
 
 	return len;
 }
-*/

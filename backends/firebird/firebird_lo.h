@@ -25,11 +25,9 @@ static int firebird_odbx_lo_open( odbx_result_t* result, odbx_lo_t** lo, const c
 
 static int firebird_odbx_lo_close( odbx_lo_t* lo );
 
-// static uint64_t firebird_odbx_lo_length( odbx_lo_t* lo );
-
 static ssize_t firebird_odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen );
 
-// static ssize_t firebird_odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen );
+static ssize_t firebird_odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen );
 
 
 
