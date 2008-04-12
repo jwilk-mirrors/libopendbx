@@ -100,6 +100,7 @@ int main( int argc, char* argv[] )
 	if( backend.find( "firebird", 0 ) != string::npos ) { stmts = firebird_stmt; }
 	if( backend.find( "mssql", 0 ) != string::npos ) { stmts = mssql_stmt; }
 	if( backend.find( "mysql", 0 ) != string::npos ) { stmts = mysql_stmt; }
+	if( backend.find( "odbc", 0 ) != string::npos ) { stmts = odbc_stmt; }
 	if( backend.find( "oracle", 0 ) != string::npos ) { stmts = oracle_stmt; }
 	if( backend.find( "pgsql", 0 ) != string::npos ) { stmts = pgsql_stmt; }
 	if( backend.find( "sqlite", 0 ) != string::npos ) { stmts = sqlite_stmt; }
@@ -174,6 +175,16 @@ int main( int argc, char* argv[] )
 			cerr << "Caught exception: " << oe.what() << endl;
 			return 1;
 		}
+		catch( std::exception& e )
+		{
+			cerr << "Caught STL exception: " << e.what() << endl;
+			return 1;
+		}
+		catch( ... )
+		{
+			cerr << "Caught unknown exception" << endl;
+			return 1;
+		}
 	}
 
 	return 0;
@@ -192,16 +203,16 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 
 	while( qptr->str != NULL )
 	{
-		if( verbose ) { cout << "  Stmt::execute(" << qptr->num << "): '" << qptr->str << "'" << endl; }
-
-		Stmt stmt = conn[qptr->num].create( Stmt::Simple, string( qptr->str ) );
-		Result result = stmt.execute();
-
-		tv.tv_sec = 3;
-		tv.tv_usec = 0;
-
 		try
 		{
+			if( verbose ) { cout << "  Stmt::execute(" << qptr->num << "): '" << qptr->str << "'" << endl; }
+
+			Stmt stmt = conn[qptr->num].create( Stmt::Simple, string( qptr->str ) );
+			Result result = stmt.execute();
+
+			tv.tv_sec = 3;
+			tv.tv_usec = 0;
+
 			while( ( stat = result.getResult( &tv, 5 ) ) != ODBX_RES_DONE )
 			{
 				if( verbose ) { cout << "  Result::getResult()" << endl; }
@@ -250,6 +261,20 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 						}
 					}
 				}
+
+				// Test case:  Calling getRow() more often must not result in fatal error
+				try {
+					result.getRow();
+				} catch( OpenDBX::Exception& oe ) {
+					if( oe.getSeverity() < 0 ) { throw oe; }
+				}
+			}
+
+			// Test case:  Calling getResult() more often must not result in fatal error
+			try {
+				result.getResult( NULL, 0 );
+			} catch( OpenDBX::Exception& oe ) {
+				if( oe.getSeverity() < 0 ) { throw oe; }
 			}
 		}
 		catch( OpenDBX::Exception& oe )

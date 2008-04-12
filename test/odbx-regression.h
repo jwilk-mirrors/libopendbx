@@ -52,6 +52,7 @@ struct odbxstmt
 
 
 static struct odbxstmt firebird_basic[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" CHARACTER(1),"
 	"   \"i16\" SMALLINT,"
@@ -94,6 +95,7 @@ static struct odbxstmt* firebird_stmt[] = { firebird_basic, firebird_basic };
 
 
 static struct odbxstmt mssql_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" CHARACTER VARYING(1) NULL,"
 	"   \"i16\" SMALLINT,"
@@ -133,6 +135,7 @@ static struct odbxstmt* mssql_stmt[] = { mssql_multi, mssql_multi };
 
 
 static struct odbxstmt mysql_basic[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" BOOLEAN,"
 	"   \"i16\" SMALLINT,"
@@ -171,6 +174,7 @@ static struct odbxstmt mysql_basic[] = {
 };
 
 static struct odbxstmt mysql_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"	\"i1\" BOOLEAN,"
 	"	\"i16\" SMALLINT,"
@@ -210,6 +214,7 @@ static struct odbxstmt* mysql_stmt[] = { mysql_basic, mysql_multi };
 
 
 static struct odbxstmt odbc_basic[] = {
+	{ 0, "SELECT * FROM odbxtest" },
 	{ 0, "CREATE TABLE odbxtest ("
 	"   i1 BOOLEAN,"
 	"   i16 SMALLINT,"
@@ -252,6 +257,7 @@ static struct odbxstmt* odbc_stmt[] = { odbc_basic, odbc_basic };
 
 
 static struct odbxstmt oracle_basic[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" CHAR(1),"
 	"   \"i16\" SMALLINT,"
@@ -293,6 +299,7 @@ static struct odbxstmt* oracle_stmt[] = { oracle_basic, NULL };
 
 
 static struct odbxstmt pgsql_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" BOOLEAN,"
 	"   \"i16\" SMALLINT,"
@@ -332,6 +339,7 @@ static struct odbxstmt* pgsql_stmt[] = { pgsql_multi, pgsql_multi };
 
 
 static struct odbxstmt sqlite_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" BOOLEAN,"
 	"   \"i16\" SMALLINT,"
@@ -374,6 +382,7 @@ static struct odbxstmt* sqlite_stmt[] = { sqlite_multi, sqlite_multi };
 
 
 static struct odbxstmt sqlite3_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" BOOLEAN,"
 	"   \"i16\" SMALLINT,"
@@ -416,6 +425,7 @@ static struct odbxstmt* sqlite3_stmt[] = { sqlite3_multi, sqlite3_multi };
 
 
 static struct odbxstmt sybase_multi[] = {
+	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" CHARACTER VARYING(1) NULL,"
 	"   \"i16\" SMALLINT,"

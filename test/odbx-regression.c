@@ -321,8 +321,20 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 				}
 			}
 
+			// Test case:  Calling odbx_row_fetch() more often must not result in fatal error
+			if( ( err = odbx_row_fetch( result ) ) != 0 )
+			{
+				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
+			}
+
 			if( verbose ) { fprintf( stdout, "  odbx_result_free()\n" ); }
 			odbx_result_free( result );
+		}
+
+		// Test case:  Calling odbx_result() more often must not result in fatal error
+		if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != 0 )
+		{
+			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 		}
 
 		qptr++;
