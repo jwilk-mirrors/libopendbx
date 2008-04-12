@@ -27,10 +27,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opendbx 1.3.6\n"
-"Report-Msgid-Bugs-To: http://bugs.linuxnetworks.de/\n"
-"POT-Creation-Date: 2008-02-04 20:48+0100\n"
-"PO-Revision-Date: 2008-02-04 20:48+0100\n"
+"Project-Id-Version: opendbx 1.3.7\n"
+"Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
+"POT-Creation-Date: 2008-04-05 22:09+0200\n"
+"PO-Revision-Date: 2008-04-05 22:09+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -62,7 +62,7 @@ msgstr "Out of memory"
 msgid "Incorrect size of allocated memory"
 msgstr "Incorrect size of allocated memory"
 
-#: lib/odbx.c:26 lib/odbxlib.c:149
+#: lib/odbx.c:26
 msgid "Loading backend library failed"
 msgstr "Loading backend library failed"
 
@@ -90,9 +90,14 @@ msgstr "Waiting for result failed"
 msgid "Not supported"
 msgstr "Not supported"
 
-#: lib/odbx.c:33
+#: lib/odbx.c:33 backends/oracle/oracle_basic.c:53
 msgid "Invalid handle"
 msgstr "Invalid handle"
+
+#: lib/odbxlib.c:149
+#, c-format
+msgid "Loading backend library %s, %s or %s failed"
+msgstr "Loading backend library %s, %s or %s failed"
 
 #: backends/mssql/mssql_basic.c:52
 msgid "Connecting to server failed"

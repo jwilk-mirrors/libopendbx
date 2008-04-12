@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: http://bugs.linuxnetworks.de/\n"
-"POT-Creation-Date: 2008-02-04 20:48+0100\n"
+"Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
+"POT-Creation-Date: 2008-04-05 22:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,7 +40,7 @@ msgstr ""
 msgid "Incorrect size of allocated memory"
 msgstr ""
 
-#: lib/odbx.c:26 lib/odbxlib.c:149
+#: lib/odbx.c:26
 msgid "Loading backend library failed"
 msgstr ""
 
@@ -68,8 +68,13 @@ msgstr ""
 msgid "Not supported"
 msgstr ""
 
-#: lib/odbx.c:33
+#: lib/odbx.c:33 backends/oracle/oracle_basic.c:53
 msgid "Invalid handle"
+msgstr ""
+
+#: lib/odbxlib.c:149
+#, c-format
+msgid "Loading backend library %s, %s or %s failed"
 msgstr ""
 
 #: backends/mssql/mssql_basic.c:52
