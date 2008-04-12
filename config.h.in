@@ -37,7 +37,7 @@
 /* Define to 1 if you have the <ibase.h> header file. */
 #undef HAVE_IBASE_H
 
-/* Define if you have the iconv() function. */
+/* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -115,6 +115,9 @@
 
 /* Define to 1 if you have mysql_next_result */
 #undef HAVE_MYSQL_NEXT_RESULT
+
+/* Define to 1 if you have OCILobWrite2 */
+#undef HAVE_OCILOBWRITE2
 
 /* Define to 1 if you have the <oci.h> header file. */
 #undef HAVE_OCI_H

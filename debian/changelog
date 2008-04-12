@@ -1,3 +1,11 @@
+libopendbx (1.3.7-1) unstable; urgency=low
+
+  * New upstream version (development version)
+  * Added dependencies for odbx-sql
+  * Added translation for odbx-sql
+
+ -- Norbert Sendetzky <norbert@linuxnetworks.de>  Thu,  20 Mar 2008 00:00:00 +0100
+
 libopendbx (1.3.6-1) unstable; urgency=low
 
   * New upstream version (development version)

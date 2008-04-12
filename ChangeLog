@@ -1,5 +1,30 @@
-2008-02-09 Norbert Sendetzky <norbert@linuxnetworks.de>
+2008-04-05 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Feature: odbx_result_finish() can return error conditions and replaces odbx_result_free()
+	* Feature: Added lob write function to lob extension for Firebird and Oracle
+	* Feature: odbx-sql history remembers complete statements
+	* Feature: Gettext support and german translation for odbx-sql
+	* Feature: Extended regression testing for retrieving results and rows
+	* Feature: Include C and C++ example application in regression test
+	* Change: odbx_result_free() is now depricated
+	* Change: Removed Stmt::bind() from libopendbxplus as it won't work with prepared stmt API
+	* Change: Moved Stmt::escape() to Conn::escape()
+	* Bugfix: Ported Bugfixes from release 1.2.5
+	* Bugfix: Escape backslashes as well in odbx_escape() default implementation
+	* Bugfix: Class Odbx::Result() was able to cause a segfault on error conditions
+	* Bugfix: Cleanup outstanding results in Odbx::~Result() if available
+	* Bugfix: Correct order of backend library loading (user supplied first)
+	* Bugfix: sqlite3_odbx_result() returned wrong code if called on finished statement
+	* Bugfix: Timeout of odbx_result() works correctly in sqlite3 backend now
+	* Bugfix: gettext works if locales are in non-standard directory
+	* Bugfix: odbx-sql accessed already freed string
+	* Bugfix: Fixed include and library path for odbx-sql
+	* Bugfix: Added missing define for setenv() in oracle backend
+	* Bugfix: Oracle backend returns correct error message if server is unavailable
+
+2008-02-24 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: New odbx-sql utility for execution of SQL statements from the shell
 	* Feature: Richer API for libopendbxplus
 	* Change: Moved opendbx/api.hpp to opendbx/api
 	* Change: Switched parameter position for Conn::create()

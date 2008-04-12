@@ -113,7 +113,7 @@ Package: opendbx-utils
 Priority: optional
 Section: utils
 Architecture: any
-Depends: libopendbx1 (>= ${binary:Version})
+Depends: libopendbx1 (>= ${binary:Version}), ${shlibs:Depends}
 Provides: opendbx-utils
 Description: Utility applications using libopendbx
  This package provides utility applications for accessing database content

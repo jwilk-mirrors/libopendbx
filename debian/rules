@@ -67,7 +67,7 @@ binary-arch: build install
 
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbx.so.*" "usr/lib/"
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbxplus.so.*" "usr/lib/"
-	dh_install -p${package} "${tmpdir}/usr/share/locale/*" "usr/share/locale/"
+	dh_install -p${package} --autodest "${tmpdir}/usr/share/locale/*/*/opendbx.mo"
 	dh_install -p${package}-dev "${tmpdir}/usr/include/opendbx/api" "usr/include/opendbx"
 	dh_install -p${package}-dev "${tmpdir}/usr/include/opendbx/api.h" "usr/include/opendbx"
 	dh_install -p${package}-dev "${tmpdir}/usr/lib/libopendbx.so" "${tmpdir}/usr/lib/libopendbx.*a" "usr/lib/"
@@ -81,6 +81,7 @@ binary-arch: build install
 		dh_link -p${package}-$${be} "usr/share/doc/${package}" "usr/share/doc/${package}-$${be}" ; \
 	done
 	dh_install -popendbx-utils "${tmpdir}/usr/bin/odbx-sql" "usr/bin/"
+	dh_install -popendbx-utils --autodest "${tmpdir}/usr/share/locale/*/*/opendbx-utils.mo"
 
 	dh_link
 	dh_strip

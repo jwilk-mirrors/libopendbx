@@ -2,13 +2,13 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.3.6], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.3.7], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.16.1])
+AM_GNU_GETTEXT_VERSION([0.17])
 AM_ICONV
 
 
@@ -164,11 +164,15 @@ do
 		oracle)
 			AC_CHECK_HEADERS([oci.h], , [AC_MSG_ERROR([oracle header (oci.h) not found])])
 			AC_SUBST([LIBORACLE])
-#			AC_CHECK_LIB(
-#				[clntsh], [OCIInitialize],
+			AC_CHECK_LIB(
+				[clntsh], [OCIInitialize],
 				AC_DEFINE([HAVE_LIBCLNTSH], 1, [Have -lclntsh]) LIBORACLE="clntsh",
-#				[AC_MSG_ERROR([oracle library (libclntsh) not found])]
-#			)
+				[AC_MSG_ERROR([oracle library (libclntsh) not found])]
+			)
+			AC_CHECK_LIB(
+				[clntsh], [OCILobWrite2],
+				AC_DEFINE([HAVE_OCILOBWRITE2], 1, [Define to 1 if you have OCILobWrite2])
+			)
 		;;
 		pgsql)
 			AC_CHECK_HEADERS([libpq-fe.h], , [AC_MSG_ERROR([postgresql header (libpq-fe.h) not found])])
@@ -241,6 +245,7 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	test/Makefile
 	utils/Makefile
+	utils/po/Makefile.in
 	opendbx.spec
 	opendbx.pc
 ])
