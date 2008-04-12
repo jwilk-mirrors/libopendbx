@@ -306,6 +306,8 @@ int odbx_lo_open( odbx_result_t* result, odbx_lo_t** lo, const char* value );
 
 ssize_t odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen );
 
+ssize_t odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen );
+
 int odbx_lo_close( odbx_lo_t* lo );
 
 

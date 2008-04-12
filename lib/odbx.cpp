@@ -106,6 +106,13 @@ namespace OpenDBX
 
 
 
+	ssize_t Lob::write( void* buffer, size_t buflen )
+	{
+		return m_impl->write( buffer, buflen );
+	}
+
+
+
 
 
 	/*
@@ -267,20 +274,6 @@ namespace OpenDBX
 
 
 
-	string& Stmt::escape( const string& from, string& to )
-	{
-		return m_impl->escape( from.c_str(), from.size(), to );
-	}
-
-
-
-	string& Stmt::escape( const char* from, unsigned long fromlen, string& to )
-	{
-		return m_impl->escape( from, fromlen, to );
-	}
-
-
-
 // 	size_t Stmt::count()
 // 	{
 // 		return m_impl->count();
@@ -428,6 +421,20 @@ namespace OpenDBX
 
 
 
+	string& Conn::escape( const string& from, string& to )
+	{
+		return m_impl->escape( from.c_str(), from.size(), to );
+	}
+
+
+
+	string& Conn::escape( const char* from, unsigned long fromlen, string& to )
+	{
+		return m_impl->escape( from, fromlen, to );
+	}
+
+
+
 	Stmt Conn::create( Stmt::Type type, const char* sql, unsigned long length )
 	{
 		if( m_impl == NULL )
@@ -498,6 +505,13 @@ namespace OpenDBX
 	ssize_t Lob_Impl::read( void* buffer, size_t buflen )
 	{
 		return odbx_lo_read( m_lo, buffer, buflen );
+	}
+
+
+
+	ssize_t Lob_Impl::write( void* buffer, size_t buflen )
+	{
+		return odbx_lo_write( m_lo, buffer, buflen );
 	}
 
 
@@ -648,15 +662,12 @@ namespace OpenDBX
 	Stmt_Impl::Stmt_Impl( odbx_t* handle )
 	{
 		m_handle = handle;
-		m_escbuf = _resize( NULL, 32 );
-		m_escsize = 32;
 	}
 
 
 
 	Stmt_Impl::~Stmt_Impl()
 	{
-		if( m_escbuf != NULL ) { std::free( m_escbuf ); }
 	}
 
 
@@ -674,43 +685,6 @@ namespace OpenDBX
 
 
 
-	string& Stmt_Impl::escape( const char* from, unsigned long fromlen, string& to )
-	{
-		int err;
-		unsigned long size = m_escsize;
-
-		while( fromlen * 2 + 1 > size ) { size = size * 2; }
-
-		if( size > m_escsize )
-		{
-			m_escbuf = _resize( m_escbuf, size );
-			m_escsize = size;
-		}
-
-
-		if( (err = odbx_escape( m_handle, from, fromlen, m_escbuf, &size ) ) < 0 )
-		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
-		}
-
-		to.assign( m_escbuf, size );
-		return to;
-	}
-
-
-
-	inline char* Stmt_Impl::_resize( char* buffer, size_t size )
-	{
-		if( ( buffer = (char*) std::realloc( buffer, size ) ) == NULL )
-		{
-			throw( Exception( string( odbx_error( m_handle, -ODBX_ERR_NOMEM ) ), -ODBX_ERR_NOMEM, odbx_error_type( m_handle, -ODBX_ERR_NOMEM ) ) );
-		}
-
-		return buffer;
-	}
-
-
-
 
 
 	/*
@@ -722,8 +696,8 @@ namespace OpenDBX
 	StmtSimple_Impl::StmtSimple_Impl( odbx_t* handle, const string& sql ) : Stmt_Impl( handle )
 	{
 		m_sql = sql;
-		m_buffer = NULL;
-		m_bufsize = 0;
+// 		m_buffer = NULL;
+// 		m_bufsize = 0;
 /*		size_t pos = 0;
 
 		while( ( pos = m_sql.find( "?", pos ) ) != string::npos )
@@ -746,15 +720,15 @@ namespace OpenDBX
 
 	StmtSimple_Impl::StmtSimple_Impl() : Stmt_Impl( NULL )
 	{
-		m_buffer = NULL;
-		m_bufsize = 0;
+// 		m_buffer = NULL;
+// 		m_bufsize = 0;
 	}
 
 
 
 	StmtSimple_Impl::~StmtSimple_Impl()
 	{
-		if( m_buffer != NULL ) { std::free( m_buffer ); }
+// 		if( m_buffer != NULL ) { std::free( m_buffer ); }
 	}
 
 
@@ -873,6 +847,9 @@ namespace OpenDBX
 	{
 		int err;
 
+		m_escbuf = _resize( NULL, 32 );
+		m_escsize = 32;
+
 		if( ( err =  odbx_init( &m_handle, backend, host, port ) ) < 0 )
 		{
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
@@ -883,6 +860,8 @@ namespace OpenDBX
 
 	Conn_Impl::~Conn_Impl()
 	{
+		if( m_escbuf != NULL ) { std::free( m_escbuf ); }
+
 		odbx_finish( m_handle );
 	}
 
@@ -953,9 +932,46 @@ namespace OpenDBX
 
 
 
+	string& Conn_Impl::escape( const char* from, unsigned long fromlen, string& to )
+	{
+		int err;
+		unsigned long size = m_escsize;
+
+		while( fromlen * 2 + 1 > size ) { size = size * 2; }
+
+		if( size > m_escsize )
+		{
+			m_escbuf = _resize( m_escbuf, size );
+			m_escsize = size;
+		}
+
+
+		if( (err = odbx_escape( m_handle, from, fromlen, m_escbuf, &size ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+		}
+
+		to.assign( m_escbuf, size );
+		return to;
+	}
+
+
+
 	Stmt_Impl* Conn_Impl::create( Stmt::Type type, const string& sql )
 	{
 		return Stmt_Impl::instance( m_handle, type, sql );
+	}
+
+
+
+	inline char* Conn_Impl::_resize( char* buffer, size_t size )
+	{
+		if( ( buffer = (char*) std::realloc( buffer, size ) ) == NULL )
+		{
+			throw( Exception( string( odbx_error( m_handle, -ODBX_ERR_NOMEM ) ), -ODBX_ERR_NOMEM, odbx_error_type( m_handle, -ODBX_ERR_NOMEM ) ) );
+		}
+
+		return buffer;
 	}
 
 

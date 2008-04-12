@@ -39,6 +39,7 @@ namespace OpenDBX
 		~Lob_Impl();
 
 		ssize_t read( void* buffer, size_t buflen );
+		ssize_t write( void* buffer, size_t buflen );
 	};
 
 
@@ -72,8 +73,6 @@ namespace OpenDBX
 	struct Stmt_Impl
 	{
 		odbx_t* m_handle;
-		char* m_escbuf;
-		unsigned long m_escsize;
 
 
 		Stmt_Impl( odbx_t* handle );
@@ -81,14 +80,10 @@ namespace OpenDBX
 
 		static Stmt_Impl* instance( odbx_t* handle, Stmt::Type type, const string& sql );
 
-		string& escape( const char* from, unsigned long fromlen, string& to );
-
 // 		virtual void bind( const void* data, unsigned long size, size_t pos, int flags ) = 0;
 
 // 		virtual size_t count() = 0;
 		virtual Result_Impl* execute() = 0;
-
-		inline char* _resize( char* buffer, size_t size );
 	};
 
 
@@ -122,6 +117,10 @@ namespace OpenDBX
 	struct Conn_Impl
 	{
 		odbx_t* m_handle;
+		char* m_escbuf;
+		unsigned long m_escsize;
+
+		inline char* _resize( char* buffer, size_t size );
 
 
 		Conn_Impl( const char* backend, const char* host, const char* port );
@@ -134,6 +133,8 @@ namespace OpenDBX
 
 		void getOption( odbxopt option, void* value );
 		void setOption( odbxopt option, void* value );
+
+		string& escape( const char* from, unsigned long fromlen, string& to );
 
 		Stmt_Impl* create( Stmt::Type type, const char* sql, unsigned long length );
 		Stmt_Impl* create( Stmt::Type type, const string& sql );

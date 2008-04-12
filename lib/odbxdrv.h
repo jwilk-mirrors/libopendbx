@@ -99,9 +99,8 @@ struct odbx_lo_ops
 {
 	int (*open) ( odbx_result_t* result, odbx_lo_t** lo, const char* value );
 	int (*close) ( odbx_lo_t* lo );
-// 	uint64_t (*length) ( odbx_lo_t* lo );
 	ssize_t (*read) ( odbx_lo_t* lo, void* buffer, size_t buflen );
-// 	ssize_t (*write) ( odbx_lo_t* lo, void* buffer, size_t buflen );
+	ssize_t (*write) ( odbx_lo_t* lo, void* buffer, size_t buflen );
 };
 
 

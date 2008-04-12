@@ -279,9 +279,13 @@ int odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* 
 			{
 				if( i == *tolen - 1 ) { return -ODBX_ERR_SIZE; }
 
-				if( from[i] == '\'' ) { to[len++] = '\''; }
-
-				to[len++] = from[i];
+				switch( from[i] )
+				{
+					// duplicate single quotes and backslashes for escaping
+					case '\\': to[len++] = '\\'; break;
+					case '\'': to[len++] = '\''; break;
+					default: to[len++] = from[i];
+				}
 			}
 
 			to[len] = '\0';
@@ -476,18 +480,6 @@ int odbx_lo_close( odbx_lo_t* lo )
 }
 
 
-/*
-uint64_t odbx_lo_length( odbx_lo_t* lo )
-{
-	if( lo != NULL && lo->result != NULL && lo->result->handle != NULL && lo->result->handle->ops != NULL && lo->result->handle->ops->lo != NULL && lo->result->handle->ops->lo->length != NULL )
-	{
-		return lo->handle->ops->lo->length( lo );
-	}
-
-	return 0;
-}
-*/
-
 
 ssize_t odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen )
 {
@@ -502,7 +494,7 @@ ssize_t odbx_lo_read( odbx_lo_t* lo, void* buffer, size_t buflen )
 }
 
 
-/*
+
 ssize_t odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen )
 {
 	if( buffer == NULL ) { return -ODBX_ERR_PARAM; }
@@ -514,4 +506,3 @@ ssize_t odbx_lo_write( odbx_lo_t* lo, void* buffer, size_t buflen )
 
 	return -ODBX_ERR_HANDLE;
 }
-*/

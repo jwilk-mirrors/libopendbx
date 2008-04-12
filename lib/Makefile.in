@@ -139,6 +139,7 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
@@ -196,6 +197,7 @@ USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -254,8 +256,8 @@ include_HEADERS = odbx.h
 nobase_include_HEADERS = opendbx/api.h opendbx/api
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
 libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h
-libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ $(am__append_1) \
-	$(am__append_5)
+libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ \
+	-DLOCALEDIR=\"$(localedir)\" $(am__append_1) $(am__append_5)
 libopendbx_la_LDFLAGS = -version-info @APIVERSION@
 libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
 libopendbxplus_la_SOURCES = odbx.cpp odbx_impl.hpp
