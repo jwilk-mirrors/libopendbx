@@ -284,8 +284,9 @@ int odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* 
 					// duplicate single quotes and backslashes for escaping
 					case '\\': to[len++] = '\\'; break;
 					case '\'': to[len++] = '\''; break;
-					default: to[len++] = from[i];
 				}
+
+				to[len++] = from[i];
 			}
 
 			to[len] = '\0';
