@@ -267,17 +267,12 @@ static int sqlite3_odbx_query( odbx_t* handle, const char* query, unsigned long 
 
 static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
-	sqlite3_stmt* res;
+	sqlite3_stmt* res = NULL;
 	struct sconn* aux = (struct sconn*) handle->aux;
 
 
 	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
 	if( aux->length == 0 ) { return ODBX_RES_DONE; }    /* no more results */
-
-	if( ( *result = (odbx_result_t*) malloc( sizeof( struct odbx_result_t ) ) ) == NULL )
-	{
-		return -ODBX_ERR_NOMEM;
-	}
 
 	if( timeout != NULL )
 	{
@@ -295,12 +290,14 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 			return ODBX_RES_TIMEOUT;
 		default:
 			aux->length = 0;
-			free( *result );
-			*result = NULL;
-
 			return -ODBX_ERR_BACKEND;
 	}
 	aux->length = strlen( aux->tail );
+
+	if( ( *result = (odbx_result_t*) malloc( sizeof( struct odbx_result_t ) ) ) == NULL )
+	{
+		return -ODBX_ERR_NOMEM;
+	}
 
 	(*result)->generic = res;
 
