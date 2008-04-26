@@ -262,6 +262,14 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 					}
 				}
 
+				// Test case:  Calling columnPos() with non-existing column name
+				try {
+					result.columnPos( "non-existing" );
+					throw std::runtime_error( string( "No exception thrown using columnPos() on  non-exising column name" ) );
+				} catch( OpenDBX::Exception& oe ) {
+					if( oe.getSeverity() < 0 ) { throw oe; }
+				}
+
 				// Test case:  Calling getRow() more often must not result in fatal error
 				try {
 					result.getRow();
