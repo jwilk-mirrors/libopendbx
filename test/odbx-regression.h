@@ -52,7 +52,7 @@ struct odbxstmt
 
 
 static struct odbxstmt firebird_basic[] = {
-	{ 0, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "SELECT * FROM \"odbxtest\" col = '%s'" },
 	{ 0, "CREATE TABLE \"odbxtest\" ("
 	"   \"i1\" CHARACTER(1),"
 	"   \"i16\" SMALLINT,"

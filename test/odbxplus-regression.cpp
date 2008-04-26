@@ -226,14 +226,14 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 						cout << "    Result::getResult(): Timeout" << endl;
 						continue;
 					case ODBX_RES_NOROWS:
-						cout << "    Affected rows: " << result.getRowsAffected() << endl;
+						cout << "    Affected rows: " << result.rowsAffected() << endl;
 						continue;
 					default:
 						break;
 				}
 
 				if( verbose ) { cout << "  Result::getColumnCount()" << endl; }
-				fields = result.getColumnCount();
+				fields = result.columnCount();
 
 				while( result.getRow() != ODBX_ROW_DONE )
 				{
@@ -241,9 +241,9 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 
 					for( i = 0; i < fields; i++ )
 					{
-						cout << "    column " << i << " (type " << result.getColumnType( i ) << "): " << result.getColumnName( i ) << " = ";
+						cout << "    column " << result.columnPos( result.columnName( i ) ) << " (type " << result.columnType( i ) << "): " << result.columnName( i ) << " = ";
 
-						switch( result.getColumnType( i ) )
+						switch( result.columnType( i ) )
 						{
 							case ODBX_TYPE_BLOB:
 							case ODBX_TYPE_CLOB:
@@ -256,8 +256,8 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 
 							default:
 
-								if( result.getFieldValue( i ) == NULL ) { cout << "NULL" << endl; }
-								else { cout << "'" << string( result.getFieldValue( i ) ) << "'" << endl; }
+								if( result.fieldValue( i ) == NULL ) { cout << "NULL" << endl; }
+								else { cout << "'" << string( result.fieldValue( i ) ) << "'" << endl; }
 						}
 					}
 				}
@@ -295,7 +295,7 @@ void lob_read( Result& result, int pos )
 	ssize_t bytes;
 
 
-	Lob lob = result.getLob( result.getFieldValue( pos ) );
+	Lob lob = result.getLob( result.fieldValue( pos ) );
 
 	cout << "'";
 

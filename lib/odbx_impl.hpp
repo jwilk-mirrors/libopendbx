@@ -9,6 +9,7 @@
 
 
 #include "lib/opendbx/api"
+#include <map>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@ namespace OpenDBX
 {
 	using std::string;
 	using std::vector;
+	using std::map;
 	using OpenDBX::Stmt;
 	using OpenDBX::Result;
 	using OpenDBX::Lob;
@@ -48,6 +50,7 @@ namespace OpenDBX
 	{
 		odbx_t* m_handle;
 		odbx_result_t* m_result;
+		map<const string, unsigned long> m_pos;
 
 
 		Result_Impl( odbx_t* handle );
@@ -56,14 +59,15 @@ namespace OpenDBX
 		odbxres getResult( struct timeval* timeout, unsigned long chunk );
 
 		odbxrow getRow();
-		uint64_t getRowsAffected();
+		uint64_t rowsAffected();
 
-		unsigned long getColumnCount();
-		string getColumnName( unsigned long pos );
-		odbxtype getColumnType( unsigned long pos );
+		unsigned long columnCount();
+		unsigned long columnPos( const string& name );
+		string columnName( unsigned long pos );
+		odbxtype columnType( unsigned long pos );
 
-		unsigned long getFieldLength( unsigned long pos );
-		const char* getFieldValue( unsigned long pos );
+		unsigned long fieldLength( unsigned long pos );
+		const char* fieldValue( unsigned long pos );
 
 		Lob_Impl* getLob( const char* value );
 	};

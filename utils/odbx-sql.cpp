@@ -75,19 +75,19 @@ void output( Result& result, struct format* fparam )
 				break;
 		}
 
-		fields = result.getColumnCount();
+		fields = result.columnCount();
 
 		while( result.getRow() != ODBX_ROW_DONE )
 		{
 			if( fields > 0 )
 			{
-				if( result.getFieldValue( 0 ) == NULL ) { cout << "NULL"; }
-				else { cout << fparam->separator << result.getFieldValue( 0 ) << fparam->separator; }
+				if( result.fieldValue( 0 ) == NULL ) { cout << "NULL"; }
+				else { cout << fparam->separator << result.fieldValue( 0 ) << fparam->separator; }
 
 				for( unsigned long i = 1; i < fields; i++ )
 				{
-					if( result.getFieldValue( i ) == NULL ) { cout << fparam->delimiter << "NULL"; }
-					else { cout << fparam->delimiter << fparam->separator << result.getFieldValue( i ) << fparam->separator; }
+					if( result.fieldValue( i ) == NULL ) { cout << fparam->delimiter << "NULL"; }
+					else { cout << fparam->delimiter << fparam->separator << result.fieldValue( i ) << fparam->separator; }
 				}
 			}
 			cout << endl;

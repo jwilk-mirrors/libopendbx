@@ -193,6 +193,35 @@ int main( int argc, char* argv[] )
 
 		for( i = 0; i < runs; i++ )
 		{
+			static char value[] = "a'\'\\'b";
+			static char buffer[256];
+			static char escaped[128];
+			unsigned long len = 128;
+			int err;
+
+			if( ( err = odbx_escape( handle[0], value, strlen( value ), escaped, &len ) ) != 0 )
+			{
+				fprintf( stderr, "Error in odbx_escape(): %s\n", odbx_error( handle[k], err ) );
+				break;
+			}
+
+			if( snprintf( buffer, 256, "SELECT * FROM \"odbxtest\" WHERE col = '%s' ", escaped ) >= 256 )
+			{
+				fprintf( stderr, "Error in snprintf(): buffer size too small\n" );
+				break;
+			}
+
+			struct odbxstmt malformed_stmt[] = {
+				{ 0, buffer },
+				{ -1, NULL }
+			};
+
+			if( ( err = exec( handle, malformed_stmt, verbose ) ) < 0 )
+			{
+				fprintf( stdout, "Error in exec(): Fatal error in malformed run %d\n", i );
+				break;
+			}
+
 			if( ( err = exec( handle, queries, verbose ) ) < 0 )
 			{
 				fprintf( stdout, "Error in exec(): Fatal error in run %d\n", i );

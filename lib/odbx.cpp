@@ -173,44 +173,51 @@ namespace OpenDBX
 
 
 
-	uint64_t Result::getRowsAffected()
+	uint64_t Result::rowsAffected()
 	{
-		return m_impl->getRowsAffected();
+		return m_impl->rowsAffected();
 	}
 
 
 
-	unsigned long Result::getColumnCount()
+	unsigned long Result::columnCount()
 	{
-		return m_impl->getColumnCount();
+		return m_impl->columnCount();
 	}
 
 
 
-	string Result::getColumnName( unsigned long pos )
+	unsigned long Result::columnPos( const string& name )
 	{
-		return m_impl->getColumnName( pos );
+		return m_impl->columnPos( name );
 	}
 
 
 
-	odbxtype Result::getColumnType( unsigned long pos )
+	string Result::columnName( unsigned long pos )
 	{
-		return m_impl->getColumnType( pos );
+		return m_impl->columnName( pos );
 	}
 
 
 
-	unsigned long Result::getFieldLength( unsigned long pos )
+	odbxtype Result::columnType( unsigned long pos )
 	{
-		return m_impl->getFieldLength( pos );
+		return m_impl->columnType( pos );
 	}
 
 
 
-	const char* Result::getFieldValue( unsigned long pos )
+	unsigned long Result::fieldLength( unsigned long pos )
 	{
-		return m_impl->getFieldValue( pos );
+		return m_impl->fieldLength( pos );
+	}
+
+
+
+	const char* Result::fieldValue( unsigned long pos )
+	{
+		return m_impl->fieldValue( pos );
 	}
 
 
@@ -559,6 +566,8 @@ namespace OpenDBX
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 		}
 
+		m_pos.clear();
+
 		return (odbxres) err;
 	}
 
@@ -578,21 +587,44 @@ namespace OpenDBX
 
 
 
-	uint64_t Result_Impl::getRowsAffected()
+	uint64_t Result_Impl::rowsAffected()
 	{
 		return odbx_rows_affected( m_result );
 	}
 
 
 
-	unsigned long Result_Impl::getColumnCount()
+	unsigned long Result_Impl::columnCount()
 	{
 		return odbx_column_count( m_result );
 	}
 
 
 
-	string Result_Impl::getColumnName( unsigned long pos )
+	unsigned long Result_Impl::columnPos( const string& name )
+	{
+		map<const string, unsigned long>::const_iterator it;
+
+		if( !m_pos.empty() )
+		{
+			if( ( it = m_pos.find( name ) ) != m_pos.end() ) { return it->second; }
+
+			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		}
+
+		for( unsigned long i = 0; i < odbx_column_count( m_result ); i++ )
+		{
+			m_pos[this->columnName( i )] = i;
+		}
+
+		if( ( it = m_pos.find( name ) ) != m_pos.end() ) { return it->second; }
+
+		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+	}
+
+
+
+	string Result_Impl::columnName( unsigned long pos )
 	{
 		if( pos < odbx_column_count( m_result ) )
 		{
@@ -609,7 +641,7 @@ namespace OpenDBX
 
 
 
-	odbxtype Result_Impl::getColumnType( unsigned long pos )
+	odbxtype Result_Impl::columnType( unsigned long pos )
 	{
 		if( pos < odbx_column_count( m_result ) )
 		{
@@ -621,7 +653,7 @@ namespace OpenDBX
 
 
 
-	unsigned long Result_Impl::getFieldLength( unsigned long pos )
+	unsigned long Result_Impl::fieldLength( unsigned long pos )
 	{
 		if( pos < odbx_column_count( m_result ) )
 		{
@@ -633,7 +665,7 @@ namespace OpenDBX
 
 
 
-	const char* Result_Impl::getFieldValue( unsigned long pos )
+	const char* Result_Impl::fieldValue( unsigned long pos )
 	{
 		if( pos < odbx_column_count( m_result ) )
 		{
