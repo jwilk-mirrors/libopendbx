@@ -98,15 +98,15 @@ int main( int argc, char* argv[] )
 
 	if( backend == NULL ) { help( argv[0] ); return 1; }
 
-	if( !strncmp( backend, "firebird", 8 ) ) { stmts = firebird_stmt; }
-	if( !strncmp( backend, "mssql", 5 ) ) { stmts = mssql_stmt; }
-	if( !strncmp( backend, "mysql", 5 ) ) { stmts = mysql_stmt; }
-	if( !strncmp( backend, "odbc", 4 ) ) { stmts = odbc_stmt; }
-	if( !strncmp( backend, "oracle", 6 ) ) { stmts = oracle_stmt; }
-	if( !strncmp( backend, "pgsql", 5 ) ) { stmts = pgsql_stmt; }
-	if( !strncmp( backend, "sqlite", 6 ) ) { stmts = sqlite_stmt; }
-	if( !strncmp( backend, "sqlite3", 7 ) ) { stmts = sqlite3_stmt; }
-	if( !strncmp( backend, "sybase", 6 ) ) { stmts = sybase_stmt; }
+	if( strstr( backend, "firebird" ) != NULL ) { stmts = firebird_stmt; }
+	if( strstr( backend, "mssql" ) != NULL ) { stmts = mssql_stmt; }
+	if( strstr( backend, "mysql" ) != NULL ) { stmts = mysql_stmt; }
+	if( strstr( backend, "odbc" ) != NULL ) { stmts = odbc_stmt; }
+	if( strstr( backend, "oracle" ) != NULL ) { stmts = oracle_stmt; }
+	if( strstr( backend, "pgsql" ) != NULL ) { stmts = pgsql_stmt; }
+	if( strstr( backend, "sqlite" ) != NULL ) { stmts = sqlite_stmt; }
+	if( strstr( backend, "sqlite3" ) != NULL ) { stmts = sqlite3_stmt; }
+	if( strstr( backend, "sybase" ) != NULL ) { stmts = sybase_stmt; }
 
 	if( stmts == NULL )
 	{
@@ -205,7 +205,7 @@ int main( int argc, char* argv[] )
 				break;
 			}
 
-			if( snprintf( buffer, 256, "SELECT * FROM \"odbxtest\" WHERE col = '%s' ", escaped ) >= 256 )
+			if( snprintf( buffer, 256, "SELECT * FROM odbxtest WHERE col = '%s' ", escaped ) >= 256 )
 			{
 				fprintf( stderr, "Error in snprintf(): buffer size too small\n" );
 				break;
@@ -284,7 +284,7 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 		tv.tv_usec = 0;
 
 		/* use values >1 for paged output (if supported) or 0 for all rows */
-		while( ( err = odbx_result( handle[qptr->num], &result, &tv, 5 ) ) != 0 )
+		while( ( err = odbx_result( handle[qptr->num], &result, &tv, 5 ) ) != ODBX_RES_DONE )
 		{
 			if( verbose ) { fprintf( stdout, "  odbx_result()\n" ); }
 
@@ -300,19 +300,19 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 
 			switch( err )
 			{
-				case 1:
+				case ODBX_RES_TIMEOUT:
 					fprintf( stdout, "    odbx_result(): Timeout\n" );
 					continue;
-				case 2:
+				case ODBX_RES_NOROWS:
 					fprintf( stdout, "    Affected rows: %lld\n", odbx_rows_affected( result ) );
-					odbx_result_free( result );
+					odbx_result_finish( result );
 					continue;
 			}
 
 			if( verbose ) { fprintf( stdout, "  odbx_column_count()\n" ); }
 			fields = odbx_column_count( result );
 
-			while( ( err = odbx_row_fetch( result ) ) != 0 )
+			while( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
 			{
 				if( verbose ) { fprintf( stdout, "  odbx_row_fetch()\n" ); }
 
@@ -351,17 +351,19 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 			}
 
 			// Test case:  Calling odbx_row_fetch() more often must not result in fatal error
-			if( ( err = odbx_row_fetch( result ) ) != 0 )
+			if( verbose ) { fprintf( stdout, "  odbx_row_fetch(n+1)\n" ); }
+			if( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
 			{
 				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 			}
 
-			if( verbose ) { fprintf( stdout, "  odbx_result_free()\n" ); }
-			odbx_result_free( result );
+			if( verbose ) { fprintf( stdout, "  odbx_result_finish()\n" ); }
+			odbx_result_finish( result );
 		}
 
 		// Test case:  Calling odbx_result() more often must not result in fatal error
-		if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != 0 )
+		if( verbose ) { fprintf( stdout, "  odbx_result(n+1)\n" ); }
+		if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != ODBX_RES_DONE )
 		{
 			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 		}
