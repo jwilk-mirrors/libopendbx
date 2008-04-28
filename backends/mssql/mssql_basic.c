@@ -691,10 +691,10 @@ static int mssql_priv_collength( DBPROCESS* dbproc, unsigned long pos )
 			return 5;
 
 		case SYBINT2:
-			return 8;
+			return 7;
 
 		case SYBINT4:
-			return 13;
+			return 12;
 
 #ifdef SYBINT8
 		case SYBINT8:
@@ -732,7 +732,7 @@ static int mssql_priv_collength( DBPROCESS* dbproc, unsigned long pos )
 			return 32;   // Variable length types, initial size
 
 		default:
-			return 13;
+			return 12;
 	}
 }
 

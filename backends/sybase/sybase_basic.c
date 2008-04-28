@@ -478,6 +478,7 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		default:
 
 			free( *result );
+			*result = NULL;
 			return -ODBX_ERR_BACKEND;
 
 	}
@@ -975,11 +976,11 @@ static CS_INT sybase_priv_collength( CS_DATAFMT* column )
 
 		case CS_SMALLINT_TYPE:
 
-			return 8;
+			return 7;
 
 		case CS_INT_TYPE:
 
-			return 13;
+			return 12;
 
 #ifdef CS_BIGINT_TYPE
 		case CS_BIGINT_TYPE:
@@ -1003,13 +1004,13 @@ static CS_INT sybase_priv_collength( CS_DATAFMT* column )
 #ifdef CS_DATE_TYPE
 		case CS_DATE_TYPE:
 
-			return 12;
+			return 11;
 #endif
 
 #ifdef CS_TIME_TYPE
 		case CS_TIME_TYPE:
 
-			return 10;
+			return 9;
 #endif
 
 		case CS_DATETIME_TYPE:
@@ -1024,7 +1025,7 @@ static CS_INT sybase_priv_collength( CS_DATAFMT* column )
 
 		default:
 
-			return 13;
+			return 12;
 	}
 }
 

@@ -873,7 +873,7 @@ static int oracle_priv_collen( ub2 type, ub2 length )
 	switch( type )
 	{
 		case SQLT_INT:
-			return 13;
+			return 12;
 		case SQLT_NUM:
 			return 54;
 

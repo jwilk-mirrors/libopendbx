@@ -859,7 +859,7 @@ static int firebird_priv_collength( XSQLVAR* var )
 		case SQL_LONG:   // can be a decimal value
 			return 13;
 		case SQL_INT64:   // can be a decimal value
-			return 22;
+			return 23;
 		case SQL_FLOAT:
 			return 42;
 		case SQL_D_FLOAT:
