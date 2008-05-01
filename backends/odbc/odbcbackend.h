@@ -53,7 +53,9 @@ struct odbcgen
 
 struct odbcres
 {
+	SQLPOINTER buffer;
 	SQLINTEGER buflen;
+	SQLLEN ind;
 };
 
 

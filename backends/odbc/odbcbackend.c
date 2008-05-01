@@ -23,7 +23,7 @@ extern struct odbx_lo_ops odbc_odbx_lo_ops;
 
 static struct odbx_ops odbc_odbx_ops = {
 	.basic = &odbc_odbx_basic_ops,
-	.lo = &odbc_odbx_lo_ops,
+ 	.lo = NULL,
 };
 
 

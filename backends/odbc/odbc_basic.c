@@ -58,36 +58,35 @@ static int odbc_odbx_init( odbx_t* handle, const char* host, const char* port )
 	}
 
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
-// printf( "odbx_init(): start\n" );
 
-	if( ( gen->err = SQLAllocHandle( SQL_HANDLE_ENV, SQL_NULL_HANDLE, &(gen->env) ) ) == SQL_SUCCESS )
+	gen->env = NULL;
+	gen->conn = NULL;
+	gen->stmt = NULL;
+
+	gen->err = SQLAllocHandle( SQL_HANDLE_ENV, SQL_NULL_HANDLE, &(gen->env) );
+	if( SQL_SUCCEEDED( gen->err ) )
 	{
-// printf( "odbx_init(): SQLAllocHandle\n" );
-		if( ( gen->err = SQLSetEnvAttr( gen->env, SQL_ATTR_ODBC_VERSION, (void*) SQL_OV_ODBC3, 0 ) ) == SQL_SUCCESS )
+		gen->err = SQLSetEnvAttr( gen->env, SQL_ATTR_ODBC_VERSION, (void*) SQL_OV_ODBC3, 0 );
+		if( SQL_SUCCEEDED( gen->err ) )
 		{
-// printf( "odbx_init(): SQLSetEnvAttr\n" );
-			if( ( gen->err = SQLAllocHandle( SQL_HANDLE_DBC, gen->env, &(gen->conn) ) ) == SQL_SUCCESS )
+			gen->err = SQLAllocHandle( SQL_HANDLE_DBC, gen->env, &(gen->conn) );
+			if( SQL_SUCCEEDED( gen->err ) )
 			{
-// printf( "odbx_init(): SQLAllocHandle 2\n" );
 				int len = strlen( host ) + 1;
 
 				if( ( gen->server = (char*) malloc( len ) ) != NULL )
 				{
 					memcpy( gen->server, host, len );
-// printf( "odbx_init(): success\n" );
 					return ODBX_ERR_SUCCESS;
 				}
 
-// printf( "odbx_init(): SQLFreeHandle\n" );
 				gen->err = SQLFreeHandle( SQL_HANDLE_DBC, gen->conn );
 			}
 		}
 
-// printf( "odbx_init(): SQLFreeHandle 2\n" );
 		gen->err = SQLFreeHandle( SQL_HANDLE_ENV, gen->env );
 	}
 
-// printf( "odbx_init(): failure\n" );
 	free( handle->generic );
 	return -ODBX_ERR_NOMEM;
 }
@@ -96,7 +95,6 @@ static int odbc_odbx_init( odbx_t* handle, const char* host, const char* port )
 
 static int odbc_odbx_bind( odbx_t* handle, const char* database, const char* who, const char* cred, int method )
 {
-// printf( "odbx_bind(): start\n" );
 	if( handle->generic == NULL ) { return -ODBX_ERR_PARAM; }
 	if( method != ODBX_BIND_SIMPLE ) { return -ODBX_ERR_NOTSUP; }
 
@@ -108,71 +106,67 @@ static int odbc_odbx_bind( odbx_t* handle, const char* database, const char* who
 	if( who != NULL ) { wlen = strlen( who ); }
 	if( cred != NULL ) { clen = strlen( cred ); }
 
-// printf( "odbx_bind(): SQLConnect\n" );
-	if( ( gen->err = SQLConnect( gen->conn, (SQLCHAR*) gen->server, strlen( gen->server ), (SQLCHAR*) who, wlen, (SQLCHAR*) cred, clen ) ) == SQL_SUCCESS )
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_CURRENT_CATALOG, (SQLCHAR*) database, strlen( database ) );
+	if( !SQL_SUCCEEDED( gen->err ) )
 	{
-// printf( "odbx_bind(): SQLSetConnectAttr\n" );
-		if( ( gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_CURRENT_CATALOG, (SQLCHAR*) database, strlen( database ) ) ) == SQL_SUCCESS )
-		{
-			SQLUINTEGER mode = SQL_AUTOCOMMIT_ON;
-
-// printf( "odbx_bind(): SQLSetConnectAttr 2\n" );
-			if( ( gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, &mode, 0 ) ) == SQL_SUCCESS )
-			{
-				mode = SQL_TXN_READ_COMMITTED;
-
-// printf( "odbx_bind(): SQLSetConnectAttr 3\n" );
-				if( ( gen->err = SQLSetConnectAttr( gen->conn, SQL_DEFAULT_TXN_ISOLATION, &mode, 0 ) ) == SQL_SUCCESS )
-				{
-					mode = SQL_ASYNC_ENABLE_ON;
-
-// printf( "odbx_bind(): SQLSetConnectAttr 4\n" );
-					if( ( gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ASYNC_ENABLE, &mode, 0 ) ) == SQL_SUCCESS )
-					{
-// printf( "odbx_bind(): SQLAllocHandle\n" );
-						if( ( gen->err = SQLAllocHandle( SQL_HANDLE_STMT, gen->conn, &(gen->stmt) ) ) == SQL_SUCCESS )
-						{
-// printf( "odbx_bind(): success\n" );
-							return ODBX_ERR_SUCCESS;
-						}
-					}
-				}
-			}
-		}
-
-// printf( "odbx_bind(): SQLDisconnect\n" );
-		gen->err = SQLDisconnect( gen->conn );
+		return -ODBX_ERR_BACKEND;
 	}
 
-// printf( "odbx_bind(): failure\n" );
-	return -ODBX_ERR_BACKEND;
+	SQLUINTEGER mode = SQL_AUTOCOMMIT_ON;
+
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, &mode, SQL_IS_UINTEGER );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	mode = SQL_TXN_READ_COMMITTED;
+
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_DEFAULT_TXN_ISOLATION, &mode, SQL_IS_UINTEGER );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	mode = SQL_ASYNC_ENABLE_ON;
+
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ASYNC_ENABLE, &mode, SQL_IS_UINTEGER );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	mode = SQL_AA_FALSE;
+
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ANSI_APP, &mode, SQL_IS_UINTEGER );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	gen->err = SQLConnect( gen->conn, (SQLCHAR*) gen->server, strlen( gen->server ), (SQLCHAR*) who, wlen, (SQLCHAR*) cred, clen );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	return ODBX_ERR_SUCCESS;
 }
 
 
 
 static int odbc_odbx_unbind( odbx_t* handle )
 {
-// printf( "odbx_unbind(): start\n" );
 	if( handle->generic == NULL ) { return -ODBX_ERR_PARAM; }
 
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
-// printf( "odbx_unbind(): SQLFreeHandle\n" );
-	if( gen->stmt != NULL && ( gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt ) ) != SQL_SUCCESS )
+	gen->err = SQLDisconnect( gen->conn );
+	if( !SQL_SUCCEEDED( gen->err ) )
 	{
-		return -ODBX_ERR_BACKEND;
-	}
-
-	gen->stmt = NULL;
-
-// printf( "odbx_unbind(): SQLDisconnect\n" );
-	if( ( gen->err = SQLDisconnect( gen->conn ) ) != SQL_SUCCESS )
-	{
-// printf( "odbx_unbind(): return ODBX_ERR_BACKEND\n" );
 			return -ODBX_ERR_BACKEND;
 	}
 
-// printf( "odbx_unbind(): success\n" );
 	return ODBX_ERR_SUCCESS;
 }
 
@@ -180,12 +174,10 @@ static int odbc_odbx_unbind( odbx_t* handle )
 
 static int odbc_odbx_finish( odbx_t* handle )
 {
-// printf( "odbx_finish(): start\n" );
 	if( handle->generic == NULL ) { return -ODBX_ERR_PARAM; }
 
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
-// printf( "odbx_finish(): SQLFreeHandle\n" );
 	if( gen->conn != NULL && ( gen->err = SQLFreeHandle( SQL_HANDLE_DBC, gen->conn ) ) != SQL_SUCCESS )
 	{
 		return -ODBX_ERR_BACKEND;
@@ -193,7 +185,6 @@ static int odbc_odbx_finish( odbx_t* handle )
 
 	gen->conn = NULL;
 
-// printf( "odbx_finish(): SQLFreeHandle 2\n" );
 	if( gen->env != NULL && ( gen->err = SQLFreeHandle( SQL_HANDLE_ENV, gen->env ) ) != SQL_SUCCESS )
 	{
 		return -ODBX_ERR_HANDLE;
@@ -204,7 +195,6 @@ static int odbc_odbx_finish( odbx_t* handle )
 	if( gen->server != NULL ) { free( gen->server ); }
 	free( handle->generic );
 
-// printf( "odbx_finish(): success\n" );
 	return ODBX_ERR_SUCCESS;
 }
 
@@ -228,11 +218,9 @@ static int odbc_odbx_get_option( odbx_t* handle, unsigned int option, void* valu
 			*(int*) value = ODBX_DISABLE;
 			break;
 		default:
-// printf( "odbx_get_option(): unknown option\n" );
 			return -ODBX_ERR_OPTION;
 	}
 
-// printf( "odbx_get_option(): success\n" );
 	return ODBX_ERR_SUCCESS;
 }
 
@@ -244,20 +232,19 @@ static int odbc_odbx_set_option( odbx_t* handle, unsigned int option, void* valu
 	{
 		case ODBX_OPT_API_VERSION:
 		case ODBX_OPT_THREAD_SAFE:
-// printf( "odbx_get_option(): option read-only\n" );
 			return -ODBX_ERR_OPTRO;
 		case ODBX_OPT_TLS:
 		case ODBX_OPT_MULTI_STATEMENTS:
 		case ODBX_OPT_PAGED_RESULTS:
 		case ODBX_OPT_COMPRESS:
-// printf( "odbx_get_option(): option couldn't be changed\n" );
 			return -ODBX_ERR_OPTWR;
 
 		case ODBX_OPT_CONNECT_TIMEOUT:
 			;   // gcc workaround
-// printf( "odbx_set_option(): SQLSetConnectAttr\n" );
 			struct odbcgen* gen = (struct odbcgen*) handle->generic;
- 			if( ( gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_LOGIN_TIMEOUT, (SQLPOINTER) value, SQL_IS_UINTEGER ) ) != SQL_SUCCESS )
+
+			gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_LOGIN_TIMEOUT, (SQLPOINTER) value, SQL_IS_UINTEGER );
+			if( !SQL_SUCCEEDED( gen->err ) )
 			{
  				return -ODBX_ERR_BACKEND;
 			}
@@ -267,7 +254,6 @@ static int odbc_odbx_set_option( odbx_t* handle, unsigned int option, void* valu
 			return -ODBX_ERR_OPTION;
 	}
 
-// printf( "odbx_set_option(): success\n" );
 	return -ODBX_ERR_SUCCESS;
 }
 
@@ -275,80 +261,83 @@ static int odbc_odbx_set_option( odbx_t* handle, unsigned int option, void* valu
 
 static const char* odbc_odbx_error( odbx_t* handle )
 {
-// printf( "odbc_odbx_error(): start\n" );
+	SQLRETURN err;
 	SQLCHAR sqlstate[6];
 	SQLINTEGER nerror;
 	SQLSMALLINT msglen = 0;
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
-// printf( "odbc_odbx_error(): SQLGetDiagRec 1\n" );
-	if( SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen ) == SQL_SUCCESS )
+	if( gen->stmt != NULL )
 	{
-		return (const char*) gen->errmsg;
+		err = SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen );
+		if( SQL_SUCCEEDED( err ) ) { return (const char*) gen->errmsg; }
 	}
 
-// printf( "odbc_odbx_error(): SQLGetDiagRec 2\n" );
-	if( SQLGetDiagRec( SQL_HANDLE_DBC, gen->conn, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen ) == SQL_SUCCESS )
+	if( gen->conn != NULL )
 	{
-		return (const char*) gen->errmsg;
+		err = SQLGetDiagRec( SQL_HANDLE_DBC, gen->conn, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen );
+		if( SQL_SUCCEEDED( err ) ) { return (const char*) gen->errmsg; }
 	}
 
-// printf( "odbc_odbx_error(): SQLGetDiagRec 3\n" );
-	if( SQLGetDiagRec( SQL_HANDLE_ENV, gen->env, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen ) == SQL_SUCCESS )
+	if( gen->env != NULL )
 	{
-		return (const char*) gen->errmsg;
+		err = SQLGetDiagRec( SQL_HANDLE_ENV, gen->env, 1, sqlstate, &nerror, (SQLCHAR*) gen->errmsg, sizeof( gen->errmsg ), &msglen );
+		if( SQL_SUCCEEDED( err ) ) { return (const char*) gen->errmsg; }
 	}
 
-// printf( "odbc_odbx_error(): no message\n" );
-	return "";
+	return NULL;
 }
 
 
 
 static int odbc_odbx_error_type( odbx_t* handle )
 {
-// printf( "odbc_odbx_error_type(): start\n" );
+	struct odbcgen* gen = (struct odbcgen*) handle->generic;
+
 	switch( ((struct odbcgen*) handle->generic)->err )
 	{
 		case SQL_SUCCESS:
-// printf( "odbc_odbx_error_type(): return success\n" );
 			return 0;
 		case SQL_SUCCESS_WITH_INFO:
-// printf( "odbc_odbx_error_type(): return warning\n" );
+		case SQL_NEED_DATA:
+		case SQL_NO_DATA:
+		case SQL_STILL_EXECUTING:
 			return 1;
-		default:
-// printf( "odbc_odbx_error_type(): return fatal\n" );
-			return -1;
 	}
+
+	char sqlstate[6];
+	SQLRETURN err;
+	SQLINTEGER nerror;
+	SQLSMALLINT msglen = 0;
+	SQLCHAR buffer;
+
+	err = SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
+	if( SQL_SUCCEEDED( err ) )
+	{
+		if( strncmp( sqlstate, "HY", 2 ) == 0 ) { return -1; }
+		if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
+		if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
+
+		return 1;
+	}
+
+	return -1;
 }
 
 
 
 static int odbc_odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
-// printf( "odbc_odbx_query(): start\n" );
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
-// 	if( !strncasecmp( "COMMIT", query, 6 ) )
-// 	{
-// printf( "odbc_odbx_query(): commit\n" );
-// 		if( ( gen->err = SQLEndTran( SQL_HANDLE_DBC, gen->conn, SQL_COMMIT ) ) != SQL_SUCCESS )
-// 		{
-// 			return -ODBX_ERR_BACKEND;
-// 		}
-// 	}
-//
-// 	if( !strncasecmp( "ROLLBACK", query, 8 ) )
-// 	{
-// printf( "odbc_odbx_query(): rollback\n" );
-// 		if( ( gen->err = SQLEndTran( SQL_HANDLE_DBC, gen->conn, SQL_ROLLBACK ) ) != SQL_SUCCESS )
-// 		{
-// 			return -ODBX_ERR_BACKEND;
-// 		}
-// 	}
+	gen->err = SQLAllocHandle( SQL_HANDLE_STMT, gen->conn, &(gen->stmt) );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
 
-// printf( "odbc_odbx_query(): SQLExecDirect\n" );
-	if( ( gen->err = SQLExecDirect( gen->stmt, (SQLCHAR*) query, (SQLINTEGER) length ) ) != SQL_SUCCESS )
+	gen->err = SQLExecDirect( gen->stmt, (SQLCHAR*) query, (SQLINTEGER) length );
+	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
@@ -362,7 +351,6 @@ static int odbc_odbx_query( odbx_t* handle, const char* query, unsigned long len
 
 static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
-// printf( "odbc_odbx_result(): start\n" );
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
 
@@ -371,20 +359,17 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 		return -ODBX_ERR_PARAM;
 	}
 
-// 	SQLSetConnectAttr( SQL_ATTR_CONNECTION_TIMEOUT )
-
-	if( gen->resnum > 0 )
+	if( gen->resnum != 0 )
 	{
-// printf( "odbc_odbx_result(): SQLMoreResults\n" );
 		switch( ( gen->err = SQLMoreResults( gen->stmt ) ) )
 		{
 			case SQL_SUCCESS:
-// printf( "odbc_odbx_result(): more results\n" );
+			case SQL_SUCCESS_WITH_INFO:
 				break;
 			case SQL_NO_DATA:
-// printf( "odbc_odbx_result(): no more results\n" );
 				gen->resnum = -1;
 				return ODBX_RES_DONE;
+			case SQL_STILL_EXECUTING:   // TODO: How to handle this?
 			default:
 				return -ODBX_ERR_BACKEND;
 		}
@@ -400,16 +385,75 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 	(*result)->aux = NULL;
 
 	SQLSMALLINT cols;
-// printf( "odbc_odbx_result(): SQLNumResultCols\n" );
-	if( SQLNumResultCols( gen->stmt, &cols ) != SQL_SUCCESS )
+	gen->err = SQLNumResultCols( gen->stmt, &cols );
+	// SQL_STILL_EXECUTING:   // TODO: How to handle this?
+	if( !SQL_SUCCEEDED( gen->err ) )
 	{
+		free( *result );
+		*result = NULL;
+
 		return -ODBX_ERR_BACKEND;
 	}
 
 	if( cols == 0 ) { return ODBX_RES_NOROWS; }
 
-//	allocate memory
-//	SQLBindCol()
+
+	if( ( (*result)->generic = malloc( cols * sizeof( struct odbcres ) ) ) == NULL )
+	{
+		free( *result );
+		*result = NULL;
+
+		return -ODBX_ERR_NOMEM;
+	}
+
+	memset( (*result)->generic, 0, cols * sizeof( struct odbcres ) );
+
+	if( ( (*result)->aux = malloc( cols * sizeof( struct odbcraux ) ) ) == NULL )
+	{
+		free( (*result)->generic );
+		free( *result );
+		*result = NULL;
+
+		return -ODBX_ERR_NOMEM;
+	}
+
+
+	SQLLEN attr;
+	struct odbcres* res = (struct odbcres*) (*result)->generic;
+	struct odbcraux* raux = (struct odbcraux*) (*result)->aux;
+
+	raux->cols = cols;
+
+	for( SQLSMALLINT i = 0; i < cols; i++ )
+	{
+		gen->err = SQLColAttribute( gen->stmt, i+1, SQL_DESC_CONCISE_TYPE, NULL, 0, NULL, &attr );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			odbc_priv_cleanup( *result, i );
+			return -ODBX_ERR_BACKEND;
+		}
+
+		if( ( res[i].buflen = odbc_priv_collength( gen, i, attr ) ) < 0 )
+		{
+			gen->err = res[i].buflen;
+			odbc_priv_cleanup( *result, i );
+			return -ODBX_ERR_BACKEND;
+		}
+
+		if( ( res[i].buffer = (SQLPOINTER) malloc( res[i].buflen ) ) == NULL )
+		{
+			odbc_priv_cleanup( *result, i );
+			return -ODBX_ERR_NOMEM;
+		}
+
+		gen->err = SQLBindCol( gen->stmt, i+1, SQL_C_CHAR, res[i].buffer, res[i].buflen, &(res[i].ind) );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			free( res[i].buffer );
+			odbc_priv_cleanup( *result, i );
+			return -ODBX_ERR_BACKEND;
+		}
+	}
 
 	return ODBX_RES_ROWS;
 }
@@ -419,21 +463,28 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 static int odbc_odbx_result_finish( odbx_result_t* result )
 {
 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
-// 	struct odbcres* res = (struct odbcres*) result->generic;
-// 	struct odbcraux* raux = (struct odbcraux*) result->aux;
+	struct odbcraux* raux = (struct odbcraux*) result->aux;
 
-	if( gen != NULL && gen->resnum == -1 ) { SQLCloseCursor( gen->stmt ); }
+	if( gen != NULL && gen->resnum == -1 )
+	{
+		gen->err = SQLCloseCursor( gen->stmt );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
 
-// 	if( res != NULL )
-// 	{
-// 		for( unsigned int i = 0; i < raux->cols; i++ )
-// 		{
-// 			free( res[i].data );
-// 		}
-// 		free( res );
-// 	}
+		if( gen->stmt != NULL && ( gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt ) ) != SQL_SUCCESS )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
 
-	result->generic = NULL;
+		gen->stmt = NULL;
+	}
+
+	if( raux != NULL )
+	{
+		odbc_priv_cleanup( result, raux->cols );
+	}
 
 	return ODBX_ERR_SUCCESS;
 }
@@ -442,12 +493,16 @@ static int odbc_odbx_result_finish( odbx_result_t* result )
 
 static int odbc_odbx_row_fetch( odbx_result_t* result )
 {
-	switch( SQLFetch( ((struct odbcgen*) result->handle->generic)->stmt ) )
+	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
+
+	if( gen == NULL ) { return -ODBX_ERR_PARAM; }
+
+	switch( ( gen->err = SQLFetch( ((struct odbcgen*) result->handle->generic)->stmt ) ) )
 	{
 		case SQL_SUCCESS:
-			return 1;
+			return ODBX_ROW_NEXT;
 		case SQL_NO_DATA:
-			return 0;
+			return ODBX_ROW_DONE;
 	}
 
 	return -ODBX_ERR_BACKEND;
@@ -457,19 +512,19 @@ static int odbc_odbx_row_fetch( odbx_result_t* result )
 
 static uint64_t odbc_odbx_rows_affected( odbx_result_t* result )
 {
-// printf( "odbc_odbx_rows_affected(): start\n" );
 	SQLLEN count;
 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
 
-// printf( "odbc_odbx_rows_affected(): SQLRowCount\n" );
-	if( gen != NULL && SQLRowCount( gen->stmt, &count ) == SQL_SUCCESS )
+	if( gen != NULL )
 	{
-// printf( "odbc_odbx_rows_affected(): value=%ld\n", count );
-		if( count < 0 ) { count = 0; }   // normalize if -1 (unknown) is returned
-		return (uint64_t) count;
+		gen->err = SQLRowCount( gen->stmt, &count );
+		if( SQL_SUCCEEDED( gen->err ) )
+		{
+			if( count < 0 ) { count = 0; }   // normalize if -1 (unknown) is returned
+			return (uint64_t) count;
+		}
 	}
 
-// printf( "odbc_odbx_rows_affected(): error\n" );
 	return 0;
 }
 
@@ -477,13 +532,19 @@ static uint64_t odbc_odbx_rows_affected( odbx_result_t* result )
 
 static unsigned long odbc_odbx_column_count( odbx_result_t* result )
 {
-// 	SQLSMALLINT count;
-// 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
-//
-// 	if( gen != NULL && SQLNumResultCols( gen->stmt, &count ) == SQL_SUCCESS )
-// 	{
-// 		return (unsigned long) count;
-// 	}
+	return (unsigned long) ((struct odbcraux*) result->aux)->cols;
+
+	SQLSMALLINT cols;
+	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
+
+	if( gen != NULL )
+	{
+		 gen->err = SQLNumResultCols( gen->stmt, &cols );
+		if( SQL_SUCCEEDED( gen->err ) )
+		{
+			return (unsigned long) cols;
+		}
+	}
 
 	return 0;
 }
@@ -492,14 +553,22 @@ static unsigned long odbc_odbx_column_count( odbx_result_t* result )
 
 static const char* odbc_odbx_column_name( odbx_result_t* result, unsigned long pos )
 {
-// 	SQLSMALLINT len;
-// 	struct odbcraux* raux = (struct odbcraux*) result->aux;
-// 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
-//
-// 	if( gen != NULL && SQLColAttribute( gen->stmt, (SQLUSMALLINT) pos+1, SQL_DESC_LABEL, (SQLPOINTER) raux->colname, sizeof( raux->colname ), &len, NULL ) == SQL_SUCCESS )
-// 	{
-// 		return (const char*) raux->colname;
-// 	}
+	SQLSMALLINT len;
+	struct odbcraux* raux = (struct odbcraux*) result->aux;
+	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
+
+
+	if( gen != NULL )
+	{
+		gen->err = SQLColAttribute( gen->stmt, (SQLUSMALLINT) pos+1, SQL_DESC_NAME, (SQLPOINTER) raux->colname, sizeof( raux->colname ), &len, NULL );
+		if( SQL_SUCCEEDED( gen->err ) )
+		{
+			if( len >= sizeof( raux->colname ) ) { len = sizeof( raux->colname ) - 1; }
+			raux->colname[len] = 0;
+
+			return (const char*) raux->colname;
+		}
+	}
 
 	return NULL;
 }
@@ -508,51 +577,56 @@ static const char* odbc_odbx_column_name( odbx_result_t* result, unsigned long p
 
 static int odbc_odbx_column_type( odbx_result_t* result, unsigned long pos )
 {
-// 	SQLINTEGER sqltype;
-// 	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
-//
-// 	if( gen != NULL && SQLColAttribute( gen->stmt, (SQLUSMALLINT) pos+1, SQL_DESC_TYPE, NULL, 0, NULL, (SQLPOINTER) sqltype ) == SQL_SUCCESS )
-// 	{
-// 		switch( sqltype )
-// 		{
-// 			case SQL_SMALLINT:
-// 				return ODBX_TYPE_SMALLINT;
-// 			case SQL_INTEGER:
-// 				return ODBX_TYPE_INTEGER;
-// 			case SQL_BIGINT:
-// 				return ODBX_TYPE_BIGINT;
-//
-// 			case SQL_DECIMAL:
-// 			case SQL_NUMERIC:
-// 				return ODBX_TYPE_DECIMAL;
-//
-// 			case SQL_REAL:
-// 				return ODBX_TYPE_REAL;
-// 			case SQL_DOUBLE:
-// 				return ODBX_TYPE_DOUBLE;
-// 			case SQL_FLOAT:
-// 				return ODBX_TYPE_FLOAT;
-//
-// 			case SQL_CHAR:
-// 				return ODBX_TYPE_CHAR;
-// 			case SQL_VARCHAR:
-// 				return ODBX_TYPE_VARCHAR;
-//
-// 			case SQL_LONGVARCHAR:
-// 				return ODBX_TYPE_CLOB;
-// 			case SQL_BINARY:
-// 			case SQL_VARBINARY:
-// 			case SQL_LONGVARBINARY:
-// 				return ODBX_TYPE_BLOB;
-//
-// 			case SQL_TYPE_DATE:
-// 				return ODBX_TYPE_DATE;
-// 			case SQL_TYPE_TIME:
-// 				return ODBX_TYPE_TIME;
-// 			case SQL_TYPE_TIMESTAMP:
-// 				return ODBX_TYPE_TIMESTAMP;
-// 		}
-// 	}
+	SQLLEN type;
+	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
+
+	if( gen == NULL ) { return -ODBX_ERR_PARAM; }
+
+	gen->err = SQLColAttribute( gen->stmt, pos+1, SQL_DESC_TYPE, NULL, 0, NULL, &type );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	switch( type )
+	{
+		case SQL_BIT:
+			return ODBX_TYPE_BOOLEAN;
+		case SQL_SMALLINT:
+			return ODBX_TYPE_SMALLINT;
+		case SQL_INTEGER:
+			return ODBX_TYPE_INTEGER;
+		case SQL_BIGINT:
+			return ODBX_TYPE_BIGINT;
+
+		case SQL_DECIMAL:
+		case SQL_NUMERIC:
+			return ODBX_TYPE_DECIMAL;
+
+		case SQL_REAL:
+			return ODBX_TYPE_REAL;
+		case SQL_DOUBLE:
+			return ODBX_TYPE_DOUBLE;
+		case SQL_FLOAT:
+			return ODBX_TYPE_FLOAT;
+
+		case SQL_CHAR:
+			return ODBX_TYPE_CHAR;
+		case SQL_VARCHAR:
+			return ODBX_TYPE_VARCHAR;
+
+		case SQL_LONGVARCHAR:
+			return ODBX_TYPE_CLOB;
+		case SQL_LONGVARBINARY:
+			return ODBX_TYPE_BLOB;
+
+		case SQL_TYPE_DATE:
+			return ODBX_TYPE_DATE;
+		case SQL_TYPE_TIME:
+			return ODBX_TYPE_TIME;
+		case SQL_TYPE_TIMESTAMP:
+			return ODBX_TYPE_TIMESTAMP;
+	}
 
 	return ODBX_TYPE_UNKNOWN;
 }
@@ -561,7 +635,14 @@ static int odbc_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 static unsigned long odbc_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
-//	SQLColAttribute( SQL_DESC_OCTET_LENGTH )
+	struct odbcres* res = (struct odbcres*) result->generic;
+	struct odbcraux* raux = (struct odbcraux*) result->aux;
+
+	if( res != NULL && raux != NULL && pos <= raux->cols )
+	{
+		return res[pos].ind;
+	}
+
 	return 0;
 }
 
@@ -569,12 +650,92 @@ static unsigned long odbc_odbx_field_length( odbx_result_t* result, unsigned lon
 
 static const char* odbc_odbx_field_value( odbx_result_t* result, unsigned long pos )
 {
-//	SQLGetData()
+	struct odbcres* res = (struct odbcres*) result->generic;
+	struct odbcraux* raux = (struct odbcraux*) result->aux;
+
+	if( res != NULL && raux != NULL && pos <= raux->cols && res[pos].ind != SQL_NULL_DATA )
+	{
+		return res[pos].buffer;
+	}
+
 	return NULL;
 }
+
+
 
 
 
 /*
  * ODBC private function
  */
+
+
+
+static SQLLEN odbc_priv_collength( struct odbcgen* gen, SQLSMALLINT col, SQLSMALLINT type )
+{
+	switch( type )
+	{
+		case SQL_SMALLINT:
+			return 7;
+		case SQL_INTEGER:
+			return 12;
+		case SQL_BIGINT:
+			return 22;
+
+		case SQL_DECIMAL:
+		case SQL_NUMERIC:
+			return 18;
+
+		case SQL_REAL:
+			return 42;
+		case SQL_DOUBLE:
+		case SQL_FLOAT:
+			return 312;
+
+		case SQL_DATE:
+		case SQL_TYPE_DATE:
+			return 11;
+		case SQL_TIME:
+		case SQL_TYPE_TIME:
+			return 9;
+		case SQL_TIMESTAMP:
+		case SQL_TYPE_TIMESTAMP:
+			return 20;
+	}
+
+	SQLLEN len = 0;
+
+	gen->err = SQLColAttribute( gen->stmt, col+1, SQL_COLUMN_LENGTH, NULL, 0, NULL, &len );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	return len + 1;
+}
+
+
+
+static void odbc_priv_cleanup( odbx_result_t* result, SQLSMALLINT cols )
+{
+	if( result->generic != NULL )
+	{
+		struct odbcres* res = (struct odbcres*) result->generic;
+
+		for( SQLSMALLINT i = 0; i < cols; i++ )
+		{
+			free( res[i].buffer );
+		}
+
+		free( result->generic );
+		result->generic = NULL;
+	}
+
+	if( result->aux != NULL )
+	{
+		free( result->aux );
+		result->aux = NULL;
+	}
+
+	free( result );
+}

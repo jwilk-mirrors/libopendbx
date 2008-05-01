@@ -56,7 +56,7 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(noinst_LTLIBRARIES) $(pkglib_LTLIBRARIES)
 libodbcbackend_la_DEPENDENCIES =
 am_libodbcbackend_la_OBJECTS = libodbcbackend_la-odbcbackend.lo \
-	libodbcbackend_la-odbc_basic.lo libodbcbackend_la-odbc_lo.lo
+	libodbcbackend_la-odbc_basic.lo
 libodbcbackend_la_OBJECTS = $(am_libodbcbackend_la_OBJECTS)
 libodbcbackend_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -229,7 +229,7 @@ AM_CPPFLAGS = -I../../lib
 @SINGLELIB_TRUE@libodbcbackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 @SINGLELIB_FALSE@pkglib_LTLIBRARIES = libodbcbackend.la
 @SINGLELIB_FALSE@libodbcbackend_la_LDFLAGS = -module -version-info @APIVERSION@
-libodbcbackend_la_SOURCES = odbcbackend.h odbcbackend.c odbc_basic.h odbc_basic.c odbc_lo.h odbc_lo.c
+libodbcbackend_la_SOURCES = odbcbackend.h odbcbackend.c odbc_basic.h odbc_basic.c
 libodbcbackend_la_LIBADD = -l@LIBODBC@
 all: all-am
 
@@ -310,7 +310,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libodbcbackend_la-odbc_basic.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libodbcbackend_la-odbc_lo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libodbcbackend_la-odbcbackend.Plo@am__quote@
 
 .c.o:
@@ -347,13 +346,6 @@ libodbcbackend_la-odbc_basic.lo: odbc_basic.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='odbc_basic.c' object='libodbcbackend_la-odbc_basic.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libodbcbackend_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libodbcbackend_la-odbc_basic.lo `test -f 'odbc_basic.c' || echo '$(srcdir)/'`odbc_basic.c
-
-libodbcbackend_la-odbc_lo.lo: odbc_lo.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libodbcbackend_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libodbcbackend_la-odbc_lo.lo -MD -MP -MF $(DEPDIR)/libodbcbackend_la-odbc_lo.Tpo -c -o libodbcbackend_la-odbc_lo.lo `test -f 'odbc_lo.c' || echo '$(srcdir)/'`odbc_lo.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libodbcbackend_la-odbc_lo.Tpo $(DEPDIR)/libodbcbackend_la-odbc_lo.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='odbc_lo.c' object='libodbcbackend_la-odbc_lo.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libodbcbackend_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libodbcbackend_la-odbc_lo.lo `test -f 'odbc_lo.c' || echo '$(srcdir)/'`odbc_lo.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

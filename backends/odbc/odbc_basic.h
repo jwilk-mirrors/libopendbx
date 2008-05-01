@@ -63,5 +63,9 @@ static const char* odbc_odbx_field_value( odbx_result_t* result, unsigned long p
  * Private ODBC support functions
  */
 
+static SQLLEN odbc_priv_collength( struct odbcgen* gen, SQLSMALLINT col, SQLSMALLINT type );
+
+static void odbc_priv_cleanup( odbx_result_t* result, SQLSMALLINT cols );
+
 
 #endif
