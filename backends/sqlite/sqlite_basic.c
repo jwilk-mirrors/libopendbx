@@ -322,7 +322,7 @@ static int sqlite_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 	if( timeout != NULL )
 	{
-		ms = timeout->tv_sec * 1000 + timeout->tv_usec;
+		ms = timeout->tv_sec * 1000 + timeout->tv_usec / 1000;
 	}
 
 	while( ( err = sqlite_get_table( (sqlite*) handle->generic, aux->stmt, &res, &nrow, &ncolumn, NULL ) ) == SQLITE_BUSY )
