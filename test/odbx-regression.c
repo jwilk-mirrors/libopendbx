@@ -325,7 +325,12 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 
 				for( i = 0; i < fields; i++ )
 				{
-					fprintf( stdout, "    column %d (type %d): ", i, odbx_column_type( result, i ) );
+					if( ( err = odbx_column_type( result, i ) ) < 0 )
+					{
+						fprintf( stderr, "Error in odbx_column_type(): %s\n", odbx_error( handle[qptr->num], err ) );
+						return err;
+					}
+					fprintf( stdout, "    column %d (type %d): ", i, err );
 
 					tmp = (char*) odbx_column_name( result, i );
 					if( tmp != NULL ) { fprintf( stdout, "%s = ", tmp ); }
