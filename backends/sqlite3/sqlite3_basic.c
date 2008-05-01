@@ -169,7 +169,10 @@ static int sqlite3_odbx_get_option( odbx_t* handle, unsigned int option, void* v
 		case ODBX_OPT_MULTI_STATEMENTS:
 			*(int*) value = ODBX_ENABLE;
 			break;
-		case ODBX_OPT_THREAD_SAFE:   /* FIXME: How to find out if THREADSAFE was set while sqlite3 compilation */
+		case ODBX_OPT_THREAD_SAFE:
+			if( sqlite3_threadsafe() != 0 ) { *(int*) value = ODBX_ENABLE; }
+			else { *(int*) value = ODBX_DISABLE; }
+			break;
 		case ODBX_OPT_TLS:
 		case ODBX_OPT_PAGED_RESULTS:
 		case ODBX_OPT_COMPRESS:
@@ -279,8 +282,17 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec );
 	}
 
-	switch( sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) )
+	if( sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) != SQLITE_OK )
 	{
+		aux->length = 0;
+		return -ODBX_ERR_BACKEND;
+	}
+	aux->length = strlen( aux->tail );
+
+	switch( ( aux->err = sqlite3_step( res ) ) )   // fetch first row and see if a busy timeout occurs
+	{
+		case SQLITE_ROW:
+		case SQLITE_DONE:
 		case SQLITE_OK:
 			break;
 		case SQLITE_BUSY:
@@ -289,10 +301,8 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 #endif
 			return ODBX_RES_TIMEOUT;
 		default:
-			aux->length = 0;
-			return -ODBX_ERR_BACKEND;
+			return ODBX_ERR_BACKEND;
 	}
-	aux->length = strlen( aux->tail );
 
 	if( ( *result = (odbx_result_t*) malloc( sizeof( struct odbx_result_t ) ) ) == NULL )
 	{
@@ -303,14 +313,6 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 
 	if( sqlite3_column_count( res ) == 0 )
 	{
-		if( sqlite3_step( res ) != SQLITE_DONE )
-		{
-			free( *result );
-			*result = NULL;
-
-			return ODBX_ERR_BACKEND;
-		}
-
 		return ODBX_RES_NOROWS;   /* empty or not SELECT like query */
 	}
 
@@ -332,7 +334,7 @@ static int sqlite3_odbx_result_finish( odbx_result_t* result )
 
 	struct sconn* aux = (struct sconn*) result->handle->aux;
 
-	if( aux->stmt != NULL && aux->length == 0 )
+	if( aux != NULL && aux->stmt != NULL && aux->length == 0 )
 	{
 		free( aux->stmt );
 		aux->stmt = NULL;
@@ -347,11 +349,21 @@ static int sqlite3_odbx_result_finish( odbx_result_t* result )
 
 static int sqlite3_odbx_row_fetch( odbx_result_t* result )
 {
-	switch( sqlite3_step( (sqlite3_stmt*) result->generic ) )
+	struct sconn* aux = (struct sconn*) result->handle->aux;
+
+	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
+
+	int err = aux->err;
+
+	if( err != -1 ) { aux->err = -1; }   // use original error code the first time
+	else { err = sqlite3_step( (sqlite3_stmt*) result->generic ); }
+
+	switch( err )
 	{
 		case SQLITE_ROW:
 			return ODBX_ROW_NEXT;
 		case SQLITE_DONE:
+		case SQLITE_OK:
 			return ODBX_ROW_DONE;
 	}
 

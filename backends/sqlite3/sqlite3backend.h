@@ -42,6 +42,7 @@ struct sconn
 	char* stmt;
 	char* tail;
 	unsigned long length;
+	int err;
 };
 
 
