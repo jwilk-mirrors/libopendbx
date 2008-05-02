@@ -46,9 +46,8 @@ do
 	do
 		case $backend in
 			firebird)
-				LD_LIBRARY_PATH="../backends/firebird/.libs" \
 				$ODBXAPP \
-					-b "firebird" \
+					-b "../backends/firebird/.libs/libfirebirdbackend.so" \
 					-h "$FIREBIRD_HOST" \
 					-p "$FIREBIRD_PORT" \
 					-d "$FIREBIRD_DATABASE" \
@@ -58,9 +57,8 @@ do
 				odbxcompare firebird
 			;;
 			mssql)
-				LD_LIBRARY_PATH="../backends/mssql/.libs" \
 				$ODBXAPP \
-					-b "mssql" \
+					-b "../backends/mssql/.libs/libmssqlbackend.so" \
 					-h "$MSSQL_HOST" \
 					-p "$MSSQL_PORT" \
 					-d "$MSSQL_DATABASE" \
@@ -70,9 +68,8 @@ do
 				odbxcompare mssql
 			;;
 			mysql)
-				LD_LIBRARY_PATH="../backends/mysql/.libs" \
 				$ODBXAPP \
-					-b "mysql" \
+					-b "../backends/mysql/.libs/libmysqlbackend.so" \
 					-h "$MYSQL_HOST" \
 					-p "$MYSQL_PORT" \
 					-d "$MYSQL_DATABASE" \
@@ -81,10 +78,21 @@ do
 					1>test.out 2>test.err
 				odbxcompare mysql
 			;;
-			oracle)
-				LD_LIBRARY_PATH="../backends/oracle/.libs:/usr/lib/oracle/xe/app/oracle/product/10.2.0/client/lib" \
+			odbc)
 				$ODBXAPP \
-					-b "oracle" \
+					-b "../backends/odbc/.libs/libodbcbackend.so" \
+					-h "$ODBC_HOST" \
+					-p "$ODBC_PORT" \
+					-d "$ODBC_DATABASE" \
+					-u "$ODBC_USERNAME" \
+					-w "$ODBC_PASSWORD" \
+					1>test.out 2>test.err
+				odbxcompare odbc
+			;;
+			oracle)
+				LD_LIBRARY_PATH="/usr/lib/oracle/xe/app/oracle/product/10.2.0/client/lib" \
+				$ODBXAPP \
+					-b "../backends/oracle/.libs/liboraclebackend.so" \
 					-h "$ORACLE_HOST" \
 					-p "$ORACLE_PORT" \
 					-d "$ORACLE_DATABASE" \
@@ -94,9 +102,8 @@ do
 				odbxcompare oracle
 			;;
 			pgsql)
-				LD_LIBRARY_PATH="../backends/pgsql/.libs" \
 				$ODBXAPP \
-					-b "pgsql" \
+					-b "../backends/pgsql/.libs/libpgsqlbackend.so" \
 					-h "$PGSQL_HOST" \
 					-p "$PGSQL_PORT2" \
 					-d "$PGSQL_DATABASE" \
@@ -106,9 +113,8 @@ do
 				odbxcompare pgsql
 			;;
 			sqlite)
-				LD_LIBRARY_PATH="../backends/sqlite/.libs" \
 				$ODBXAPP \
-					-b "sqlite" \
+					-b "../backends/sqlite/.libs/libsqlitebackend.so" \
 					-h "$SQLITE_HOST" \
 					-p "$SQLITE_PORT" \
 					-d "$SQLITE_DATABASE" \
@@ -118,9 +124,8 @@ do
 				odbxcompare sqlite
 			;;
 			sqlite3)
-				LD_LIBRARY_PATH="../backends/sqlite3/.libs" \
 				$ODBXAPP \
-					-b "sqlite3" \
+					-b "../backends/sqlite3/.libs/libsqlite3backend.so" \
 					-h "$SQLITE3_HOST" \
 					-p "$SQLITE3_PORT" \
 					-d "$SQLITE3_DATABASE" \
@@ -130,9 +135,8 @@ do
 				odbxcompare sqlite3
 			;;
 			sybase)
-				LD_LIBRARY_PATH="../backends/sybase/.libs" \
 				$ODBXAPP \
-					-b "sybase" \
+					-b "../backends/sybase/.libs/libsybasebackend.so" \
 					-h "$SYBASE_HOST" \
 					-p "$SYBASE_PORT" \
 					-d "$SYBASE_DATABASE" \
