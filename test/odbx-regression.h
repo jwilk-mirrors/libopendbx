@@ -232,22 +232,22 @@ static struct odbxstmt odbc_basic[] = {
 	"   timeval TIME,"
 	"   timestmp TIMESTAMP,"
 	"   dateval DATE"
-	") ENGINE=InnoDB" },
+	")" },
 
-	{ 0, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
+	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
 
 	{ 0, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '1', 2, 4, 8, 1.333, 4.5, 3.99, 8.0, 'EN', 'aouaou', 'varstring', 'aouaouaouaou', 'clob', '23:59:59', '1999-01-01 00:00:00', '1999-01-01' )" },
 
-	{ 0, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
+	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM odbxtest WHERE i16 = 2" },
-	{ 0, "SELECT * FROM odbxtest WHERE str20 = 'empty'" },
+	{ 1, "SELECT * FROM odbxtest WHERE str20 = 'empty'" },
 	{ 0, "START TRANSACTION" },
 	{ 0, "DELETE FROM odbxtest WHERE str20 LIKE '%string'" },
 	{ 0, "ROLLBACK" },
-	{ 0, "SELECT * FROM odbxtest" },
+	{ 1, "SELECT * FROM odbxtest" },
 	{ 0, "DELETE FROM odbxtest WHERE str20 LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS count FROM odbxtest" },
+	{ 1, "SELECT COUNT(*) AS count FROM odbxtest" },
 	{ 0, "DROP TABLE odbxtest" },
 	{ -1, NULL }
 };
