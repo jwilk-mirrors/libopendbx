@@ -1,6 +1,6 @@
 /*
  *  ODBC driver for OpenDBX
- *  Copyright (C) 2007 Norbert Sendetzky <norbert@linuxnetworks.de>
+ *  Copyright (C) 2008 Norbert Sendetzky <norbert@linuxnetworks.de>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2006-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2006-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -8,17 +8,18 @@
 
 
 
-#include "oracle_lo.h"
-#include <stdlib.h>
-
-
-
 #ifdef HAVE_OCILOBWRITE2
-
+#define ORAXB8_DEFINED
 // Oracle 10.2.0 workaround, bug 4901517
 #ifndef oraub8
 typedef unsigned long long oraub8;
 #endif
+
+
+#include "oracle_lo.h"
+#include <ociap.h>
+#include <stdlib.h>
+
 
 
 /*
