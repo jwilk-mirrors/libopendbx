@@ -18,7 +18,7 @@
 
 
 Name:    opendbx
-Version:    1.3.7
+Version:    1.3.8
 Release:    1%{?dist}
 Summary:    Unified database layer with a clean and lightweight interface
 Summary(de):    Bibliothek zum Zugriff auf Datenbanken über eine einheitliche Schnittstelle

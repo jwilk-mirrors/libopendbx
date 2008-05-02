@@ -1,3 +1,14 @@
+2008-05-01 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Full-featured ODBC backend
+	* Feature: Added Result::columnPos() function for mapping column names to positions
+	* Change: Shortend column and field member function names in OpenDBX::Result
+	* Bugfix: odbx_escape() didn't work anymore after the change in version 1.3.7
+	* Bugfix: sqlite3_get_option() returns correct value for ODBX_OPT_THREAD_SAFE
+	* Bugfix: Fixed memory leak on timeout in sqlite3_odbx_result()
+	* Bugfix: Fixed timeout handling in sqlite3 backend
+	* Bugfix: Correct timeout value in sqlite backend
+
 2008-04-05 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: odbx_result_finish() can return error conditions and replaces odbx_result_free()
