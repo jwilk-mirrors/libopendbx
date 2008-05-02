@@ -6,9 +6,9 @@
  * version 2 or (at your option) any later version.
  */
 
-// test
-#include <stdio.h>
 
+
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include "odbxdrv.h"
