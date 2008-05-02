@@ -16,6 +16,7 @@ EXTRA_DIST = \
 	ref/firebird.ref \
 	ref/mssql.ref \
 	ref/mysql.ref \
+	ref/odbc.ref \
 	ref/oracle.ref \
 	ref/pgsql.ref \
 	ref/sqlite.ref \
