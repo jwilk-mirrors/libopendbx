@@ -46,6 +46,18 @@ struct odbx_basic_ops sqlite3_odbx_basic_ops = {
 
 
 /*
+ *  Private sqlite3 error messages
+ */
+
+static const char* sqlite3_odbx_errmsg[] = {
+	gettext_noop("Unknown error"),
+	gettext_noop("Invalid parameter"),
+	gettext_noop("Opening database failed"),
+};
+
+
+
+/*
  *  ODBX basic operations
  *  SQLite3 style
  */
@@ -99,10 +111,8 @@ static int sqlite3_odbx_bind( odbx_t* handle, const char* database, const char* 
 {
 	struct sconn* aux = (struct sconn*) handle->aux;
 
-	if( aux == NULL )
-	{
-		return -ODBX_ERR_PARAM;
-	}
+
+	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
 
 	if( method != ODBX_BIND_SIMPLE ) { return -ODBX_ERR_NOTSUP; }
 
@@ -119,7 +129,7 @@ static int sqlite3_odbx_bind( odbx_t* handle, const char* database, const char* 
 	}
 
 	sqlite3* s3conn;
-	if( sqlite3_open( aux->path, &s3conn ) != SQLITE_OK )
+	if( ( aux->err = sqlite3_open( aux->path, &s3conn ) ) != SQLITE_OK )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
@@ -132,7 +142,11 @@ static int sqlite3_odbx_bind( odbx_t* handle, const char* database, const char* 
 
 static int sqlite3_odbx_unbind( odbx_t* handle )
 {
-	if( sqlite3_close( (sqlite3*) handle->generic ) != SQLITE_OK )
+	struct sconn* aux = (struct sconn*) handle->aux;
+
+	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
+
+	if( ( aux->err = sqlite3_close( (sqlite3*) handle->generic ) ) != SQLITE_OK )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
@@ -215,14 +229,42 @@ static int sqlite3_odbx_set_option( odbx_t* handle, unsigned int option, void* v
 
 static const char* sqlite3_odbx_error( odbx_t* handle )
 {
-	return sqlite3_errmsg( (sqlite3*) handle->generic );
+	if( handle->generic != NULL )
+	{
+		return sqlite3_errmsg( (sqlite3*) handle->generic );
+	}
+
+	if( handle->aux == NULL )
+	{
+		return dgettext( "opendbx", sqlite3_odbx_errmsg[1] );
+	}
+
+	switch( ((struct sconn*) handle->aux)->err )
+	{
+		case SQLITE_CANTOPEN:
+			return dgettext( "opendbx", sqlite3_odbx_errmsg[2] );
+	}
+
+	return dgettext( "opendbx", sqlite3_odbx_errmsg[0] );
 }
 
 
 
 static int sqlite3_odbx_error_type( odbx_t* handle )
 {
-	switch( sqlite3_errcode( (sqlite3*) handle->generic ) )
+	int err;
+
+	if( handle->generic != NULL )
+	{
+		err = sqlite3_errcode( (sqlite3*) handle->generic );
+	}
+	else
+	{
+		if( handle->aux == NULL ) { return -1; }
+		err = ((struct sconn*) handle->aux)->err;
+	}
+
+	switch( err )
 	{
 		case SQLITE_OK:
 			return 0;
@@ -235,6 +277,7 @@ static int sqlite3_odbx_error_type( odbx_t* handle )
 		case SQLITE_CANTOPEN:
 		case SQLITE_NOLFS:
 		case SQLITE_AUTH:
+		case SQLITE_NOTADB:
 			return -1;
 	}
 
@@ -282,7 +325,7 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec );
 	}
 
-	if( sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) != SQLITE_OK )
+	if( ( aux->err = sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
 	{
 		aux->length = 0;
 		return -ODBX_ERR_BACKEND;
@@ -323,18 +366,21 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 
 static int sqlite3_odbx_result_finish( odbx_result_t* result )
 {
+	struct sconn* aux = (struct sconn*) result->handle->aux;
+
+
+	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
+
 	if( result->generic != NULL )
 	{
-		if( sqlite3_finalize( (sqlite3_stmt*) result->generic ) != SQLITE_OK )
+		if( ( aux->err = sqlite3_finalize( (sqlite3_stmt*) result->generic ) ) != SQLITE_OK )
 		{
 			return -ODBX_ERR_BACKEND;
 		}
 		result->generic = NULL;
 	}
 
-	struct sconn* aux = (struct sconn*) result->handle->aux;
-
-	if( aux != NULL && aux->stmt != NULL && aux->length == 0 )
+	if( aux->stmt != NULL && aux->length == 0 )
 	{
 		free( aux->stmt );
 		aux->stmt = NULL;
