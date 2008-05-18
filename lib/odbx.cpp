@@ -543,7 +543,10 @@ namespace OpenDBX
 	{
 		int err;
 
-		if( m_result != NULL ) { odbx_result_finish( m_result ); }
+		do
+		{
+			if( m_result != NULL ) { odbx_result_finish( m_result ); }
+		}
 		while( ( err = odbx_result( m_handle, &m_result, NULL, 0 ) ) != ODBX_RES_DONE && odbx_error_type( m_handle, err ) >= 0 );
 	}
 
