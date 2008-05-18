@@ -481,9 +481,10 @@ static int odbc_odbx_result_finish( odbx_result_t* result )
 		gen->stmt = NULL;
 	}
 
-	if( raux != NULL )
-	{
+	if( raux != NULL ) {
 		odbc_priv_cleanup( result, raux->cols );
+	} else {
+		free( result );
 	}
 
 	return ODBX_ERR_SUCCESS;
