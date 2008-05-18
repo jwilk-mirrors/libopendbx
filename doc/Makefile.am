@@ -26,6 +26,7 @@ man_MANS = \
 	odbx_init.3 \
 	odbx_query.3 \
 	odbx_result.3 \
+	odbx_result_finish.3 \
 	odbx_result_free.3 \
 	odbx_row_fetch.3 \
 	odbx_rows_affected.3 \

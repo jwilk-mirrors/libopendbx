@@ -32,7 +32,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_bind</function></funcdef>
@@ -145,7 +145,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_capabilities</function></funcdef>
@@ -226,7 +226,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_column_count</function></funcdef>
@@ -284,7 +284,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>char* <function>odbx_column_name</function></funcdef>
@@ -345,7 +345,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>char* <function>odbx_column_type</function></funcdef>
@@ -535,7 +535,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>char* <function>odbx_error</function></funcdef>
@@ -594,7 +594,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_error_type</function></funcdef>
@@ -660,7 +660,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_escape</function></funcdef>
@@ -753,7 +753,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>unsigned long <function>odbx_field_length</function></funcdef>
@@ -813,7 +813,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>const char* <function>odbx_field_value</function></funcdef>
@@ -876,7 +876,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_finish</function></funcdef>
@@ -944,7 +944,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_get_option</function></funcdef>
@@ -1071,7 +1071,7 @@
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_init</function></funcdef>
@@ -1241,7 +1241,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_query</function></funcdef>
@@ -1329,7 +1329,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_result</function></funcdef>
@@ -1411,22 +1411,28 @@ Depending on the native database library, it's also possible to use database spe
 
 </refentry>
 
-<refentry id="odbx_result_free">
+<refentry id="odbx_result_finish">
 
 	<refmeta>
-		<refentrytitle>odbx_result_free</refentrytitle>
+		<refentrytitle>odbx_result_finish</refentrytitle>
 		<manvolnum>3</manvolnum>
 	</refmeta>
 
 	<refnamediv>
+		<refname>odbx_result_finish</refname>
 		<refname>odbx_result_free</refname>
-		<refpurpose>Frees the allocated memory of a result set</refpurpose>
+		<refpurpose>Closes the result set and frees its allocated memory</refpurpose>
 	</refnamediv>
 
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
+
+			<funcprototype>
+				<funcdef>int <function>odbx_result_finish</function></funcdef>
+				<paramdef>odbx_result_t* <parameter>result</parameter></paramdef>
+			</funcprototype>
 
 			<funcprototype>
 				<funcdef>void <function>odbx_result_free</function></funcdef>
@@ -1440,19 +1446,36 @@ Depending on the native database library, it's also possible to use database spe
 	<refsect1>
 		<title>Description</title>
 
-		<para><function>odbx_result_free</function>() releases all resources allocated by <function>odbx_result</function>() and by the native database library which are attached to result. It also frees the memory the first parameter is pointing to. Trying to free <parameter>result</parameter> manually using free() will create memory leaks because it contains more dynamically allocated structures and also the memory of the result set allocated by the native database library. <function>odbx_result_free</function>() must be called even if the statement was not a SELECT-like statement which returned now rows.</para>
+		<para><function>odbx_result_finish</function>() closes the result set which may also include dropping the non-fetched rows sent by the server. It releases all resources allocated by <function>odbx_result</function>() and by the native database library which are attached to <parameter>result</parameter> as well as the memory the first parameter is pointing to. Trying to free <parameter>result</parameter> manually using free() will create memory leaks because it contains more dynamically allocated structures and also the memory of the result set allocated by the native database library. <function>odbx_result_finish</function>() must be called even if the statement was not a SELECT-like statement which returned now rows as it may be necessary to commit the changes done by the statement.</para>
 
-		<para><parameter>result</parameter> must be valid a result set created by <function>odbx_result</function>() which is returned via its second parameter. After feeding it to <function>odbx_result_free</function>() it becomes invalid and must not be feed to it again. Otherwise a "double free" will occur and the application may be terminated.</para>
+		<para><function>odbx_result_free</function>() performs the same tasks as <function>odbx_result_finish</function>() but is unable to return an error if the task couln't be completed. It shouldn't be used in applications linking to the OpenDBX library version 1.3.8 or later and it will be removed from the library at a later stage.</para>
+
+		<para><parameter>result</parameter> must be valid a result set created by <function>odbx_result</function>() which is returned via its second parameter. After feeding it to <function>odbx_result_finish</function>() it becomes invalid and must not be feed to it again. Otherwise a "double free" may occur and the application may be terminated.</para>
 	</refsect1>
 
 	<refsect1>
 		<title>Return value</title>
-		<para>This function doesn't return any values.</para>
+		<para><function>odbx_result_finsih</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
 	</refsect1>
 
 	<refsect1>
 		<title>Errors</title>
-		<para><function>odbx_result_free</function>() tries its best to cleanup the allocated structure and doesn't generate an error.	</para>
+		<para>
+			<variablelist>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_BACKEND</symbol></term>
+					<listitem>
+						<para>The native database library returned an error</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_PARAM</symbol></term>
+					<listitem>
+						<para>The <parameter>result</parameter> parameter is invalid</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</para>
 	</refsect1>
 
 	<refsect1>
@@ -1481,7 +1504,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>uint64_t <function>odbx_rows_affected</function></funcdef>
@@ -1538,7 +1561,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_row_fetch</function></funcdef>
@@ -1614,7 +1637,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_set_option</function></funcdef>
@@ -1739,7 +1762,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_unbind</function></funcdef>
@@ -1809,7 +1832,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsynopsisdiv>
 
 		<funcsynopsis>
-			<funcsynopsisinfo>#include &lt;odbx.h&gt;</funcsynopsisinfo>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
 				<funcdef>int <function>odbx_lo_open</function></funcdef>
