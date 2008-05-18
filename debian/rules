@@ -82,6 +82,7 @@ binary-arch: build install
 	done
 	dh_install -popendbx-utils "${tmpdir}/usr/bin/odbx-sql" "usr/bin/"
 	dh_install -popendbx-utils --autodest "${tmpdir}/usr/share/locale/*/*/opendbx-utils.mo"
+	dh_install -popendbx-utils "${tmpdir}/usr/share/opendbx/keywords" "usr/share/opendbx/"
 
 	dh_link
 	dh_strip
