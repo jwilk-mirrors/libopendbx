@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include "commands.hpp"
+#include "completion.hpp"
 #include <opendbx/api>
 #include <stdexcept>
 #include <iostream>
@@ -38,6 +39,27 @@ struct format
 	const char* separator;
 };
 
+
+// hack to access completion
+Completion* g_comp = NULL;
+
+char* complete( const char* text, int state )
+{
+	char* match = NULL;
+
+	if( g_comp != NULL )
+	{
+		if( state == 0 ) {
+			g_comp->find( text );
+		}
+
+		if( ( match = (char*) g_comp->get() ) !=  NULL ) {
+			return strdup( match );
+		}
+	}
+
+	return match;
+}
 
 
 const string help( const string& filename )
@@ -162,7 +184,8 @@ int main( int argc, char* argv[] )
 	{
 		int param;
 		bool iactive = false;
-		char* filename = NULL;
+		char* conffile = NULL;
+		char* keywordfile = NULL;
 		struct format fparam;
 
 
@@ -184,12 +207,12 @@ int main( int argc, char* argv[] )
 			CFG_END()
 		};
 
-		while( ( param = getopt( argc, argv, "c:d:his:" ) ) != -1 )
+		while( ( param = getopt( argc, argv, "c:d:hik:s:" ) ) != -1 )
 		{
 			switch( param )
 			{
 				case 'c':
-					filename = optarg;
+					conffile = optarg;
 					break;
 				case 'd':
 					fparam.delimiter = optarg;
@@ -200,6 +223,9 @@ int main( int argc, char* argv[] )
 				case 'i':
 					iactive = true;
 					break;
+				case 'k':
+					keywordfile = optarg;
+					break;
 				case 's':
 					fparam.separator = optarg;
 					break;
@@ -209,13 +235,22 @@ int main( int argc, char* argv[] )
 			}
 		}
 
-		Config cfg( filename, opts );
+		if( keywordfile == NULL ) {
+			keywordfile = KEYWORDFILE;
+		}
+
+		Config cfg( conffile, opts );
+		g_comp = new Completion( keywordfile );
+
+		rl_completion_entry_function = &complete;
 
 		Conn conn( cfg.getStr( "backend" ), cfg.getStr( "host" ), cfg.getStr( "port" ) );
 		conn.bind( cfg.getStr( "database" ), cfg.getStr( "username" ), cfg.getStr( "password" ), ODBX_BIND_SIMPLE );
 
 		loopstmts( conn, &fparam, iactive );
 		conn.unbind();
+
+		delete g_comp;
 	}
 	catch( OpenDBX::Exception& oe )
 	{
