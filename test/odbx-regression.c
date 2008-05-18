@@ -363,7 +363,11 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 			}
 
 			if( verbose ) { fprintf( stdout, "  odbx_result_finish()\n" ); }
-			odbx_result_finish( result );
+			if( ( err = odbx_result_finish( result ) ) != ODBX_ERR_SUCCESS )
+			{
+				fprintf( stderr, "Error in odbx_result_finish(): %s\n", odbx_error( handle[qptr->num], err ) );
+				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
+			}
 		}
 
 		// Test case:  Calling odbx_result() more often must not result in fatal error
