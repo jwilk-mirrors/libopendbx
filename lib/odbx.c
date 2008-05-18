@@ -341,9 +341,10 @@ int odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout
 
 int odbx_result_finish( odbx_result_t* result )
 {
-	if( result != NULL && result->handle != NULL && result->handle->ops != NULL &&
-		result->handle->ops->basic != NULL && result->handle->ops->basic->result_finish != NULL )
+	if( result != NULL && result->handle != NULL && result->handle->ops != NULL && result->handle->ops->basic != NULL &&
+		result->handle->ops->basic->result_finish != NULL && result->handle->ops->basic->row_fetch != NULL )
 	{
+		while( result->handle->ops->basic->row_fetch( result ) == ODBX_ROW_NEXT );
 		return result->handle->ops->basic->result_finish( result );
 	}
 
