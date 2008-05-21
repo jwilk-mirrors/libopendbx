@@ -1817,6 +1817,10 @@ Depending on the native database library, it's also possible to use database spe
 </refentry>
 
 
+
+<!-- Large object functions -->
+
+
 <refentry id="odbx_lo_open">
 
 	<refmeta>
@@ -1826,7 +1830,7 @@ Depending on the native database library, it's also possible to use database spe
 
 	<refnamediv>
 		<refname>odbx_lo_open</refname>
-		<refpurpose>Opens a large object inside the database</refpurpose>
+		<refpurpose>Opens a large object in the database</refpurpose>
 	</refnamediv>
 
 	<refsynopsisdiv>
@@ -1836,7 +1840,7 @@ Depending on the native database library, it's also possible to use database spe
 
 			<funcprototype>
 				<funcdef>int <function>odbx_lo_open</function></funcdef>
-				<paramdef>odbx_t* <parameter>handle</parameter></paramdef>
+				<paramdef>odbx_result_t* <parameter>result</parameter></paramdef>
 				<paramdef>odbx_lo_t** <parameter>lo</parameter></paramdef>
 				<paramdef>const char* <parameter>value</parameter></paramdef>
 			</funcprototype>
@@ -1847,15 +1851,18 @@ Depending on the native database library, it's also possible to use database spe
 
 	<refsect1>
 		<title>Description</title>
-<!--
-		<para>The <parameter>handle</parameter> parameter has to be the connection object created and returned by <function>odbx_init</function>(). It becomes invalid after it was supplied to <function>odbx_finish</function>() and <function>odbx_unbind</function>() will return an error in this case.</para>
+
+		<para>Some database management systems store large amount of data in separate regions of the database and the content is only referenced by identifiers in the tables. The data types used for this are called Binary Large OBject (BLOB) and Character Large OBject (CLOB) and can be found in e.g. the Firebird and Oracle database servers. The OpenDBX library provides a large object interface to access, read and write their content via the "odbx_lo_*()" functions. To find out if large amount of data can be accessed directly or if the large object interface have to be used, <function>odbx_capabilities()</function> provides the answer when feed with the <symbol>ODBX_CAP_LO</symbol></para>
+
+		<para>The <parameter>result</parameter> parameter has to be the result object created and returned by <function>odbx_result</function>(). It becomes invalid after it was supplied to <function>odbx_result_finish</function>() and this function will return an error in that case. The second parameter, the pointer to a <symbol>odbx_lo_t</symbol>*, will contain the newly created large object handle if <function>odbx_lo_open</function>() succeeds. The <parameter>lo</parameter> handle is necessary for all other functions of the large object interface so they are able to perform their operations on the referenced content. The last parameter must be the return value of <function>odbx_field_value</function>() but you have to check for <symbol>NULL</symbol> values before feeding the value to <function>odbx_lo_open</function>(). Otherwise, an error is returned.</para>
+
 	</refsect1>
 
 	<refsect1>
 		<title>Return value</title>
 
-		<para><function>odbx_unbind</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
--->	</refsect1>
+		<para><function>odbx_lo_open</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
+	</refsect1>
 
 	<refsect1>
 		<title>Errors</title>
@@ -1868,21 +1875,9 @@ Depending on the native database library, it's also possible to use database spe
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term>-<symbol>ODBX_ERR_PARAM</symbol></term>
-					<listitem>
-						<para>Either the <parameter>lo</parameter> or the <parameter>value</parameter> parameter is NULL</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
 					<term>-<symbol>ODBX_ERR_NOMEM</symbol></term>
 					<listitem>
 						<para>Allocating additionally required memory failed</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>-<symbol>ODBX_ERR_HANDLE</symbol></term>
-					<listitem>
-						<para><parameter>handle</parameter> is NULL or the supplied connection object is invalid</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -1893,9 +1888,234 @@ Depending on the native database library, it's also possible to use database spe
 		<title>See also</title>
 		<para>
 			<simplelist type='inline'>
+				<member><function>odbx_capabilities</function>()</member>
 				<member><function>odbx_field_value</function>()</member>
 				<member><function>odbx_lo_close</function>()</member>
 				<member><function>odbx_lo_read</function>()</member>
+				<member><function>odbx_lo_write</function>()</member>
+				<member><function>odbx_result</function>()</member>
+			</simplelist>
+		</para>
+	</refsect1>
+
+</refentry>
+
+<refentry id="odbx_lo_close">
+
+	<refmeta>
+		<refentrytitle>odbx_lo_close</refentrytitle>
+		<manvolnum>3</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>odbx_lo_close</refname>
+		<refpurpose>Closes a large object reference</refpurpose>
+	</refnamediv>
+
+	<refsynopsisdiv>
+
+		<funcsynopsis>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
+
+			<funcprototype>
+				<funcdef>int <function>odbx_lo_close</function></funcdef>
+				<paramdef>odbx_lo_t* <parameter>lo</parameter></paramdef>
+			</funcprototype>
+
+		</funcsynopsis>
+
+	</refsynopsisdiv>
+
+	<refsect1>
+		<title>Description</title>
+
+		<para>This function commits any changes made by <function>odbx_lo_write</function>() and closes the open large object handle. To ommit calling this function on open large object handles will result in memory leaks as the data structure and dependent memory aren't freed.</para>
+
+		<para>The <parameter>lo</parameter> parameter has to be the large object handle created and returned by <function>odbx_lo_open</function>() via its second parameter. It becomes invalid after it was supplied to <function>odbx_lo_close</function>() and this function will return an error in this case.</para>
+
+	</refsect1>
+
+	<refsect1>
+		<title>Return value</title>
+
+		<para><function>odbx_lo_close</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
+	</refsect1>
+
+	<refsect1>
+		<title>Errors</title>
+		<para>
+			<variablelist>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_BACKEND</symbol></term>
+					<listitem>
+						<para>The native database library couldn't close the large object successfully</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_HANDLE</symbol></term>
+					<listitem>
+						<para><parameter>lo</parameter> is NULL or the supplied large object handle is invalid</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</para>
+	</refsect1>
+
+	<refsect1>
+		<title>See also</title>
+		<para>
+			<simplelist type='inline'>
+				<member><function>odbx_lo_open</function>()</member>
+			</simplelist>
+		</para>
+	</refsect1>
+
+</refentry>
+
+<refentry id="odbx_lo_read">
+
+	<refmeta>
+		<refentrytitle>odbx_lo_read</refentrytitle>
+		<manvolnum>3</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>odbx_lo_read</refname>
+		<refpurpose>Reads content from a large object</refpurpose>
+	</refnamediv>
+
+	<refsynopsisdiv>
+
+		<funcsynopsis>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
+
+			<funcprototype>
+				<funcdef>ssize_t <function>odbx_lo_read</function></funcdef>
+				<paramdef>odbx_lo_t* <parameter>lo</parameter></paramdef>
+				<paramdef>void* <parameter>buffer</parameter></paramdef>
+				<paramdef>size_t <parameter>buflen</parameter></paramdef>
+			</funcprototype>
+
+		</funcsynopsis>
+
+	</refsynopsisdiv>
+
+	<refsect1>
+		<title>Description</title>
+
+		<para>To get the content of a large object, <function>odbx_lo_read</function>() fetches the data in one or more pieces from the server and stores it into the user supplied <parameter>buffer</parameter>. After opening the large object using <function>odbx_lo_open</function>(), the first call to <function>odbx_lo_read</function>() will return the bytes from the beginning. The second and all other calls will store subsequent parts of the large object content into the <parameter>buffer</parameter> until the end of the data is reached. To reread the content a second time, you have to close the large object handle and reopen it again as some databases provide no way to reposition the internal file position indicator for the stream.</para>
+
+		<para>The <parameter>lo</parameter> parameter has to be the large object handle created and returned by <function>odbx_lo_open</function>() via its second parameter. It becomes invalid after it was supplied to <function>odbx_lo_close</function>() and this function will return an error in this case. The large object content fetched from the server is stored into the user supplied <parameter>buffer</parameter> up to <parameter>buflen</parameter> bytes.</para>
+
+	</refsect1>
+
+	<refsect1>
+		<title>Return value</title>
+
+		<para><function>odbx_lo_read</function>() returns the number of bytes placed into <parameter>buffer</parameter>, which may be up to <parameter>buflen</parameter> bytes. If the end of the content is reached and no more data is available, the return value will be 0. On error, a code whose value is less than zero is returned if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
+	</refsect1>
+
+	<refsect1>
+		<title>Errors</title>
+		<para>
+			<variablelist>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_BACKEND</symbol></term>
+					<listitem>
+						<para>The native database library couldn't read from the large object</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_HANDLE</symbol></term>
+					<listitem>
+						<para><parameter>lo</parameter> is NULL or the supplied large object handle is invalid</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</para>
+	</refsect1>
+
+	<refsect1>
+		<title>See also</title>
+		<para>
+			<simplelist type='inline'>
+				<member><function>odbx_lo_open</function>()</member>
+				<member><function>odbx_lo_close</function>()</member>
+			</simplelist>
+		</para>
+	</refsect1>
+
+</refentry>
+
+<refentry id="odbx_lo_write">
+
+	<refmeta>
+		<refentrytitle>odbx_lo_write</refentrytitle>
+		<manvolnum>3</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>odbx_lo_write</refname>
+		<refpurpose>Writes buffer content into the large object</refpurpose>
+	</refnamediv>
+
+	<refsynopsisdiv>
+
+		<funcsynopsis>
+			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
+
+			<funcprototype>
+				<funcdef>ssize_t <function>odbx_lo_write</function></funcdef>
+				<paramdef>odbx_lo_t* <parameter>lo</parameter></paramdef>
+				<paramdef>void* <parameter>buffer</parameter></paramdef>
+				<paramdef>size_t <parameter>buflen</parameter></paramdef>
+			</funcprototype>
+
+		</funcsynopsis>
+
+	</refsynopsisdiv>
+
+	<refsect1>
+		<title>Description</title>
+
+		<para><function>odbx_lo_write</function>() sends the data supplied in <parameter>buffer</parameter> to the server for storing it inside the large object. The function can be called more than once to add subsequent parts of the content to the object. If it isn't a new or empty object, the existing data will be overwritten and truncated to the new size. It's not possible to update only parts of the content as some databases doesn't support to position the internal file position indicator.</para>
+
+		<para>The <parameter>lo</parameter> parameter has to be the large object handle created and returned by <function>odbx_lo_open</function>() via its second parameter. It becomes invalid after it was supplied to <function>odbx_lo_close</function>() and this function will return an error in this case. The data which should be send to the server is read from <parameter>buffer</parameter> up to <parameter>buflen</parameter> bytes.</para>
+
+	</refsect1>
+
+	<refsect1>
+		<title>Return value</title>
+
+		<para><function>odbx_lo_write</function>() returns the number of bytes read from <parameter>buffer</parameter> and sent to the database server, which may be up to <parameter>buflen</parameter> bytes. It isn't guaranteed that the complete chunk was sent to the server, so the returned size may be less than the value in <parameter>buflen</parameter>. On error, a code whose value is less than zero is returned if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
+	</refsect1>
+
+	<refsect1>
+		<title>Errors</title>
+		<para>
+			<variablelist>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_BACKEND</symbol></term>
+					<listitem>
+						<para>The native database library couldn't write to the large object successfully</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-<symbol>ODBX_ERR_HANDLE</symbol></term>
+					<listitem>
+						<para><parameter>lo</parameter> is NULL or the supplied large object handle is invalid</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</para>
+	</refsect1>
+
+	<refsect1>
+		<title>See also</title>
+		<para>
+			<simplelist type='inline'>
+				<member><function>odbx_lo_open</function>()</member>
+				<member><function>odbx_lo_close</function>()</member>
 			</simplelist>
 		</para>
 	</refsect1>

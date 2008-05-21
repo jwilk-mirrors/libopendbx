@@ -31,6 +31,10 @@ man_MANS = \
 	odbx_row_fetch.3 \
 	odbx_rows_affected.3 \
 	odbx_set_option.3 \
-	odbx_unbind.3
+	odbx_unbind.3 \
+	odbx_lo_open.3 \
+	odbx_lo_close.3 \
+	odbx_lo_read.3 \
+	odbx_lo_write.3
 
 endif

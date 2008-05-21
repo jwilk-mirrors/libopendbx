@@ -217,7 +217,11 @@ EXTRA_DIST = opendbx.en.xml
 @ENABLEMAN_TRUE@	odbx_row_fetch.3 \
 @ENABLEMAN_TRUE@	odbx_rows_affected.3 \
 @ENABLEMAN_TRUE@	odbx_set_option.3 \
-@ENABLEMAN_TRUE@	odbx_unbind.3
+@ENABLEMAN_TRUE@	odbx_unbind.3 \
+@ENABLEMAN_TRUE@	odbx_lo_open.3 \
+@ENABLEMAN_TRUE@	odbx_lo_close.3 \
+@ENABLEMAN_TRUE@	odbx_lo_read.3 \
+@ENABLEMAN_TRUE@	odbx_lo_write.3
 
 all: all-am
 
