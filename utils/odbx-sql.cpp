@@ -68,12 +68,13 @@ const string help( const string& filename )
 
 	help << gettext( "Read and execute semicolon-terminated SQL statements from stdin" ) << endl;
 	help << endl;
-	help << gettext( "Usage: " ) << filename << " " << gettext( "<options>" ) << endl;
+	help << gettext( "Usage: " ) << filename << " " << " -c <configfile> [-d <delimiter>] [-h] [-i] [-k <keywordfile>] [-s <separator>]" << endl;
 	help << endl;
 	help << "    -c      " << gettext( "read configuration from file" ) << endl;
 	help << "    -d      " << gettext( "start/end delimiter for fields in output" ) << endl;
 	help << "    -h      " << gettext( "print help" ) << endl;
 	help << "    -i      " << gettext( "interactive mode" ) << endl;
+	help << "    -k      " << gettext( "SQL keyword file" ) << endl;
 	help << "    -s      " << gettext( "separator between fields in output" ) << endl;
 
 	return help.str();
@@ -104,12 +105,12 @@ void output( Result& result, struct format* fparam )
 			if( fields > 0 )
 			{
 				if( result.fieldValue( 0 ) == NULL ) { cout << "NULL"; }
-				else { cout << fparam->separator << result.fieldValue( 0 ) << fparam->separator; }
+				else { cout << fparam->delimiter << result.fieldValue( 0 ) << fparam->delimiter; }
 
 				for( unsigned long i = 1; i < fields; i++ )
 				{
-					if( result.fieldValue( i ) == NULL ) { cout << fparam->delimiter << "NULL"; }
-					else { cout << fparam->delimiter << fparam->separator << result.fieldValue( i ) << fparam->separator; }
+					if( result.fieldValue( i ) == NULL ) { cout << fparam->separator << "NULL"; }
+					else { cout << fparam->separator << fparam->delimiter << result.fieldValue( i ) << fparam->delimiter; }
 				}
 			}
 			cout << endl;
@@ -170,7 +171,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		}
 		catch( OpenDBX::Exception& oe )
 		{
-			cerr << gettext( "Error: " ) << oe.what() << endl;
+			cerr << gettext( "Warning: " ) << oe.what() << endl;
 			if( oe.getSeverity() < 0 ) { return; }
 		}
 	}
@@ -193,8 +194,8 @@ int main( int argc, char* argv[] )
 		textdomain( "opendbx-utils" );
 		bindtextdomain( "opendbx-utils", LOCALEDIR );
 
-		fparam.delimiter = "\t";
-		fparam.separator = "";
+		fparam.delimiter = "";
+		fparam.separator = "\t";
 
 		cfg_opt_t opts[] =
 		{
