@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opendbx 1.3.9\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-05-03 12:00+0200\n"
-"PO-Revision-Date: 2008-05-03 12:00+0200\n"
+"POT-Creation-Date: 2008-05-22 22:57+0200\n"
+"PO-Revision-Date: 2008-05-22 22:57+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -82,47 +82,50 @@ msgstr "Unable to parse configuration file: "
 msgid "Unknown error returned from configuration parser. File name: "
 msgstr "Unknown error returned from configuration parser. File name: "
 
-#: utils/odbx-sql.cpp:47
+#: utils/odbx-sql.cpp:69
 msgid "Read and execute semicolon-terminated SQL statements from stdin"
 msgstr "Read and execute semicolon-terminated SQL statements from stdin"
 
-#: utils/odbx-sql.cpp:49
+#: utils/odbx-sql.cpp:71
 msgid "Usage: "
 msgstr "Usage: "
 
-#: utils/odbx-sql.cpp:49
-msgid "<options>"
-msgstr "<options>"
-
-#: utils/odbx-sql.cpp:51
+#: utils/odbx-sql.cpp:73
 msgid "read configuration from file"
 msgstr "read configuration from file"
 
-#: utils/odbx-sql.cpp:52
+#: utils/odbx-sql.cpp:74
 msgid "start/end delimiter for fields in output"
 msgstr "start/end delimiter for fields in output"
 
-#: utils/odbx-sql.cpp:53
+#: utils/odbx-sql.cpp:75
 msgid "print help"
 msgstr "print help"
 
-#: utils/odbx-sql.cpp:54
+#: utils/odbx-sql.cpp:76
 msgid "interactive mode"
 msgstr "interactive mode"
 
-#: utils/odbx-sql.cpp:55
+#: utils/odbx-sql.cpp:77
+msgid "SQL keyword file"
+msgstr "SQL keyword file"
+
+#: utils/odbx-sql.cpp:78
 msgid "separator between fields in output"
 msgstr "separator between fields in output"
 
-#: utils/odbx-sql.cpp:112
+#: utils/odbx-sql.cpp:135
 msgid "Interactive SQL shell, use .help to list available commands"
 msgstr "Interactive SQL shell, use .help to list available commands"
 
-#: utils/odbx-sql.cpp:151 utils/odbx-sql.cpp:222 utils/odbx-sql.cpp:227
-#: utils/odbx-sql.cpp:233
+#: utils/odbx-sql.cpp:174
+msgid "Warning: "
+msgstr "Warning: "
+
+#: utils/odbx-sql.cpp:258 utils/odbx-sql.cpp:263 utils/odbx-sql.cpp:269
 msgid "Error: "
 msgstr "Error: "
 
-#: utils/odbx-sql.cpp:238
+#: utils/odbx-sql.cpp:274
 msgid "Error: Caught unknown exception"
 msgstr "Error: Caught unknown exception"
