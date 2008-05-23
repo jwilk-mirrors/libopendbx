@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-04-05 22:09+0200\n"
+"POT-Creation-Date: 2008-05-03 12:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Invalid capability"
 msgstr ""
 
-#: lib/odbx.c:23
+#: lib/odbx.c:23 backends/sqlite3/sqlite3_basic.c:54
 msgid "Invalid parameter"
 msgstr ""
 
@@ -81,6 +81,10 @@ msgstr ""
 msgid "Connecting to server failed"
 msgstr ""
 
-#: backends/sqlite/sqlite_basic.c:53
+#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:55
 msgid "Opening database failed"
+msgstr ""
+
+#: backends/sqlite3/sqlite3_basic.c:53
+msgid "Unknown error"
 msgstr ""

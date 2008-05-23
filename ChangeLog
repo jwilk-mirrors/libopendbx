@@ -1,3 +1,19 @@
+2008-05-23 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Added auto completion of SQL keywords in odbx-sql
+	* Feature: Fetch all outstanding rows in odbx_result_finish()
+	* Feature: Man page for odbx_lo_*() functions and odbx_result_finish()
+	* Feature: Man page for odbx-sql
+	* Change: Made OpenDBX::Result::getResult() parameters optional
+	* Change: Updated OpenDBX header in man pages
+	* Bugfix: sqlite3 backend returns correct error message now if database file couldn't be opened
+	* Bugfix: Fixed error type for invalid database files in sqlite3 backend
+	* Bugfix: Frees all outstanding result sets in Result::~Result() now
+	* Bugfix: Fixed memory leak in odbc_odbx_result_finish()
+	* Bugfix: Correct temporal data types in odbc_odbx_column_type() when using PostgreSQL ODBC adapter
+	* Bugfix: Added missing stdlib.h to odbc backend
+	* Bugfix: Fixed delimters and separators in odbx-sql
+
 2008-05-01 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Full-featured ODBC backend

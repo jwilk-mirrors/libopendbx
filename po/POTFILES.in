@@ -6,3 +6,4 @@ lib/odbxlib.c
 backends/mssql/mssql_basic.c
 backends/oracle/oracle_basic.c
 backends/sqlite/sqlite_basic.c
+backends/sqlite3/sqlite3_basic.c
