@@ -583,7 +583,7 @@ static int odbc_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 	if( gen == NULL ) { return -ODBX_ERR_PARAM; }
 
-	gen->err = SQLColAttribute( gen->stmt, pos+1, SQL_DESC_TYPE, NULL, 0, NULL, &type );
+	gen->err = SQLColAttribute( gen->stmt, pos+1, SQL_DESC_CONCISE_TYPE, NULL, 0, NULL, &type );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
