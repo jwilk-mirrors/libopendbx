@@ -16,6 +16,116 @@
 	<title>OpenDBX reference pages</title>
 	<chapter>
 
+<refentry id="odbx-sql">
+
+	<refmeta>
+		<refentrytitle>odbx-sql</refentrytitle>
+		<manvolnum>1</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>odbx-sql</refname>
+		<refpurpose>Swiss army knife for communicating with databases and interactive SQL shell</refpurpose>
+	</refnamediv>
+
+	<refsynopsisdiv>
+
+		<cmdsynopsis>
+			<command>odbx-sql</command>
+			<arg choice='req'>-c <replaceable>configfile</replaceable></arg>
+			<arg>-d <replaceable>delimiter</replaceable></arg>
+			<arg>-h</arg>
+			<arg>-i</arg>
+			<arg>-k <replaceable>keywordfile</replaceable></arg>
+			<arg>-s <replaceable>separator</replaceable></arg>
+		</cmdsynopsis>
+
+	</refsynopsisdiv>
+
+	<refsect1>
+		<title>Description</title>
+
+		<para><command>odbx-sql</command> is a small and flexible utiltiy to communicate with the databases supported by the OpenDBX library. In batch mode, it's main purpose is automating tasks in shell scripts which require working with databases. On the other side, the interactive mode provides a convenient SQL shell for modifying database content or testing statements. The format of the output can be controlled to some extend by defining strings for separation between columns and for delimiting field values.</para>
+	</refsect1>
+
+	<refsect1>
+		<title>Options</title>
+
+		<para>
+			<variablelist>
+				<varlistentry>
+					<term>-c configfile</term>
+					<listitem>
+						<para>Supplying a configuration file with parameters required for connecting to the database is an required options. The file have to include values for the backend that should be used, the host name or ip address (and maybe the port if required), the database name and the user and password. These values must be placed into a configuration file to be able to access them from non-interactive program execution savely without revealing the password anywhere. A full example of such a configuration file can be found in the example section of this manual.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-d delimiter</term>
+					<listitem>
+						<para>Single character or string that should surround field values which are returned by SELECT-like statements and printed to stdout.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-h</term>
+					<listitem>
+						<para>Print help including a short description of available options</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-i</term>
+					<listitem>
+						<para>Run in interactive mode and provide a convenient SQL shell contrary to batch mode which is waiting for input from stdin and printing results to stdout</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-k keywordfile</term>
+					<listitem>
+						<para>Location of a keyword file used for providing auto-completion of keywords</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-s separator</term>
+					<listitem>
+						<para>Single character or string that should separate field values which are returned by SELECT-like statements and printed to stdout.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</para>
+	</refsect1>
+
+	<refsect1>
+		<title>Examples</title>
+
+		<example>
+			<title>Configuration file (e.g. ~/.db/mysql.conf)</title>
+
+			<literallayout>backend = mysql
+host = localhost
+port = 3306
+database = test
+username = myuser
+password = secret</literallayout>
+		</example>
+
+		<example>
+			<title>Starting in interactive mode</title>
+			<synopsis>odbx-sql -c mysql.conf -i</synopsis>
+		</example>
+
+		<example>
+			<title>Executing commands in batch mode</title>
+			<synopsis>cat stmt.sql | odbx-sql -c mysql.conf</synopsis>
+		</example>
+	</refsect1>
+
+	<refsect1>
+		<title>Exit status</title>
+
+		<para><command>odbx-sql</command> returns 1 if an error occured and 0 if all commands succeeded or only warnings are reported. If warnings occur, they are written to stderr.</para>
+	</refsect1>
+
+</refentry>
+
 <refentry id="odbx_bind">
 
 	<refmeta>
@@ -242,7 +352,7 @@
 
 		<para>Returns the number of columns which belongs to the current result set allocated by <function>odbx_result</function>(). The number will never change within a result set with one notable exception: MySQL returns all outstanding rows of a previous result set first if they were not fetched completely by <function>odbx_row_fetch</function>() before. Therefore, the column count might change in this special situation. It is strongly advised to fetch all rows of a result set before calling <function>odbx_result</function>() again because other backends will return an error in this case.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_finish</function>() before.</para>
 	</refsect1>
 
 	<refsect1>
@@ -301,7 +411,7 @@
 
 		<para><function>odbx_column_name</function>() gets the name of the column specified by pos in the current result set returned by <function>odbx_result</function>(). The column names will not change within the result set with the exception described for MySQL in <function>odbx_column_count</function>() when the first result set wasn't retrieved completely before <function>odbx_result</function>() was called again.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not have been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not have been feed to <function>odbx_result_finish</function>() before.</para>
 
 		<para>Valid column indices for the requested column provided via <parameter>pos</parameter> start with zero and end with the value returned by <function>odbx_column_count</function>() minus one.</para>
 	</refsect1>
@@ -362,7 +472,7 @@
 
 		<para><function>odbx_column_type</function>() returns the data type of the requested column within the current result set returned by <function>odbx_result</function>(). The column type applies to all fields at the same position of the rows fetched via <function>odbx_row_fetch</function>(). The definitions are based on the SQL2003 standard and the data types of the database server have to comply to the specification of the standard. Data types provided by database implementations which are not covered by the SQL2003 standard are subsumed as <symbol>ODBX_TYPE_UNKNOWN</symbol>.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_finish</function>() before.</para>
 
 		<para>Valid column indices for the requested column provided via <parameter>pos</parameter> start with zero and end with the value returned by <function>odbx_column_count</function>() minus one.</para>
 	</refsect1>
@@ -770,7 +880,7 @@
 
 		<para><function>odbx_field_length</function>() returns the length of the field value in bytes. The field is part of the current row which was retrieved by the latest call to <function>odbx_row_fetch</function>() and is specified by the column index given by <parameter>pos</parameter>.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_finish</function>() before.</para>
 
 		<para>Valid column indices for the requested column provided via <parameter>pos</parameter> start with zero and end with the value returned by <function>odbx_column_count</function>() minus one.</para>
 	</refsect1>
@@ -832,7 +942,7 @@
 
 		<para>All values except binary objects are handed back as strings terminated by the zero character. This does also apply to numeric values, dates, etc. They have to be converted to their binary machine dependent representation before arithmetic operations can be done. If a value is undefined, i.e. "NULL" is attached to the field in the database, an equivalent NULL pointer is returned.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_finish</function>() before.</para>
 
 		<para>Valid column indices for the requested column provided via <parameter>pos</parameter> start with zero and end with the value returned by <function>odbx_column_count</function>() minus one.</para>
 	</refsect1>
@@ -1346,7 +1456,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsect1>
 		<title>Description</title>
 
-		<para>Retrieves the result of a query statement sent by <function>odbx_query</function>() from the database server. After a statement was successfully executed, a dynamically allocated object representing the result set is stored in <parameter>result</parameter> which must be freed afterwards by <function>odbx_result_free</function>(). Result sets for SELECT-like statements returned successfully by this function can be processed by calling <function>odbx_row_fetch</function>() until all rows are retrieved. If the statement was an INSERT, UPDATE, DELETE or a similar statement, the number of affected rows is available via <function>odbx_rows_affected</function>().</para>
+		<para>Retrieves the result of a query statement sent by <function>odbx_query</function>() from the database server. After a statement was successfully executed, a dynamically allocated object representing the result set is stored in <parameter>result</parameter> which must be freed afterwards by <function>odbx_result_finish</function>(). Result sets for SELECT-like statements returned successfully by this function can be processed by calling <function>odbx_row_fetch</function>() until all rows are retrieved. If the statement was an INSERT, UPDATE, DELETE or a similar statement, the number of affected rows is available via <function>odbx_rows_affected</function>().</para>
 
 		<para>If a timeout or error occurs, the <parameter>result</parameter> pointer is set to NULL. In case of a timeout, <function>odbx_result</function>() should be called again because the query isn't canceled. This function must be called multiple times until it returns zero, even if the query contains only one statement. Otherwise, memory will be leaked and <function>odbx_query</function>() will return an error.</para>
 
@@ -1404,7 +1514,7 @@ Depending on the native database library, it's also possible to use database spe
 				<member><function>odbx_column_type</function>()</member>
 				<member><function>odbx_rows_affected</function>()</member>
 				<member><function>odbx_row_fetch</function>()</member>
-				<member><function>odbx_result_free</function>()</member>
+				<member><function>odbx_result_finish</function>()</member>
 			</simplelist>
 		</para>
 	</refsect1>
@@ -1455,7 +1565,7 @@ Depending on the native database library, it's also possible to use database spe
 
 	<refsect1>
 		<title>Return value</title>
-		<para><function>odbx_result_finsih</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
+		<para><function>odbx_result_finish</function>() returns <symbol>ODBX_ERR_SUCCESS</symbol>, or an error code whose value is less than zero if one of the operations couldn't be completed successfully. Possible error codes are listed in the error section and they can be feed to <function>odbx_error</function>() and <function>odbx_error_type</function>() to get further details.</para>
 	</refsect1>
 
 	<refsect1>
@@ -1520,7 +1630,7 @@ Depending on the native database library, it's also possible to use database spe
 
 		<para>Returns the number of rows that have been changed by the current statement whose result set was retrieved by <function>odbx_result</function>(). Affected rows are only returned for DELETE, INSERT or UPDATE statements and their concrete number depends on the database implementation. Instead returning the number of rows which are matched by the WHERE clause, MySQL for example does only count the rows whose values have really been changed.</para>
 
-		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_free</function>() before.</para>
+		<para>The <parameter>result</parameter> parameter required by this function must be a valid result set returned by <function>odbx_result</function>() and must not has been feed to <function>odbx_result_finish</function>() before.</para>
 	</refsect1>
 
 	<refsect1>
@@ -1539,7 +1649,7 @@ Depending on the native database library, it's also possible to use database spe
 		<para>
 			<simplelist type='inline'>
 				<member><function>odbx_result</function>()</member>
-				<member><function>odbx_result_free</function>()</member>
+				<member><function>odbx_result_finish</function>()</member>
 			</simplelist>
 		</para>
 	</refsect1>
@@ -1579,7 +1689,7 @@ Depending on the native database library, it's also possible to use database spe
 
 		<para>Moreover, it is necessary to fetch all rows from a result set until zero is returned indicating that no more rows are available. Otherwise - depending on the backend - an error may occur after calling <function>odbx_result</function>() the next time or the outstanding rows will be returned within the next result.</para>
 
-		<para><function>odbx_row_fetch</function>() requires a valid <parameter>result</parameter> object which was created by <function>odbx_result</function>(). It must not have been feed to <function>odbx_result_free</function>() before.</para>
+		<para><function>odbx_row_fetch</function>() requires a valid <parameter>result</parameter> object which was created by <function>odbx_result</function>(). It must not have been feed to <function>odbx_result_finish</function>() before.</para>
 	</refsect1>
 
 	<refsect1>
@@ -1597,7 +1707,7 @@ Depending on the native database library, it's also possible to use database spe
 				<varlistentry>
 					<term>-<symbol>ODBX_ERR_PARAM</symbol></term>
 					<listitem>
-						<para>The <parameter>result</parameter> parameter is either NULL or the object is invalid. This is usually the case if result has been already feed to <function>odbx_result_free</function>().</para>
+						<para>The <parameter>result</parameter> parameter is either NULL or the object is invalid. This is usually the case if result has been already feed to <function>odbx_result_finish</function>().</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -1852,7 +1962,7 @@ Depending on the native database library, it's also possible to use database spe
 	<refsect1>
 		<title>Description</title>
 
-		<para>Some database management systems store large amount of data in separate regions of the database and the content is only referenced by identifiers in the tables. The data types used for this are called Binary Large OBject (BLOB) and Character Large OBject (CLOB) and can be found in e.g. the Firebird and Oracle database servers. The OpenDBX library provides a large object interface to access, read and write their content via the "odbx_lo_*()" functions. To find out if large amount of data can be accessed directly or if the large object interface have to be used, <function>odbx_capabilities()</function> provides the answer when feed with the <symbol>ODBX_CAP_LO</symbol></para>
+		<para>Some database management systems store large amount of data in separate regions of the database and the content is only referenced by identifiers in the tables. The data types used for this are called Binary Large OBject (BLOB) and Character Large OBject (CLOB) and can be found in e.g. the Firebird and Oracle database servers. The OpenDBX library provides a large object interface to access, read and write their content via the "odbx_lo_*()" functions. To find out if large amount of data can be accessed directly or if the large object interface have to be used, <function>odbx_capabilities</function>() provides the answer when feed with the <symbol>ODBX_CAP_LO</symbol></para>
 
 		<para>The <parameter>result</parameter> parameter has to be the result object created and returned by <function>odbx_result</function>(). It becomes invalid after it was supplied to <function>odbx_result_finish</function>() and this function will return an error in that case. The second parameter, the pointer to a <symbol>odbx_lo_t</symbol>*, will contain the newly created large object handle if <function>odbx_lo_open</function>() succeeds. The <parameter>lo</parameter> handle is necessary for all other functions of the large object interface so they are able to perform their operations on the referenced content. The last parameter must be the return value of <function>odbx_field_value</function>() but you have to check for <symbol>NULL</symbol> values before feeding the value to <function>odbx_lo_open</function>(). Otherwise, an error is returned.</para>
 
