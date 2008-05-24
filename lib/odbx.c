@@ -307,7 +307,7 @@ int odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* 
 
 int odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
-	if( length < 0 ) { return ODBX_ERR_PARAM; }
+	if( query == NULL ) { return ODBX_ERR_PARAM; }
 
 	if( handle != NULL && handle->ops != NULL && handle->ops->basic != NULL && handle->ops->basic->query != NULL )
 	{
@@ -326,7 +326,7 @@ int odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout
 		int err;
 		*result = NULL;
 
-		if( ( err = handle->ops->basic->result( handle, result, timeout, chunk ) ) > 1 )
+		if( ( err = handle->ops->basic->result( handle, result, timeout, chunk ) ) > ODBX_RES_TIMEOUT )   // for ODBX_RES_NOROWS and ODBX_RES_ROWS
 		{
 			if( *result ) { (*result)->handle = handle; }
 		}
