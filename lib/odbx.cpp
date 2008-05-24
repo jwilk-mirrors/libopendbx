@@ -541,11 +541,11 @@ namespace OpenDBX
 
 	Result_Impl::~Result_Impl()
 	{
-		int err;
+		int err = ODBX_RES_ROWS;   // assume we have a result set to finish until proved otherwise
 
 		do
 		{
-			if( m_result != NULL ) { odbx_result_finish( m_result ); }
+			if( m_result != NULL && err > ODBX_RES_TIMEOUT ) { odbx_result_finish( m_result ); }
 		}
 		while( ( err = odbx_result( m_handle, &m_result, NULL, 0 ) ) != ODBX_RES_DONE && odbx_error_type( m_handle, err ) >= 0 );
 	}
