@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2004-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -82,7 +82,7 @@ namespace OpenDBX
 		Stmt_Impl( odbx_t* handle );
 		virtual ~Stmt_Impl();
 
-		static Stmt_Impl* instance( odbx_t* handle, Stmt::Type type, const string& sql );
+		static Stmt_Impl* instance( odbx_t* handle, const string& sql, Stmt::Type type );
 
 // 		virtual void bind( const void* data, unsigned long size, size_t pos, int flags ) = 0;
 
@@ -140,8 +140,8 @@ namespace OpenDBX
 
 		string& escape( const char* from, unsigned long fromlen, string& to );
 
-		Stmt_Impl* create( Stmt::Type type, const char* sql, unsigned long length );
-		Stmt_Impl* create( Stmt::Type type, const string& sql );
+		Stmt_Impl* create( const char* sql, unsigned long length, Stmt::Type type );
+		Stmt_Impl* create( const string& sql, Stmt::Type type );
 	};
 
 }   // namespace

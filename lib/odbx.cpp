@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2004-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -11,8 +11,9 @@
 #include "opendbx/api"
 #include "odbx_impl.hpp"
 #include "odbxdrv.h"
+#include <iostream>
 #include <cstdlib>
-
+#include <cstring>
 
 
 
@@ -31,24 +32,24 @@ namespace OpenDBX
  */
 
 
-	Exception::Exception( string msg, int error, int severity ) : std::runtime_error( msg )
+	Exception::Exception( string msg, int error, int type ) : std::runtime_error( msg )
 	{
 		m_error = error;
-		m_severity = severity;
+		m_type = type;
 	}
 
 
 
-	int Exception::getErrorCode()
+	int Exception::getCode()
 	{
 		return m_error;
 	}
 
 
 
-	int Exception::getSeverity()
+	int Exception::getType()
 	{
-		return m_severity;
+		return m_type;
 	}
 
 
@@ -442,26 +443,28 @@ namespace OpenDBX
 
 
 
-	Stmt Conn::create( Stmt::Type type, const char* sql, unsigned long length )
+	Stmt Conn::create( const char* sql, unsigned long length, Stmt::Type type )
 	{
 		if( m_impl == NULL )
 		{
 			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
-		return Stmt( m_impl->create( type, string( sql, length ) ) );
+		if( length == 0 ) { length = (unsigned long) strlen( sql ); }
+
+		return Stmt( m_impl->create( string( sql, length ), type ) );
 	}
 
 
 
-	Stmt Conn::create( Stmt::Type type, const string& sql )
+	Stmt Conn::create( const string& sql, Stmt::Type type )
 	{
 		if( m_impl == NULL )
 		{
 			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
-		return Stmt( m_impl->create( type, sql ) );
+		return Stmt( m_impl->create( sql, type ) );
 	}
 
 
@@ -541,13 +544,7 @@ namespace OpenDBX
 
 	Result_Impl::~Result_Impl()
 	{
-		int err = ODBX_RES_ROWS;   // assume we have a result set to finish until proved otherwise
-
-		do
-		{
-			if( m_result != NULL && err > ODBX_RES_TIMEOUT ) { odbx_result_finish( m_result ); }
-		}
-		while( ( err = odbx_result( m_handle, &m_result, NULL, 0 ) ) != ODBX_RES_DONE && odbx_error_type( m_handle, err ) >= 0 );
+		while( this->getResult( NULL, 0 ) != ODBX_RES_DONE );
 	}
 
 
@@ -707,7 +704,7 @@ namespace OpenDBX
 
 
 
-	Stmt_Impl* Stmt_Impl::instance( odbx_t* handle, Stmt::Type type, const string& sql )
+	Stmt_Impl* Stmt_Impl::instance( odbx_t* handle, const string& sql, Stmt::Type type )
 	{
 		switch( type )
 		{
@@ -895,9 +892,19 @@ namespace OpenDBX
 
 	Conn_Impl::~Conn_Impl()
 	{
+		int err;
+
 		if( m_escbuf != NULL ) { std::free( m_escbuf ); }
 
-		odbx_finish( m_handle );
+		if( ( err =  odbx_unbind( m_handle ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+		}
+
+		if( ( err =  odbx_finish( m_handle ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+		}
 	}
 
 
@@ -992,9 +999,9 @@ namespace OpenDBX
 
 
 
-	Stmt_Impl* Conn_Impl::create( Stmt::Type type, const string& sql )
+	Stmt_Impl* Conn_Impl::create( const string& sql, Stmt::Type type )
 	{
-		return Stmt_Impl::instance( m_handle, type, sql );
+		return Stmt_Impl::instance( m_handle, sql, type );
 	}
 
 
