@@ -1,3 +1,20 @@
+2008-05-31 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Inline C++ API documentation (Javadoc style)
+	* Feature: firebird, sqlite3 backend don't return an error if odbx_row_fetch() is called more often than necessary
+	* Feature: Conn destructor does unbinding automatically now
+	* Feature: odbx_query() can calculate the statement length on its own
+	* Feature: odbx-sql prints column names for result sets
+	* Change: Moved type parameter in Conn::create() to the end and made it optional
+	* Change: Made port in Conn::Conn() and who/cred in Conn::bind() optional
+	* Change: Shortend and streamlined Exception methods
+	* Change: odbx_result() uses constant instead of number
+	* Bugfix: Cleanup in Result destructor didn't throw an exception if an error occured
+	* Bugfix: Fixed memory leak in sqlite3 backend if SQL statement is invalid
+	* Bugfix: Fixed firebird and odbc backend when compiled as single lib
+	* Bugfix: Added odbx-sql man page to install script
+	* Bugfix: Cleanup in doc directories doesn't fail anymore if no files are available
+
 2008-05-23 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Added auto completion of SQL keywords in odbx-sql
