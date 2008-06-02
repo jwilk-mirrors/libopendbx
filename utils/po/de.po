@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opendbx 1.3.7\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-05-22 22:57+0200\n"
+"POT-Creation-Date: 2008-05-30 21:12+0200\n"
 "PO-Revision-Date: 2008-04-04 00:18+0200\n"
 "Last-Translator:  <norbert@linuxnetworks.de>\n"
 "Language-Team: German\n"
@@ -16,24 +16,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils/commands.cpp:29
+#: utils/commands.cpp:30
 msgid "Unknown command, use .help to list available commands"
 msgstr ""
 "Unbekannter Befehl. Benutzen Sie .help für eine Liste der verfügbaren Befehle"
 
-#: utils/commands.cpp:39
+#: utils/commands.cpp:41
+msgid "Printing column names is now enabled"
+msgstr "Spaltennamen werden jetzt ausgegeben"
+
+#: utils/commands.cpp:44
+msgid "Printing column names is now disabled"
+msgstr "Spaltennamen werden jetzt nicht mehr ausgegeben"
+
+#: utils/commands.cpp:53
 msgid "Available commands:"
 msgstr "Verfügbare Befehle:"
 
-#: utils/commands.cpp:40
+#: utils/commands.cpp:54
+msgid "toggle printing column names for result sets"
+msgstr "Spaltennamen für Ergebnislisten ein-/ausschalten"
+
+#: utils/commands.cpp:55
 msgid "print this help"
 msgstr "Diese Hilfe ausgeben"
 
-#: utils/commands.cpp:41
+#: utils/commands.cpp:56
 msgid "exit program"
 msgstr "Programm beenden"
 
-#: utils/commands.cpp:48
+#: utils/commands.cpp:63
 msgid "Good bye"
 msgstr "Auf Wiedersehen"
 
@@ -61,54 +73,54 @@ msgstr "Die Konfigurationsdatei konnte nicht analysiert werden"
 msgid "Unknown error returned from configuration parser. File name: "
 msgstr "Es trat ein unbekannter Fehler im Konfigurationsparser auf. Datei: "
 
-#: utils/odbx-sql.cpp:69
+#: utils/odbx-sql.cpp:63
 msgid "Read and execute semicolon-terminated SQL statements from stdin"
 msgstr ""
 "Führt durch Strichpunkt getrennte SQL Anweisungen von der "
 "Eingabeaufforderung aus"
 
-#: utils/odbx-sql.cpp:71
+#: utils/odbx-sql.cpp:65
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: utils/odbx-sql.cpp:73
+#: utils/odbx-sql.cpp:67
 msgid "read configuration from file"
 msgstr "Liest Konfiguration aus dieser Datei"
 
-#: utils/odbx-sql.cpp:74
+#: utils/odbx-sql.cpp:68
 msgid "start/end delimiter for fields in output"
 msgstr "Zeichen, das einzelne Felder in der Ausgabe umschliesst"
 
-#: utils/odbx-sql.cpp:75
+#: utils/odbx-sql.cpp:69
 msgid "print help"
 msgstr "Hilfe ausgeben"
 
-#: utils/odbx-sql.cpp:76
+#: utils/odbx-sql.cpp:70
 msgid "interactive mode"
 msgstr "Interaktiver Modus"
 
-#: utils/odbx-sql.cpp:77
+#: utils/odbx-sql.cpp:71
 msgid "SQL keyword file"
-msgstr ""
+msgstr "SQL Schlüsselwortdatei"
 
-#: utils/odbx-sql.cpp:78
+#: utils/odbx-sql.cpp:72
 msgid "separator between fields in output"
 msgstr "Trennzeichen zwischen Feldern in der Ausgabe"
 
-#: utils/odbx-sql.cpp:135
+#: utils/odbx-sql.cpp:140
 msgid "Interactive SQL shell, use .help to list available commands"
 msgstr ""
 "Interaktive SQL Eingabeaufforderung.\n"
 "Geben Sie .help für eine Liste der verfügbaren Befehle ein"
 
-#: utils/odbx-sql.cpp:174
+#: utils/odbx-sql.cpp:179
 msgid "Warning: "
 msgstr "Warnung: "
 
-#: utils/odbx-sql.cpp:258 utils/odbx-sql.cpp:263 utils/odbx-sql.cpp:269
+#: utils/odbx-sql.cpp:264 utils/odbx-sql.cpp:269 utils/odbx-sql.cpp:275
 msgid "Error: "
 msgstr "Fehler: "
 
-#: utils/odbx-sql.cpp:274
+#: utils/odbx-sql.cpp:280
 msgid "Error: Caught unknown exception"
 msgstr "Fehler: Es ist eine unbekannte Ausnahme aufgetreten"
