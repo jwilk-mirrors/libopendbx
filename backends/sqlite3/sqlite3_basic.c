@@ -178,7 +178,7 @@ static int sqlite3_odbx_get_option( odbx_t* handle, unsigned int option, void* v
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = 10200;
 			break;
 		case ODBX_OPT_MULTI_STATEMENTS:
 			*(int*) value = ODBX_ENABLE;
@@ -328,9 +328,18 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 	if( ( aux->err = sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
 	{
 		aux->length = 0;
+		free( aux->stmt );
+		aux->stmt = NULL;
+
 		return -ODBX_ERR_BACKEND;
 	}
-	aux->length = strlen( aux->tail );
+
+	if( ( aux->length = strlen( aux->tail ) ) == 0 )
+	{
+		free( aux->stmt );
+		aux->stmt = NULL;
+	}
+
 
 	switch( ( aux->err = sqlite3_step( res ) ) )   // fetch first row and see if a busy timeout occurs
 	{
@@ -380,12 +389,6 @@ static int sqlite3_odbx_result_finish( odbx_result_t* result )
 		result->generic = NULL;
 	}
 
-	if( aux->stmt != NULL && aux->length == 0 )
-	{
-		free( aux->stmt );
-		aux->stmt = NULL;
-	}
-
 	free( result );
 
 	return ODBX_ERR_SUCCESS;
@@ -410,6 +413,7 @@ static int sqlite3_odbx_row_fetch( odbx_result_t* result )
 			return ODBX_ROW_NEXT;
 		case SQLITE_DONE:
 		case SQLITE_OK:
+		case SQLITE_MISUSE:   // Return DONE if function called more often afterwards
 			return ODBX_ROW_DONE;
 	}
 
