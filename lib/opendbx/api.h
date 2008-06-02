@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2007 Norbert Sendetzky <norbert@linuxnetworks.de>
+ *  Copyright (C) 2004-2008 Norbert Sendetzky <norbert@linuxnetworks.de>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
