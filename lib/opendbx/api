@@ -1,0 +1,517 @@
+/*
+ *  OpenDBX - A simple but extensible database abstraction layer
+ *  Copyright (C) 2004-2008 Norbert Sendetzky <norbert@linuxnetworks.de>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public
+ *  License along with this library; if not, write to the Free
+ *  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307 USA.
+ */
+
+
+
+#include <opendbx/api.h>
+#include <stdexcept>
+#include <vector>
+#include <string>
+
+
+
+#ifndef ODBX_API_HPP
+#define ODBX_API_HPP
+
+
+
+extern "C++" {
+
+
+
+namespace OpenDBX
+{
+	class Lob_Impl;
+	class Result_Impl;
+	class Stmt_Impl;
+	class Conn_Impl;
+}
+
+
+
+namespace OpenDBX
+{
+	using std::string;
+
+
+	class Lob;
+	class Result;
+	class Stmt;
+	class Conn;
+
+
+
+	/**
+	 * Exception thrown by OpenDBX objects
+	 */
+	class Exception : public std::runtime_error
+	{
+	protected:
+
+		/**
+		 * Error code (negative)
+		 */
+		int m_error;
+
+		/**
+		 * Severity of error (negative: fatal, zero: success, positive: warning)
+		 */
+		int m_type;
+
+	public:
+
+		/**
+		 * Initializes exception object
+		 *
+		 * @param string Error message
+		 * @param int Severity of error (negative: fatal, zero: success, positive: warning)
+		 * @return Exception
+		 */
+		Exception( string msg, int err, int type );
+
+		/**
+		 * Returns code related to the error
+		 *
+		 * @return Error code
+		 */
+		int getCode();
+
+		/**
+		 * Returns severity indicator
+		 *
+		 * @return Severity of error (negative: fatal, zero: success, positive: warning)
+		 */
+		int getType();
+	};
+
+
+
+	/**
+	 * Handling large objects if supported by the database
+	 */
+	class Lob
+	{
+	protected:
+
+		/**
+		 * Private implementation of object
+		 */
+		Lob_Impl* m_impl;
+
+		/**
+		 * Reference counter of copies
+		 */
+		int* m_ref;
+
+		/**
+		 * Default constructor
+		 *
+		 * @return Lob instance
+		 */
+		Lob();
+
+		/**
+		 * Create large object instance
+		 *
+		 * @param Lob_Impl* Pointer to private implementation
+		 * @return Lob instance
+		 */
+		Lob( Lob_Impl* impl );
+
+		friend class Result;
+
+	public:
+
+		/**
+		 * Destroy large object instance if no other references exist
+		 */
+		~Lob();
+
+		/**
+		 * Assign large object instance to another one
+		 *
+		 * @param const Lob& Large object instance
+		 * @return Large object reference of this instance
+		 */
+		Lob& operator=( const Lob& ref );
+
+		/**
+		 * Reads content from large object into the buffer
+		 *
+		 * @param void* Pointer to a byte array where the data should be written to
+		 * @param size_t Length of the given buffer in bytes
+		 * @return Number of bytes written into the buffer
+		 */
+		ssize_t read( void* buffer, size_t buflen );
+
+		/**
+		 * Writes data from the buffer into the large object
+		 *
+		 * @param void* Pointer to a byte array where the content is stored
+		 * @param size_t Length of the data in the buffer in bytes
+		 * @return Number of bytes written into the large object
+		 */
+		ssize_t write( void* buffer, size_t buflen );
+	};
+
+
+
+	class Result
+	{
+	protected:
+
+		/**
+		 * Private implementation of object
+		 */
+		Result_Impl* m_impl;
+
+		/**
+		 * Reference counter of copies
+		 */
+		int* m_ref;
+
+		/**
+		 * Default constructor
+		 *
+		 * @return Result instance
+		 */
+		Result();
+
+		/**
+		 * Create Result instance
+		 *
+		 * @param Result_Impl* Pointer to private implementation
+		 * @return Result instance
+		 */
+		Result( Result_Impl* impl );
+
+		friend class Stmt;
+
+	public:
+
+		/**
+		 * Destroy Result instance if no other references exist
+		 */
+		~Result();
+
+		/**
+		 * Assign Result instance to another one
+		 *
+		 * @param const Result& Result instance
+		 * @return Result reference of this instance
+		 */
+		Result& operator=( const Result& ref );
+
+		/**
+		 * Fetch one result set from the database server
+		 *
+		 * @param struct timeval* Pointer to a timeval struct specifying how long to wait for a result set from the database server
+		 * @param unsigned long Number of rows to fetch at once from the database server (zero means all rows at once)
+		 * @return Status or error code
+		 */
+		odbxres getResult( struct timeval* timeout = NULL, unsigned long chunk = 0 );
+
+		/**
+		 * Makes data of next row available
+		 *
+		 * @return Status or error code
+		 */
+		odbxrow getRow();
+
+		/**
+		 * Returns the number of rows affected by DELETE, INSERT of UPDATE statements
+		 *
+		 * @return Number of rows touched
+		 */
+		uint64_t rowsAffected();
+
+		/**
+		 * Returns the number of columns available in this result set
+		 *
+		 * @return Number of columns
+		 */
+		unsigned long columnCount();
+
+		/**
+		 * Maps the column name to the column number required by other methods
+		 *
+		 * @return Position of column in result set
+		 */
+		unsigned long columnPos( const string& name );
+
+		/**
+		 * Returns the name of the column in the current result set
+		 *
+		 * @param unsigned long Position of column in result set
+		 * @return Column name
+		 */
+		string columnName( unsigned long pos );
+
+		/**
+		 * Returns the type of the column in the current result set
+		 *
+		 * @param unsigned long Position of column in result set
+		 * @return Column type
+		 */
+		odbxtype columnType( unsigned long pos );
+
+		/**
+		 * Returns the size of the content in the current row at the specified postion
+		 *
+		 * @param unsigned long Position of column in result set
+		 * @return Size of the data in bytes
+		 */
+		unsigned long fieldLength( unsigned long pos );
+
+		/**
+		 * Returns a pointer to the content in the current row at the specified postion
+		 *
+		 * @param unsigned long Position of column in result set
+		 * @return Pointer to the data
+		 */
+		const char* fieldValue( unsigned long pos );
+
+		/**
+		 * Create a large object instance if supported by the database
+		 *
+		 * @param const char* Pointer to the content of a field returned by fieldValue()
+		 * @return Large object instance
+		 */
+		Lob getLob( const char* value );
+	};
+
+
+
+	class Stmt
+	{
+	protected:
+
+		/**
+		 * Private implementation of object
+		 */
+		Stmt_Impl* m_impl;
+
+		/**
+		 * Reference counter of copies
+		 */
+		int* m_ref;
+
+		/**
+		 * Default constructor
+		 *
+		 * @return Statement instance
+		 */
+		Stmt();
+
+		/**
+		 * Create statement instance
+		 *
+		 * @param Stmt_Impl* Pointer to private implementation
+		 * @return Statement instance
+		 */
+		Stmt( Stmt_Impl* impl );
+
+		friend class Conn;
+
+	public:
+
+		/**
+		 * Statement objects which can be created
+		 */
+		enum Type { Simple };
+
+		/**
+		 * Destroy statement instance if no other references exist
+		 */
+		~Stmt();
+
+		/**
+		 * Assign statement instance to another one
+		 *
+		 * @param const Stmt& Stmt instance
+		 * @return Statement reference of this instance
+		 */
+		Stmt& operator=( const Stmt& ref );
+
+		/**
+		 * Execute statement and return Result instance
+		 *
+		 * @return Result instance
+		 */
+		Result execute();
+	};
+
+
+
+	class Conn
+	{
+	protected:
+
+		/**
+		 * Private implementation of object
+		 */
+		Conn_Impl* m_impl;
+
+		/**
+		 * Reference counter of copies
+		 */
+		int* m_ref;
+
+	public:
+
+		/**
+		 * Default constructor
+		 *
+		 * @return Connection instance
+		 */
+		Conn();
+
+		/**
+		 * Build connection object using C string parameters
+		 *
+		 * @param const char* Name of the backend module to use
+		 * @param const char* Name or IP address of the database server
+		 * @param const char* Name or number of the port used by the database server
+		 * @return Connection instance
+		 */
+		Conn( const char* backend, const char* host = "", const char* port = "" );
+
+		/**
+		 * Build connection object using C++ string parameters
+		 *
+		 * @param string Name of the backend module to use
+		 * @param string Name or IP address of the database server
+		 * @param string Name or number of the port used by the database server
+		 * @return Connection instance
+		 */
+		Conn( const string& backend, const string& host = "", const string& port = "" );
+
+		/**
+		 * Destroy connection instance if no other references exist
+		 */
+		~Conn();
+
+		/**
+		 * Assign connection instance to another one
+		 *
+		 * @param const Conn& Connection instance
+		 * @return Connection reference of this instance
+		 */
+		Conn& operator=( const Conn& ref );
+
+		/**
+		 * Log into database server and select database using C string parameters
+		 *
+		 * @param const char* Name of the database managed by the database server
+		 * @param const char* Name of the user account known by the database server
+		 * @param const char* Necessary credential which belongs to the user account
+		 * @param odbxbind Method used for authentication
+		 */
+		void bind( const char* database, const char* who = "", const char* cred = "", odbxbind method = ODBX_BIND_SIMPLE );
+
+		/**
+		 * Log into database server and select database using C++ string parameters
+		 *
+		 * @param const char* Name of the database managed by the database server
+		 * @param const char* Name of the user account known by the database server
+		 * @param const char* Necessary credential which belongs to the user account
+		 * @param odbxbind Method used for authentication
+		 */
+		void bind( const string& database, const string& who = "", const string& cred = "", odbxbind method = ODBX_BIND_SIMPLE );
+
+		/**
+		 * Close connection to the database server
+		 */
+		void unbind();
+
+		/**
+		 * Test if the database driver module does understand certain extensions
+		 *
+		 * @param odbxcap Constant of the capability
+		 * @return True if supported, false if not
+		 */
+		bool getCapability( odbxcap cap );
+
+		/**
+		 * Get the value of certain options provided by the database driver module
+		 *
+		 * @param odbxcap Constant of the option
+		 * @param void* Pointer to memory where the result is stored
+		 */
+		void getOption( odbxopt option, void* value );
+
+		/**
+		 * Set certain options provided by the database driver module
+		 *
+		 * @param odbxcap Constant of the option
+		 * @param void* Pointer to memory which contains the new value
+		 */
+		void setOption( odbxopt option, void* value );
+
+		/**
+		 * Escape potentially dangerous characters in user input using a C++ string parameter
+		 *
+		 * @param const string& Input string with which may contain dangerous characters
+		 * @param string& String instance where the escaped characters should be written to
+		 * @return Reference to the second parameter containing the escaped characters
+		 */
+		string& escape( const string& from, string& to );
+
+		/**
+		 * Escape potentially dangerous characters in user input using a C style buffer
+		 *
+		 * @param const char* Input string with which may contain dangerous characters
+		 * @param unsigned long Size of the input string to escape in bytes
+		 * @param string& String instance where the escaped characters should be written to
+		 * @return Reference to the second parameter containing the escaped characters
+		 */
+		string& escape( const char* from, unsigned long fromlen, string& to );
+
+		/**
+		 * Create statement object from SQL text string using a C style buffer
+		 *
+		 * @param const char* SQL text string containing a valid statement understood by the database server
+		 * @param unsigned long Size of the SQL text string in bytes
+		 * @param Stmt::Type Type of statements object that should be created
+		 * @return Statement instance
+		 */
+		Stmt create( const char* sql, unsigned long size = 0, Stmt::Type type = Stmt::Simple );
+
+		/**
+		 * Create statement object from SQL text string using a C++ string
+		 *
+		 * @param string SQL text string containing a valid statement understood by the database server
+		 * @param Stmt::Type Type of statements object that should be created
+		 * @return Statement instance
+		 */
+		Stmt create( const string& sql, Stmt::Type type = Stmt::Simple );
+	};
+
+
+
+}   // namespace OpenDBX
+
+
+
+}   // extern C++
+
+
+
+#endif
