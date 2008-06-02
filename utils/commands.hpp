@@ -1,3 +1,4 @@
+#include "odbx-sql.hpp"
 #include <opendbx/api>
 #include <string>
 #include <map>
@@ -17,19 +18,20 @@ class Commands
 {
 protected:
 
-	typedef void (Commands::*cmdfunc)( const string& );
+	typedef void (Commands::*cmdfunc)( const string&, struct format* fparam );
 
 	OpenDBX::Conn m_conn;
 	std::map<string, cmdfunc> m_cmds;
 
-	void help( const string& str );
-	void quit( const string& str );
+	void header( const string& str, struct format* fparam );
+	void help( const string& str, struct format* fparam );
+	void quit( const string& str, struct format* fparam );
 
 public:
 
 	Commands( OpenDBX::Conn& conn );
 
-	void exec( const string& cmd );
+	void exec( const string& cmd, struct format* fparam );
 };
 
 
