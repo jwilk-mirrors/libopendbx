@@ -21,7 +21,7 @@ extern struct odbx_lo_ops firebird_odbx_lo_ops;
 
 
 
-static struct odbx_ops firebird_odbx_ops = {
+struct odbx_ops firebird_odbx_ops = {
 	.basic = &firebird_odbx_basic_ops,
 	.lo = &firebird_odbx_lo_ops,
 };

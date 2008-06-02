@@ -244,7 +244,7 @@ static int firebird_odbx_get_option( odbx_t* handle, unsigned int option, void* 
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = 10200;
 			break;
 		case ODBX_OPT_THREAD_SAFE:
 			*(int*) value = ODBX_ENABLE;
@@ -292,21 +292,18 @@ static const char* firebird_odbx_error( odbx_t* handle )
 	struct fbconn* fbc = (struct fbconn*) handle->aux;
 	long* perr = fbc->status;
 
-	if( fbc == NULL )
-	{
-		return NULL;
-	}
 
-	isc_interprete( msg, &perr );
+	if( fbc == NULL ) { return NULL; }
 
-	do
+	if( isc_interprete( msg, &perr ) )
 	{
-		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, ", %s", msg ) ) < 0 )
+		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s", msg ) ) < 0 ) { return NULL; }
+
+		while( isc_interprete( msg, &perr ) )
 		{
-			return NULL;
+			if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, ", %s", msg ) ) < 0 ) { return NULL; }
 		}
 	}
-	while( isc_interprete( msg, &perr ) );
 
 	return (const char*) fbc->errmsg;
 }
@@ -512,16 +509,15 @@ static int firebird_odbx_row_fetch( odbx_result_t* result )
 {
 	struct fbconn* fbc = (struct fbconn*) result->handle->aux;
 
-	if( fbc == NULL )
-	{
-		return -ODBX_ERR_PARAM;
-	}
+
+	if( fbc == NULL ) { return -ODBX_ERR_PARAM; }
 
 	switch( isc_dsql_fetch( fbc->status, &(fbc->stmt), SQL_DIALECT_V6, (XSQLDA*) result->generic ) )
 	{
 		case 0:
 			break;
 		case 100:
+		case isc_req_sync:   // Return DONE if function is called after no more rows are available
 			return ODBX_ROW_DONE;
 		default:
 			return -ODBX_ERR_BACKEND;
