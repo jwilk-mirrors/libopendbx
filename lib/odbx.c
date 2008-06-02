@@ -13,6 +13,7 @@
 #include "odbxlib.h"
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 
@@ -308,6 +309,7 @@ int odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* 
 int odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
 	if( query == NULL ) { return ODBX_ERR_PARAM; }
+	if( length == 0 ) { length = (unsigned long) strlen( query ); }
 
 	if( handle != NULL && handle->ops != NULL && handle->ops->basic != NULL && handle->ops->basic->query != NULL )
 	{
