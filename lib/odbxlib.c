@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2007 Norbert Sendetzky and others
+ *  Copyright (C) 2004-2008 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -38,7 +38,7 @@ extern struct odbx_ops pgsql_odbx_ops;
 #if defined( HAVE_LIBSQLITE )
 extern struct odbx_ops sqlite_odbx_ops;
 #endif
-#if defined( HAVE_LIBDQLITE3 )
+#if defined( HAVE_LIBSQLITE3 )
 extern struct odbx_ops sqlite3_odbx_ops;
 #endif
 #if defined( HAVE_LIBCT ) || defined( HAVE_LIBSYBCT_R ) || defined( HAVE_LIBSYBCT )
@@ -60,7 +60,7 @@ struct odbx_backend_syms odbx_lib_ops[] = {
 #if defined( HAVE_LIBPQ )
 	{ "pgsql", &pgsql_odbx_ops },
 #endif
-#if defined( HAVE_LIBDQLITE3 )
+#if defined( HAVE_LIBSQLITE3 )
 	{ "sqlite3", &sqlite3_odbx_ops },
 #endif
 #if defined( HAVE_LIBFBCLIENT )
@@ -203,11 +203,15 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 	}
 	lib[len] = '\0';
 
-	if( ( handle->backend = (void*) LoadLibrary( lib ) ) == NULL )
+	if( ( handle->backend = (void*) LoadLibrary( backend ) ) == NULL )
 	{
-		if( ( handle->backend = (void*) LoadLibrary( lib + plen ) ) == NULL )
+		if( ( handle->backend = (void*) LoadLibrary( lib ) ) == NULL )
 		{
-			return -ODBX_ERR_NOTEXIST;
+			if( ( handle->backend = (void*) LoadLibrary( lib + plen ) ) == NULL )
+			{
+				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen, lib );
+				return -ODBX_ERR_NOTEXIST;
+			}
 		}
 	}
 
