@@ -192,7 +192,7 @@ static int sqlite_odbx_get_option( odbx_t* handle, unsigned int option, void* va
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = 10200;
 			break;
 		case ODBX_OPT_THREAD_SAFE:   /* FIXME: How to find out if THREADSAFE was set while sqlite compilation */
 		case ODBX_OPT_TLS:

@@ -223,7 +223,7 @@ static int mysql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = 10200;
 			break;
 		case ODBX_OPT_THREAD_SAFE:
 			*((int*) value) = (int) mysql_thread_safe();
