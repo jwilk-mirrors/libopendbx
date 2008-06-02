@@ -272,7 +272,7 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 	while( qptr->str != NULL )
 	{
 		if( verbose ) { fprintf( stdout, "  odbx_query(%d): '%s'\n", qptr->num, qptr->str ); }
-		if( ( err = odbx_query( handle[qptr->num], qptr->str, strlen( qptr->str ) ) ) < 0 )
+		if( ( err = odbx_query( handle[qptr->num], qptr->str, 0 ) ) < 0 )
 		{
 			fprintf( stderr, "Error in odbx_query(): %s\n", odbx_error( handle[qptr->num], err ) );
 			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
@@ -355,10 +355,11 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 				}
 			}
 
-			// Test case:  Calling odbx_row_fetch() more often must not result in fatal error
+			// Test case:  Calling odbx_row_fetch() more often must return ODBX_ROW_DONE
 			if( verbose ) { fprintf( stdout, "  odbx_row_fetch(n+1)\n" ); }
 			if( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
 			{
+				fprintf( stderr, "Error in odbx_row_fetch(): %s\n", odbx_error( handle[qptr->num], err ) );
 				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 			}
 
@@ -370,10 +371,11 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 			}
 		}
 
-		// Test case:  Calling odbx_result() more often must not result in fatal error
+		// Test case:  Calling odbx_result() more often must return ODBX_RES_DONE
 		if( verbose ) { fprintf( stdout, "  odbx_result(n+1)\n" ); }
 		if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != ODBX_RES_DONE )
 		{
+			fprintf( stderr, "Error in odbx_result(): %s\n", odbx_error( handle[qptr->num], err ) );
 			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 		}
 

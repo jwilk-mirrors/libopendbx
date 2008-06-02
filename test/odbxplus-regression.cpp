@@ -207,7 +207,7 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 		{
 			if( verbose ) { cout << "  Stmt::execute(" << qptr->num << "): '" << qptr->str << "'" << endl; }
 
-			Stmt stmt = conn[qptr->num].create( Stmt::Simple, string( qptr->str ) );
+			Stmt stmt = conn[qptr->num].create( string( qptr->str ) );
 			Result result = stmt.execute();
 
 			tv.tv_sec = 3;
@@ -265,29 +265,21 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 				// Test case:  Calling columnPos() with non-existing column name
 				try {
 					result.columnPos( "non-existing" );
-					throw std::runtime_error( string( "No exception thrown using columnPos() on  non-exising column name" ) );
+					throw std::runtime_error( string( "No exception thrown using columnPos() for non-exising column name" ) );
 				} catch( OpenDBX::Exception& oe ) {
-					if( oe.getSeverity() < 0 ) { throw oe; }
+					if( oe.getType() < 0 ) { throw oe; }
 				}
 
-				// Test case:  Calling getRow() more often must not result in fatal error
-				try {
-					result.getRow();
-				} catch( OpenDBX::Exception& oe ) {
-					if( oe.getSeverity() < 0 ) { throw oe; }
-				}
+				// Test case:  Calling getRow() more often must not result in error
+				result.getRow();
 			}
 
-			// Test case:  Calling getResult() more often must not result in fatal error
-			try {
-				result.getResult( NULL, 0 );
-			} catch( OpenDBX::Exception& oe ) {
-				if( oe.getSeverity() < 0 ) { throw oe; }
-			}
+			// Test case:  Calling getResult() more often must not result in error
+			result.getResult();
 		}
 		catch( OpenDBX::Exception& oe )
 		{
-			if( oe.getSeverity() < 0 ) { throw oe; }
+			if( oe.getType() < 0 ) { throw oe; }
 			cerr << "Error in exec(): " << oe.what() << endl;
 		}
 
