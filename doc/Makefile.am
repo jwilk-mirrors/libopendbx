@@ -7,7 +7,7 @@ odbx_bind.3: opendbx.en.xml
 	docbook2x-man --solinks opendbx.en.xml
 
 clean:
-	for file in `ls odbx_*.3`; do rm -f $file; done
+	for file in `ls odbx_*.3`; do rm -f $$file; done
 
 man_MANS = \
 	odbx_bind.3 \

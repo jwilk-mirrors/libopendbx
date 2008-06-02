@@ -445,7 +445,7 @@ uninstall-man: uninstall-man3
 @ENABLEMAN_TRUE@	docbook2x-man --solinks opendbx.en.xml
 
 @ENABLEMAN_TRUE@clean:
-@ENABLEMAN_TRUE@	for file in `ls odbx_*.3`; do rm -f $file; done
+@ENABLEMAN_TRUE@	for file in `ls odbx_*.3`; do rm -f $$file; done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
