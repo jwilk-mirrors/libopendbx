@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-05-03 12:02+0200\n"
+"POT-Creation-Date: 2008-05-30 21:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,63 +16,63 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/odbx.c:20
+#: lib/odbx.c:21
 msgid "Success"
 msgstr ""
 
-#: lib/odbx.c:21
+#: lib/odbx.c:22
 msgid "Backend error occured"
 msgstr ""
 
-#: lib/odbx.c:22
+#: lib/odbx.c:23
 msgid "Invalid capability"
 msgstr ""
 
-#: lib/odbx.c:23 backends/sqlite3/sqlite3_basic.c:54
+#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:54
 msgid "Invalid parameter"
 msgstr ""
 
-#: lib/odbx.c:24
+#: lib/odbx.c:25
 msgid "Out of memory"
 msgstr ""
 
-#: lib/odbx.c:25
+#: lib/odbx.c:26
 msgid "Incorrect size of allocated memory"
 msgstr ""
 
-#: lib/odbx.c:26
+#: lib/odbx.c:27
 msgid "Loading backend library failed"
 msgstr ""
 
-#: lib/odbx.c:27
+#: lib/odbx.c:28
 msgid "Operation is not available"
 msgstr ""
 
-#: lib/odbx.c:28
+#: lib/odbx.c:29
 msgid "Invalid option"
 msgstr ""
 
-#: lib/odbx.c:29
+#: lib/odbx.c:30
 msgid "Option is read only"
 msgstr ""
 
-#: lib/odbx.c:30
+#: lib/odbx.c:31
 msgid "Setting option failed"
 msgstr ""
 
-#: lib/odbx.c:31
+#: lib/odbx.c:32
 msgid "Waiting for result failed"
 msgstr ""
 
-#: lib/odbx.c:32
+#: lib/odbx.c:33
 msgid "Not supported"
 msgstr ""
 
-#: lib/odbx.c:33 backends/oracle/oracle_basic.c:53
+#: lib/odbx.c:34 backends/oracle/oracle_basic.c:53
 msgid "Invalid handle"
 msgstr ""
 
-#: lib/odbxlib.c:149
+#: lib/odbxlib.c:149 lib/odbxlib.c:212
 #, c-format
 msgid "Loading backend library %s, %s or %s failed"
 msgstr ""
