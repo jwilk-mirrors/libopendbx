@@ -24,6 +24,7 @@ AC_SUBST([LIBVERSION])
 
 
 # Checks for programs.
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_CPP
@@ -57,7 +58,7 @@ AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_STRFTIME
 AC_FUNC_SELECT_ARGTYPES
-AC_CHECK_FUNCS([getopt memmove memset select setenv strdup strncasecmp strtol strtoul strtoull])
+AC_CHECK_FUNCS([getopt memmove memset select setenv snprintf strdup strncasecmp strtol strtoul strtoull])
 
 
 # Checks for additional libraries
