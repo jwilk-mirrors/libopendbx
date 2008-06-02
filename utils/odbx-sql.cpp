@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "commands.hpp"
 #include "completion.hpp"
+#include "odbx-sql.hpp"
 #include <opendbx/api>
 #include <stdexcept>
 #include <iostream>
@@ -31,13 +32,6 @@ using std::string;
 using std::cout;
 using std::cerr;
 using std::endl;
-
-
-struct format
-{
-	const char* delimiter;
-	const char* separator;
-};
 
 
 // hack to access completion
@@ -100,6 +94,17 @@ void output( Result& result, struct format* fparam )
 
 		fields = result.columnCount();
 
+		if( fparam->header == true && fields > 0 )
+		{
+			cout << fparam->delimiter << result.columnName( 0 ) << fparam->delimiter;
+
+			for( unsigned long i = 1; i < fields; i++ )
+			{
+				cout << fparam->separator << fparam->delimiter << result.columnName( i ) << fparam->delimiter;
+			}
+			cout << endl << "---" << endl;
+		}
+
 		while( result.getRow() != ODBX_ROW_DONE )
 		{
 			if( fields > 0 )
@@ -142,7 +147,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 	{
 		len = strlen( line );
 		if( len == 0 ) { free( line ); continue;}
-		if( line[0] == '.' ) { cmd.exec( string( line ) ); continue; }
+		if( line[0] == '.' ) { cmd.exec( string( line ), fparam ); continue; }
 
 		sql = string( line, len );
 		free( line );
@@ -164,7 +169,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 
 		try
 		{
-			Stmt stmt = conn.create( Stmt::Simple, sql );
+			Stmt stmt = conn.create( sql );
 			Result result = stmt.execute();
 
 			output( result, fparam );
@@ -172,7 +177,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		catch( OpenDBX::Exception& oe )
 		{
 			cerr << gettext( "Warning: " ) << oe.what() << endl;
-			if( oe.getSeverity() < 0 ) { return; }
+			if( oe.getType() < 0 ) { return; }
 		}
 	}
 }
@@ -196,6 +201,7 @@ int main( int argc, char* argv[] )
 
 		fparam.delimiter = "";
 		fparam.separator = "\t";
+		fparam.header = false;
 
 		cfg_opt_t opts[] =
 		{
@@ -223,6 +229,7 @@ int main( int argc, char* argv[] )
 					return 0;
 				case 'i':
 					iactive = true;
+					fparam.header = true;
 					break;
 				case 'k':
 					keywordfile = optarg;
@@ -249,7 +256,6 @@ int main( int argc, char* argv[] )
 		conn.bind( cfg.getStr( "database" ), cfg.getStr( "username" ), cfg.getStr( "password" ), ODBX_BIND_SIMPLE );
 
 		loopstmts( conn, &fparam, iactive );
-		conn.unbind();
 
 		delete g_comp;
 	}
