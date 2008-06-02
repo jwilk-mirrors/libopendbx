@@ -61,9 +61,9 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 
-	dh_installman -p${package} ${tmpdir}/usr/share/man/man?/*
-	dh_installchangelogs -p${package} ChangeLog
 	dh_installdocs -p${package}
+	dh_installchangelogs -p${package} ChangeLog
+	dh_installman -p${package}-dev ${tmpdir}/usr/share/man/man3/*
 
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbx.so.*" "usr/lib/"
 	dh_install -p${package} "${tmpdir}/usr/lib/libopendbxplus.so.*" "usr/lib/"
@@ -80,6 +80,7 @@ binary-arch: build install
 		dh_install  -p${package}-$${be} "${tmpdir}/usr/lib/opendbx/lib$${be}backend.so*" "usr/lib/opendbx/" ; \
 		dh_link -p${package}-$${be} "usr/share/doc/${package}" "usr/share/doc/${package}-$${be}" ; \
 	done
+	dh_installman -popendbx-utils ${tmpdir}/usr/share/man/man1/*
 	dh_install -popendbx-utils "${tmpdir}/usr/bin/odbx-sql" "usr/bin/"
 	dh_install -popendbx-utils --autodest "${tmpdir}/usr/share/locale/*/*/opendbx-utils.mo"
 	dh_install -popendbx-utils "${tmpdir}/usr/share/opendbx/keywords" "usr/share/opendbx/"
