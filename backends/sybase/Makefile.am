@@ -6,7 +6,7 @@ libsybasebackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 else
 pkglib_LTLIBRARIES = libsybasebackend.la
 libsybasebackend_la_CPPFLAGS = $(AM_CPPFLAGS)
-libsybasebackend_la_LDFLAGS = -module -version-info @APIVERSION@
+libsybasebackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif
 
 libsybasebackend_la_SOURCES = sybasebackend.h sybasebackend.c sybase_basic.h sybase_basic.c

@@ -6,7 +6,7 @@ libpgsqlbackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 else
 pkglib_LTLIBRARIES = libpgsqlbackend.la
 libpgsqlbackend_la_CPPFLAGS = $(AM_CPPFLAGS)
-libpgsqlbackend_la_LDFLAGS = -module -version-info @APIVERSION@
+libpgsqlbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif
 
 libpgsqlbackend_la_SOURCES = pgsqlbackend.h pgsqlbackend.c pgsql_basic.h pgsql_basic.c

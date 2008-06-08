@@ -6,7 +6,7 @@ libsqlitebackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 else
 pkglib_LTLIBRARIES = libsqlitebackend.la
 libsqlitebackend_la_CPPFLAGS = $(AM_CPPFLAGS)
-libsqlitebackend_la_LDFLAGS = -module -version-info @APIVERSION@
+libsqlitebackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif
 
 libsqlitebackend_la_SOURCES = sqlitebackend.h sqlitebackend.c sqlite_basic.h sqlite_basic.c

@@ -6,7 +6,7 @@ libfirebirdbackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 else
 pkglib_LTLIBRARIES = libfirebirdbackend.la
 libfirebirdbackend_la_CPPFLAGS = $(AM_CPPFLAGS)
-libfirebirdbackend_la_LDFLAGS = -module -version-info @APIVERSION@
+libfirebirdbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif
 
 libfirebirdbackend_la_SOURCES = firebirdbackend.h firebirdbackend.c firebird_basic.h firebird_basic.c firebird_lo.h firebird_lo.c

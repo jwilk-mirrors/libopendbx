@@ -35,10 +35,7 @@ build_triplet = @build@
 host_triplet = @host@
 @SINGLELIB_TRUE@am__append_1 = -DODBX_SINGLELIB
 @SINGLELIB_TRUE@am__append_2 = @backendlibs@
-@SINGLELIB_TRUE@am__append_3 = -DODBX_SINGLELIB
-@SINGLELIB_TRUE@am__append_4 = @backendlibs@
-@SINGLELIB_FALSE@am__append_5 = -DLIBPATH=\"$(pkglibdir)/\"
-@SINGLELIB_FALSE@am__append_6 = -DLIBPATH=\"$(pkglibdir)/\"
+@SINGLELIB_FALSE@am__append_3 = -DLIBPATH=\"$(pkglibdir)\" -DLIBPREFIX=\"@LIBPREFIX@\" -DLIBSUFFIX=\"@LIBSUFFIX@\"
 subdir = lib
 DIST_COMMON = $(include_HEADERS) $(nobase_include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -72,8 +69,7 @@ libopendbx_la_OBJECTS = $(am_libopendbx_la_OBJECTS)
 libopendbx_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libopendbx_la_LDFLAGS) $(LDFLAGS) -o $@
-libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) libopendbx.la \
-	$(am__DEPENDENCIES_1)
+libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) libopendbx.la
 am_libopendbxplus_la_OBJECTS = libopendbxplus_la-odbx.lo
 libopendbxplus_la_OBJECTS = $(am_libopendbxplus_la_OBJECTS)
 libopendbxplus_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -114,6 +110,7 @@ AMTAR = @AMTAR@
 APIPLUSVERSION = @APIPLUSVERSION@
 APIVERSION = @APIVERSION@
 AR = @AR@
+AS = @AS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -130,6 +127,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DLLTOOL = @DLLTOOL@
 DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
@@ -160,9 +158,11 @@ LIBOBJS = @LIBOBJS@
 LIBODBC = @LIBODBC@
 LIBORACLE = @LIBORACLE@
 LIBPGSQL = @LIBPGSQL@
+LIBPREFIX = @LIBPREFIX@
 LIBS = @LIBS@
 LIBSQLITE = @LIBSQLITE@
 LIBSQLITE3 = @LIBSQLITE3@
+LIBSUFFIX = @LIBSUFFIX@
 LIBSYBASE = @LIBSYBASE@
 LIBTOOL = @LIBTOOL@
 LIBVERSION = @LIBVERSION@
@@ -178,6 +178,7 @@ MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 NMEDIT = @NMEDIT@
+OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -257,14 +258,13 @@ nobase_include_HEADERS = opendbx/api.h opendbx/api
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
 libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ \
-	-DLOCALEDIR=\"$(localedir)\" $(am__append_1) $(am__append_5)
-libopendbx_la_LDFLAGS = -version-info @APIVERSION@
+	-DLOCALEDIR=\"$(localedir)\" $(am__append_1) $(am__append_3)
+libopendbx_la_LDFLAGS = -no-undefined -version-info @APIVERSION@
 libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
 libopendbxplus_la_SOURCES = odbx.cpp odbx_impl.hpp
-libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@ $(am__append_3) \
-	$(am__append_6)
-libopendbxplus_la_LDFLAGS = -version-info @APIPLUSVERSION@
-libopendbxplus_la_LIBADD = $(LTLIBINTL) libopendbx.la $(am__append_4)
+libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
+libopendbxplus_la_LDFLAGS = -no-undefined -version-info @APIPLUSVERSION@
+libopendbxplus_la_LIBADD = $(LTLIBINTL) libopendbx.la
 all: all-am
 
 .SUFFIXES:

@@ -23,8 +23,28 @@ LIBVERSION=`echo $VERSION. | sed -e 's/[[^0-9.]]//g; s/\./  /g; s/ \([[0-9]]\) /
 AC_SUBST([LIBVERSION])
 
 
-# Checks for programs.
+# Environment specific settings
+AC_SUBST([LIBPREFIX])
+AC_SUBST([LIBSUFFIX])
+LIBPREFIX="lib"
+LIBSUFFIX=".so"
+case "$host" in
+	*-*-cygwin*)
+		LIBPREFIX="cyg"
+		LIBSUFFIX="-1.dll"
+	;;
+	*-*-mingw* | *-*-pw32*)
+		AC_DEFINE([WIN32], 1, [Using Win32 platform])
+		LIBSUFFIX="-1.dll"
+	;;
+esac
+
+
+# Libtool settings
 AC_LIBTOOL_WIN32_DLL
+
+
+# Checks for programs.
 AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_CPP
@@ -48,7 +68,7 @@ AC_STRUCT_TM
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h])
 
 
 # Checks for library functions.
@@ -64,7 +84,7 @@ AC_CHECK_FUNCS([getopt memmove memset select setenv snprintf strdup strncasecmp 
 # Checks for additional libraries
 AC_SUBST([MAINLIBS])
 ORIGLIBS=${LIBS}; LIBS=""
-AC_SEARCH_LIBS([dlopen], [dl], [AC_DEFINE([HAVE_LIBDL], 1, [Have -ldl])], [AC_MSG_ERROR([dynamic linking (-ldl) library not found])])
+AC_SEARCH_LIBS([dlopen], [dl], [AC_DEFINE([HAVE_LIBDL], 1, [Have -ldl])])
 MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 

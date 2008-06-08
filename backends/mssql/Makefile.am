@@ -6,7 +6,7 @@ libmssqlbackend_la_CPPFLAGS = $(AM_CPPFLAGS) -DODBX_SINGLELIB
 else
 pkglib_LTLIBRARIES = libmssqlbackend.la
 libmssqlbackend_la_CPPFLAGS = $(AM_CPPFLAGS)
-libmssqlbackend_la_LDFLAGS = -module -version-info @APIVERSION@
+libmssqlbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif
 
 libmssqlbackend_la_SOURCES = mssqlbackend.h mssqlbackend.c mssql_basic.h mssql_basic.c
