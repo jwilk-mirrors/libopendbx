@@ -173,6 +173,8 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 			Result result = stmt.execute();
 
 			output( result, fparam );
+
+			result.finish();
 		}
 		catch( OpenDBX::Exception& oe )
 		{
@@ -257,6 +259,7 @@ int main( int argc, char* argv[] )
 
 		loopstmts( conn, &fparam, iactive );
 
+		conn.finish();
 		delete g_comp;
 	}
 	catch( OpenDBX::Exception& oe )
