@@ -130,23 +130,22 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 
 
 	len = plen = snprintf( lib, ODBX_PATHSIZE, LIBPATH );
-	len += snprintf( lib + len, ODBX_PATHSIZE, "lib" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "/" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBPREFIX );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, backend );
-	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend.so" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBSUFFIX );
 
-	if( len > ODBX_PATHSIZE )
-	{
-		return -ODBX_ERR_SIZE;
-	}
+	if( len > ODBX_PATHSIZE ) { return -ODBX_ERR_SIZE; }
 	lib[len] = '\0';
 
 	if( ( handle->backend = dlopen( backend, RTLD_LAZY ) ) == NULL )
 	{
-		if( ( handle->backend = dlopen( lib + plen, RTLD_LAZY ) ) == NULL )
+		if( ( handle->backend = dlopen( lib + plen + 1, RTLD_LAZY ) ) == NULL )
 		{
 			if( ( handle->backend = dlopen( lib, RTLD_LAZY ) ) == NULL )
 			{
-				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen, lib );
+				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen + 1, lib );
 				fprintf( stderr, "\n%s\n", dlerror() );
 				return -ODBX_ERR_NOTEXIST;
 			}
@@ -176,7 +175,7 @@ int _odbx_lib_close( struct odbx_t* handle )
 
 
 
-#elif defined( WIN32 ) && defined ( DLL_EXPORT )
+#elif defined( WIN32 )
 
 
 #ifdef HAVE_WINDOWS_H
@@ -187,40 +186,44 @@ int _odbx_lib_close( struct odbx_t* handle )
 
 int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 {
-	size_t len, plen;
+	typedef void (WINAPI*regfunc)(struct odbx_ops**);
+
+	regfunc odbxreg;
 	char lib[ODBX_PATHSIZE+1];
-	void (*odbxreg)(struct odbx_ops**);
+	size_t len, plen;
 
 
-	len = plen = snprintf( lib, ODBX_PATHSIZE, LIBPATH );
-	len += snprintf( lib + len, ODBX_PATHSIZE, "lib" );
+	// SetDllDirectory( LIBPATH )
+
+	len = plen = snprintf( lib + len, ODBX_PATHSIZE, PACKAGE );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "\\" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBPREFIX );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, backend );
-	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend.dll" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend" );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBSUFFIX );
 
-	if( len > ODBX_PATHSIZE )
-	{
-		return -ODBX_ERR_SIZE;
-	}
+	if( len > ODBX_PATHSIZE ) { return -ODBX_ERR_SIZE; }
 	lib[len] = '\0';
 
 	if( ( handle->backend = (void*) LoadLibrary( backend ) ) == NULL )
 	{
-		if( ( handle->backend = (void*) LoadLibrary( lib ) ) == NULL )
+		if( ( handle->backend = (void*) LoadLibrary( lib + plen + 1 ) ) == NULL )
 		{
-			if( ( handle->backend = (void*) LoadLibrary( lib + plen ) ) == NULL )
+			if( ( handle->backend = (void*) LoadLibrary( lib ) ) == NULL )
 			{
-				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen, lib );
+				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen + 1, lib );
+				// DWord err = GetLastError()
 				return -ODBX_ERR_NOTEXIST;
 			}
 		}
 	}
 
-	if( ( *(void **) (&odbxreg) = GetProcAddress( (HMODULE) handle->backend, "odbxdrv_register" ) ) == NULL )
+	if( ( odbxreg = (regfunc) GetProcAddress( (HMODULE) handle->backend, "odbxdrv_register" ) ) == NULL )
 	{
 		return -ODBX_ERR_NOOP;
 	}
 
-	(*odbxreg)( &(handle->ops) );
+	odbxreg( &(handle->ops) );
 	return ODBX_ERR_SUCCESS;
 }
 
