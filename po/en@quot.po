@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opendbx 1.3.10\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-05-30 21:11+0200\n"
-"PO-Revision-Date: 2008-05-30 21:11+0200\n"
+"POT-Creation-Date: 2008-06-08 13:52+0200\n"
+"PO-Revision-Date: 2008-06-08 13:52+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -50,7 +50,7 @@ msgstr "Backend error occured"
 msgid "Invalid capability"
 msgstr "Invalid capability"
 
-#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:54
+#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:53
 msgid "Invalid parameter"
 msgstr "Invalid parameter"
 
@@ -94,7 +94,7 @@ msgstr "Not supported"
 msgid "Invalid handle"
 msgstr "Invalid handle"
 
-#: lib/odbxlib.c:149 lib/odbxlib.c:212
+#: lib/odbxlib.c:148 lib/odbxlib.c:214
 #, c-format
 msgid "Loading backend library %s, %s or %s failed"
 msgstr "Loading backend library %s, %s or %s failed"
@@ -103,10 +103,10 @@ msgstr "Loading backend library %s, %s or %s failed"
 msgid "Connecting to server failed"
 msgstr "Connecting to server failed"
 
-#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:55
+#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:54
 msgid "Opening database failed"
 msgstr "Opening database failed"
 
-#: backends/sqlite3/sqlite3_basic.c:53
+#: backends/sqlite3/sqlite3_basic.c:52
 msgid "Unknown error"
 msgstr "Unknown error"

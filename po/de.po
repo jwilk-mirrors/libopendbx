@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenDBX 1.3.0\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-05-30 21:11+0200\n"
+"POT-Creation-Date: 2008-06-08 13:52+0200\n"
 "PO-Revision-Date: 2007-02-18 00:00+0100\n"
 "Last-Translator: Norbert Sendetzky <norbert@linuxnetworks.de>\n"
 "Language-Team: de <de@li.org>\n"
@@ -27,7 +27,7 @@ msgstr "Es ist ein Fehler in der Datenbankbibliothek aufgetreten"
 msgid "Invalid capability"
 msgstr "Fähigkeit im Treiber nicht vorhanden"
 
-#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:54
+#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:53
 msgid "Invalid parameter"
 msgstr "Ungültiges Argument übergeben"
 
@@ -71,7 +71,7 @@ msgstr "Nicht unterstützt"
 msgid "Invalid handle"
 msgstr "Ungültige Datenbankreferenz übergeben"
 
-#: lib/odbxlib.c:149 lib/odbxlib.c:212
+#: lib/odbxlib.c:148 lib/odbxlib.c:214
 #, c-format
 msgid "Loading backend library %s, %s or %s failed"
 msgstr "Der Datenbanktreiber konnte nicht in %s, %s oder %s gefunden werden"
@@ -80,10 +80,10 @@ msgstr "Der Datenbanktreiber konnte nicht in %s, %s oder %s gefunden werden"
 msgid "Connecting to server failed"
 msgstr "Keine Verbindung zum Server möglich"
 
-#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:55
+#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:54
 msgid "Opening database failed"
 msgstr "Das Öffnen der Datenbank schlug fehl"
 
-#: backends/sqlite3/sqlite3_basic.c:53
+#: backends/sqlite3/sqlite3_basic.c:52
 msgid "Unknown error"
 msgstr "Ein unbekannter Fehler ist aufgetreten"
