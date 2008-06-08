@@ -12,6 +12,15 @@
 #include <vector>
 #include <iostream>
 #include <opendbx/api>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif
+
 #include "odbx-regression.h"
 
 
@@ -169,6 +178,12 @@ int main( int argc, char* argv[] )
 			{
 				exec( conn, queries, verbose );
 			}
+
+			for( k = 0; k < 2; k++ )
+			{
+				if( verbose ) { cout << "  Conn::finish()" << endl; }
+				conn[k].finish();
+			}
 		}
 		catch( OpenDBX::Exception& oe )
 		{
@@ -276,6 +291,8 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 
 			// Test case:  Calling getResult() more often must not result in error
 			result.getResult();
+
+			result.finish();
 		}
 		catch( OpenDBX::Exception& oe )
 		{
@@ -306,4 +323,6 @@ void lob_read( Result& result, int pos )
 	}
 
 	cout << "'" << endl;
+
+	lob.close();
 }
