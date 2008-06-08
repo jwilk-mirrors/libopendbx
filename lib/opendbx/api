@@ -153,6 +153,11 @@ namespace OpenDBX
 		Lob& operator=( const Lob& ref );
 
 		/**
+		 * Close Lob and commit changes
+		 */
+		void close();
+
+		/**
 		 * Reads content from large object into the buffer
 		 *
 		 * @param void* Pointer to a byte array where the data should be written to
@@ -218,6 +223,11 @@ namespace OpenDBX
 		 * @return Result reference of this instance
 		 */
 		Result& operator=( const Result& ref );
+
+		/**
+		 * Get unfetched rows and clean up the current result set
+		 */
+		void finish();
 
 		/**
 		 * Fetch one result set from the database server
@@ -440,6 +450,11 @@ namespace OpenDBX
 		 * Close connection to the database server
 		 */
 		void unbind();
+
+		/**
+		 * Clean up connection object
+		 */
+		void finish();
 
 		/**
 		 * Test if the database driver module does understand certain extensions
