@@ -100,6 +100,13 @@ namespace OpenDBX
 
 
 
+	void Lob::close()
+	{
+		return m_impl->close();
+	}
+
+
+
 	ssize_t Lob::read( void* buffer, size_t buflen )
 	{
 		return m_impl->read( buffer, buflen );
@@ -156,6 +163,13 @@ namespace OpenDBX
 		++(*m_ref);
 
 		return *this;
+	}
+
+
+
+	void Result::finish()
+	{
+		return m_impl->finish();
 	}
 
 
@@ -393,6 +407,18 @@ namespace OpenDBX
 
 
 
+	void Conn::finish()
+	{
+		if( m_impl == NULL )
+		{
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
+		}
+
+		m_impl->finish();
+	}
+
+
+
 	bool Conn::getCapability( odbxcap cap )
 	{
 		if( m_impl == NULL )
@@ -505,9 +531,14 @@ namespace OpenDBX
 
 
 
-	Lob_Impl::~Lob_Impl()
+	void Lob_Impl::close()
 	{
-		if( m_lo != NULL ) { odbx_lo_close( m_lo ); }
+		int err;
+
+		if( ( err = odbx_lo_close( m_lo ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) ) );
+		}
 	}
 
 
@@ -542,7 +573,7 @@ namespace OpenDBX
 
 
 
-	Result_Impl::~Result_Impl()
+	void Result_Impl::finish()
 	{
 		while( this->getResult( NULL, 0 ) != ODBX_RES_DONE );
 	}
@@ -557,6 +588,7 @@ namespace OpenDBX
 		{
 			if( ( err = odbx_result_finish( m_result ) ) != ODBX_ERR_SUCCESS )
 			{
+				m_result = NULL;
 				throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 			}
 		}
@@ -698,12 +730,6 @@ namespace OpenDBX
 
 
 
-	Stmt_Impl::~Stmt_Impl()
-	{
-	}
-
-
-
 	Stmt_Impl* Stmt_Impl::instance( odbx_t* handle, const string& sql, Stmt::Type type )
 	{
 		switch( type )
@@ -758,10 +784,10 @@ namespace OpenDBX
 
 
 
-	StmtSimple_Impl::~StmtSimple_Impl()
-	{
+// 	StmtSimple_Impl::~StmtSimple_Impl()
+// 	{
 // 		if( m_buffer != NULL ) { std::free( m_buffer ); }
-	}
+// 	}
 
 
 
@@ -879,6 +905,7 @@ namespace OpenDBX
 	{
 		int err;
 
+		m_bound = false;
 		m_escbuf = _resize( NULL, 32 );
 		m_escsize = 32;
 
@@ -892,19 +919,7 @@ namespace OpenDBX
 
 	Conn_Impl::~Conn_Impl()
 	{
-		int err;
-
 		if( m_escbuf != NULL ) { std::free( m_escbuf ); }
-
-		if( ( err =  odbx_unbind( m_handle ) ) < 0 )
-		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
-		}
-
-		if( ( err =  odbx_finish( m_handle ) ) < 0 )
-		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
-		}
 	}
 
 
@@ -917,6 +932,8 @@ namespace OpenDBX
 		{
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 		}
+
+		m_bound = true;
 	}
 
 
@@ -926,6 +943,25 @@ namespace OpenDBX
 		int err;
 
 		if( ( err = odbx_unbind( m_handle ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+		}
+
+		m_bound = false;
+	}
+
+
+
+	void Conn_Impl::finish()
+	{
+		int err;
+
+		if( m_bound && ( err =  odbx_unbind( m_handle ) ) < 0 )
+		{
+			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+		}
+
+		if( ( err =  odbx_finish( m_handle ) ) < 0 )
 		{
 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
 		}

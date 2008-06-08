@@ -38,7 +38,7 @@ namespace OpenDBX
 
 
 		Lob_Impl( odbx_result_t* result, const char* value );
-		~Lob_Impl();
+		void close();
 
 		ssize_t read( void* buffer, size_t buflen );
 		ssize_t write( void* buffer, size_t buflen );
@@ -54,7 +54,7 @@ namespace OpenDBX
 
 
 		Result_Impl( odbx_t* handle );
-		~Result_Impl();
+		void finish();
 
 		odbxres getResult( struct timeval* timeout, unsigned long chunk );
 
@@ -80,7 +80,6 @@ namespace OpenDBX
 
 
 		Stmt_Impl( odbx_t* handle );
-		virtual ~Stmt_Impl();
 
 		static Stmt_Impl* instance( odbx_t* handle, const string& sql, Stmt::Type type );
 
@@ -105,7 +104,6 @@ namespace OpenDBX
 
 		StmtSimple_Impl( odbx_t* handle, const string& sql );
 		StmtSimple_Impl();
-		~StmtSimple_Impl();
 
 		void bind( const void* data, unsigned long size, size_t pos, int flags );
 
@@ -120,6 +118,7 @@ namespace OpenDBX
 
 	struct Conn_Impl
 	{
+		bool m_bound;
 		odbx_t* m_handle;
 		char* m_escbuf;
 		unsigned long m_escsize;
@@ -129,6 +128,7 @@ namespace OpenDBX
 
 		Conn_Impl( const char* backend, const char* host, const char* port );
 		~Conn_Impl();
+		void finish();
 
 		void bind( const char* database, const char* who, const char* cred, odbxbind method = ODBX_BIND_SIMPLE );
 		void unbind();
