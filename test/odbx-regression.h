@@ -110,9 +110,9 @@ static struct odbxstmt mssql_multi[] = {
 	"   \"str20\" CHARACTER VARYING(20) NULL,"
 	"   \"nstr24\" NATIONAL CHARACTER VARYING(24),"
 	"   \"clob64k\" TEXT,"
-	"   \"timeval\" TIME,"
+	"   \"timeval\" DATETIME,"
 	"   \"timestmp\" DATETIME,"
-	"   \"dateval\" DATE"
+	"   \"dateval\" DATETIME"
 	")" },
 
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"timeval\", \"timestmp\", \"dateval\" ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
