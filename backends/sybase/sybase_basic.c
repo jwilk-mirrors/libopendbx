@@ -232,7 +232,7 @@ static int sybase_odbx_get_option( odbx_t* handle, unsigned int option, void* va
 	{
 		case ODBX_OPT_API_VERSION:
 
-			*(int*) value = 10200;
+			*(int*) value = 10100;
 			break;
 
 		case ODBX_OPT_TLS:

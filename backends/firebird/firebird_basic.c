@@ -244,7 +244,7 @@ static int firebird_odbx_get_option( odbx_t* handle, unsigned int option, void* 
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10200;
+			*(int*) value = 10100;
 			break;
 		case ODBX_OPT_THREAD_SAFE:
 			*(int*) value = ODBX_ENABLE;
