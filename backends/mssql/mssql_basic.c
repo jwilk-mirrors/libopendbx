@@ -144,18 +144,13 @@ static int mssql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_BACKEND;
 	}
 
-	if( dbsetopt( (DBPROCESS*) handle->generic, DBDATEFORMAT, "ymd", -1 ) == FAIL )
-	{
-		dbclose( (DBPROCESS*) handle->generic );
-		handle->generic = NULL;
-		return -ODBX_ERR_BACKEND;
-	}
+	int err;
 
-	if( dbsetopt( (DBPROCESS*) handle->generic, DBQUOTEDIDENT, NULL, 1 ) == FAIL )
+	if( ( err = mssql_priv_ansimode( handle ) ) < 0 )
 	{
 		dbclose( (DBPROCESS*) handle->generic );
 		handle->generic = NULL;
-		return -ODBX_ERR_BACKEND;
+		return err;
 	}
 
 	return ODBX_ERR_SUCCESS;
@@ -640,6 +635,45 @@ static const char* mssql_odbx_field_value( odbx_result_t* result, unsigned long 
 	}
 
 	return NULL;
+}
+
+
+
+static int mssql_priv_ansimode( odbx_t* handle )
+{
+	int err;
+	DBPROCESS* dbproc = (DBPROCESS*) handle->generic;
+
+
+	if( dbsetopt( dbproc, DBDATEFORMAT, "ymd", -1 ) == FAIL )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	if( dbcmd( dbproc, "SET QUOTED_IDENTIFIER ON" ) == FAIL )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	if( dbsqlexec( dbproc ) == FAIL )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	while( ( err = dbresults( dbproc ) ) != NO_MORE_RESULTS )
+	{
+		switch( err )
+		{
+			case SUCCEED:
+				if( DBCMDROW( dbproc ) == SUCCEED )
+				{ while( dbnextrow( dbproc ) != NO_MORE_ROWS ); }
+				break;
+			default:
+				return -ODBX_ERR_BACKEND;
+		}
+	}
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

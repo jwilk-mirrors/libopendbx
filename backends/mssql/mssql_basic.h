@@ -65,6 +65,8 @@ static const char* mssql_odbx_field_value( odbx_result_t* result, unsigned long 
  *  Private functions
   */
 
+static int mssql_priv_ansimode( odbx_t* handle );
+
 static int mssql_priv_collength( DBPROCESS* dbproc, unsigned long pos );
 
 static int mssql_err_handler( DBPROCESS* dbproc, int lvl, int dberr, int oserr, char* dbstr, char* osstr );
