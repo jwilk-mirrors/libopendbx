@@ -32,7 +32,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = odbxtest$(EXEEXT) odbxplustest$(EXEEXT)
+@ENABLETEST_TRUE@noinst_PROGRAMS = odbxtest$(EXEEXT) \
+@ENABLETEST_TRUE@	odbxplustest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -47,15 +48,18 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_odbxplustest_OBJECTS = odbxplus-regression.$(OBJEXT)
+am__odbxplustest_SOURCES_DIST = odbxplus-regression.cpp
+@ENABLETEST_TRUE@am_odbxplustest_OBJECTS =  \
+@ENABLETEST_TRUE@	odbxplus-regression.$(OBJEXT)
 odbxplustest_OBJECTS = $(am_odbxplustest_OBJECTS)
-odbxplustest_DEPENDENCIES = ../lib/libopendbxplus.la
+@ENABLETEST_TRUE@odbxplustest_DEPENDENCIES = ../lib/libopendbxplus.la
 odbxplustest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(odbxplustest_LDFLAGS) $(LDFLAGS) -o $@
-am_odbxtest_OBJECTS = odbx-regression.$(OBJEXT)
+am__odbxtest_SOURCES_DIST = odbx-regression.c odbx-regression.h
+@ENABLETEST_TRUE@am_odbxtest_OBJECTS = odbx-regression.$(OBJEXT)
 odbxtest_OBJECTS = $(am_odbxtest_OBJECTS)
-odbxtest_DEPENDENCIES = ../lib/libopendbx.la
+@ENABLETEST_TRUE@odbxtest_DEPENDENCIES = ../lib/libopendbx.la
 odbxtest_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(odbxtest_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -81,7 +85,8 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(odbxplustest_SOURCES) $(odbxtest_SOURCES)
-DIST_SOURCES = $(odbxplustest_SOURCES) $(odbxtest_SOURCES)
+DIST_SOURCES = $(am__odbxplustest_SOURCES_DIST) \
+	$(am__odbxtest_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -234,12 +239,12 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I../lib
-odbxtest_SOURCES = odbx-regression.c odbx-regression.h
-odbxtest_LDADD = ../lib/libopendbx.la
-odbxtest_LDFLAGS = -static
-odbxplustest_SOURCES = odbxplus-regression.cpp
-odbxplustest_LDADD = ../lib/libopendbxplus.la
-odbxplustest_LDFLAGS = -static
+@ENABLETEST_TRUE@odbxtest_SOURCES = odbx-regression.c odbx-regression.h
+@ENABLETEST_TRUE@odbxtest_LDADD = ../lib/libopendbx.la
+@ENABLETEST_TRUE@odbxtest_LDFLAGS = -static
+@ENABLETEST_TRUE@odbxplustest_SOURCES = odbxplus-regression.cpp
+@ENABLETEST_TRUE@odbxplustest_LDADD = ../lib/libopendbxplus.la
+@ENABLETEST_TRUE@odbxplustest_LDFLAGS = -static
 EXTRA_DIST = \
 	odbxtest.site.template \
 	odbxtest.sh \

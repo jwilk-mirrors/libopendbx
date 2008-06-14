@@ -257,8 +257,8 @@ top_srcdir = @top_srcdir@
 @ENABLEUTILS_TRUE@odbx_sql_SOURCES = odbx-sql.hpp odbx-sql.cpp config.cpp config.hpp commands.cpp commands.hpp completion.cpp completion.hpp
 @ENABLEUTILS_TRUE@odbx_sql_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DKEYWORDFILE=\"$(pkgdatadir)/keywords\"
 @ENABLEUTILS_TRUE@odbx_sql_LDADD = ../lib/.libs/libopendbxplus.so -lconfuse -lreadline
-@ENABLEUTILS_TRUE@EXTRA_DIST = keywords
-@ENABLEUTILS_TRUE@pkgdata_DATA = keywords
+EXTRA_DIST = keywords
+pkgdata_DATA = keywords
 all: all-recursive
 
 .SUFFIXES:

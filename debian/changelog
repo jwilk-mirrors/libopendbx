@@ -1,6 +1,13 @@
+libopendbx (1.3.11-1) unstable; urgency=low
+
+  * New upstream version (development version)
+  * removed --enable-utils as building the utils is now enabled by default
+
+ -- Norbert Sendetzky <norbert@linuxnetworks.de>  Sat, 15 Jun 2008 00:00:00 +0100
+
 libopendbx (1.3.10-1) unstable; urgency=low
 
-  * New upstream version (stable version)
+  * New upstream version (development version)
   * Added odbx-sql man page to opendbx-utils package
   * Moved odbx_*.3 man pages to libopendbx-dev package
 

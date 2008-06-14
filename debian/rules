@@ -40,7 +40,6 @@ build:
 	CXXFLAGS="${CXXFLAGS}" \
 	./configure ${CONFFLAGS} \
 		--prefix=/usr \
-		--enable-utils \
 		--with-backends="${backends}"
 
 	$(MAKE)

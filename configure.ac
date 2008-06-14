@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.3.10], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.3.11], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -34,7 +34,7 @@ case "$host" in
 		LIBSUFFIX="-1.dll"
 	;;
 	*-*-mingw* | *-*-pw32*)
-		AC_DEFINE([WIN32], 1, [Using Win32 platform])
+		AC_DEFINE([WIN32], 1, [Using Win32 API functions])
 		LIBSUFFIX="-1.dll"
 	;;
 esac
@@ -98,7 +98,10 @@ AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes])
 AC_ARG_ENABLE([singlelib], [AS_HELP_STRING([--enable-singlelib], [build single library including backends])], [singlelib="${enableval}"], [singlelib=no])
 AM_CONDITIONAL([SINGLELIB], [test "x${singlelib}" = xyes])
 
-AC_ARG_ENABLE([utils], [AS_HELP_STRING([--enable-utils], [build OpenDBX utility applications])], [utils="${enableval}"], [utils=no])
+AC_ARG_ENABLE([test], [AS_HELP_STRING([--disable-test], [don't build OpenDBX test applications])], [test="${enableval}"], [test=yes])
+AM_CONDITIONAL([ENABLETEST], [test "x${test}" = xyes])
+
+AC_ARG_ENABLE([utils], [AS_HELP_STRING([--disable-utils], [don't build OpenDBX utility applications])], [utils="${enableval}"], [utils=yes])
 AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
 
 if test "x${utils}" = xyes; then

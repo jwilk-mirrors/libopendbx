@@ -1,5 +1,8 @@
 INCLUDES = -I../lib
 
+
+if ENABLETEST
+
 noinst_PROGRAMS = odbxtest odbxplustest
 
 odbxtest_SOURCES = odbx-regression.c odbx-regression.h
@@ -9,6 +12,9 @@ odbxtest_LDFLAGS = -static
 odbxplustest_SOURCES = odbxplus-regression.cpp
 odbxplustest_LDADD = ../lib/libopendbxplus.la
 odbxplustest_LDFLAGS = -static
+
+endif
+
 
 EXTRA_DIST = \
 	odbxtest.site.template \
