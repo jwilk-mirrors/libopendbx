@@ -334,31 +334,31 @@ static const char* oracle_odbx_error( odbx_t* handle )
 	switch( conn->errcode )
 	{
 		case OCI_SUCCESS:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Success" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Success" );
 			break;
 		case OCI_SUCCESS_WITH_INFO:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Success with info" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Success with info" );
 			break;
 		case OCI_NEED_DATA:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Need data" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Need data" );
 			break;
 		case OCI_NO_DATA:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "No data" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "No data" );
 			break;
 		case OCI_ERROR:
-			OCIErrorGet( (dvoid*) conn->err, 1, NULL, &error, (text*) conn->errmsg, ORACLE_ERRLEN, OCI_HTYPE_ERROR );
+			OCIErrorGet( (dvoid*) conn->err, 1, NULL, &error, (text*) conn->errmsg, OCI_ERROR_MAXMSG_SIZE, OCI_HTYPE_ERROR );
 			break;
 		case OCI_INVALID_HANDLE:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Invalid handle" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Invalid handle" );
 			break;
 		case OCI_STILL_EXECUTING:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Still executing" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Still executing" );
 			break;
 		case OCI_CONTINUE:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Continue" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Continue" );
 			break;
 		default:
-			snprintf( conn->errmsg, ORACLE_ERRLEN, "Unknown error" );
+			snprintf( conn->errmsg, OCI_ERROR_MAXMSG_SIZE, "Unknown error" );
 			break;
 	}
 
@@ -620,6 +620,7 @@ static int oracle_odbx_row_fetch( odbx_result_t* result )
 		return -ODBX_ERR_PARAM;
 	}
 
+	sb4 error;
 	struct oraconn* conn = (struct oraconn*) result->handle->aux;
 
 	switch( ( conn->errcode = OCIStmtFetch( conn->stmt, conn->err, 1, OCI_FETCH_NEXT, OCI_DEFAULT ) ) )
@@ -629,6 +630,8 @@ static int oracle_odbx_row_fetch( odbx_result_t* result )
 		case OCI_NO_DATA:
 			return ODBX_ROW_DONE;
 		default:
+			OCIErrorGet( (dvoid*) conn->err, 1, NULL, &error, (text*) conn->errmsg, OCI_ERROR_MAXMSG_SIZE, OCI_HTYPE_ERROR );
+			if( error == 1002 ) { return ODBX_ROW_DONE; }   // don't return an error if called again after OCI_NO_DATA was returned
 			return -ODBX_ERR_BACKEND;
 	}
 }

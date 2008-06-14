@@ -30,7 +30,6 @@
 
 
 
-#define ORACLE_ERRLEN 512
 #define ORACLE_PORTLEN 16
 #define ORACLE_COLNAMELEN 32
 
@@ -52,7 +51,7 @@ struct oraconn
 	char* host;
 	char port[ORACLE_PORTLEN];
 	char colname[ORACLE_COLNAMELEN];
-	char errmsg[ORACLE_ERRLEN];
+	char errmsg[OCI_ERROR_MAXMSG_SIZE];
 	sword errcode;
 };
 
