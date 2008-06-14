@@ -61,7 +61,7 @@ static const char* mssql_odbx_errmsg[] = {
 
 static int mssql_odbx_init( odbx_t* handle, const char* host, const char* port )
 {
-	int err, len;
+	int len;
 	struct tdsconn* tc;
 
 
@@ -73,7 +73,7 @@ static int mssql_odbx_init( odbx_t* handle, const char* host, const char* port )
 	handle->aux = NULL;
 	handle->generic = NULL;
 
-	if( ( err = dbinit() ) == FAIL )
+	if( dbinit() == FAIL )
 	{
 		return -ODBX_ERR_NOMEM;
 	}
@@ -171,6 +171,8 @@ static int mssql_odbx_finish( odbx_t* handle )
 	if( handle->aux != NULL )
 	{
 		dbloginfree( (LOGINREC*) ((struct tdsconn*) handle->aux)->login );
+		dbexit();
+
 		free( ((struct tdsconn*) handle->aux)->host );
 		free( handle->aux );
 		handle->aux = NULL;
@@ -190,12 +192,12 @@ static int mssql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 		case ODBX_OPT_API_VERSION:
 			*(int*) value = 10100;
 			break;
-		case ODBX_OPT_THREAD_SAFE:
 		case ODBX_OPT_TLS:
 		case ODBX_OPT_PAGED_RESULTS:
 		case ODBX_OPT_COMPRESS:
 			*((int*) value) = ODBX_DISABLE;
 			break;
+		case ODBX_OPT_THREAD_SAFE:
 		case ODBX_OPT_MULTI_STATEMENTS:
 		case ODBX_OPT_CONNECT_TIMEOUT:
 			*((int*) value) = ODBX_ENABLE;
