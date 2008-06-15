@@ -746,7 +746,6 @@ static int mssql_err_handler( DBPROCESS* dbproc, int severity, int dberr, int os
 
 	if( tc == NULL || tc->errmsg == NULL )
 	{
-		fprintf( stderr, "mssql_err_handler(): dbgetuserdata returned NULL pointer\n" );
 		fprintf( stderr, "mssql_err_handler(): error = %s\n", dberrstr );
 		if( oserr != DBNOERR ) { fprintf( stderr, "mssql_err_handler():  OS error = %s\n", dberrstr ); }
 		return INT_CANCEL;
@@ -760,7 +759,7 @@ static int mssql_err_handler( DBPROCESS* dbproc, int severity, int dberr, int os
 	}
 
 	tc->errtype = 1;
-	if( severity > 6 ) { tc->errtype = -1; }
+	if( severity > EXPROGRAM ) { tc->errtype = -1; }
 
 	return INT_CANCEL;
 }
@@ -780,7 +779,6 @@ static int mssql_msg_handler( DBPROCESS* dbproc, DBINT num, int state, int lvl, 
 
 	if( tc == NULL || tc->errmsg == NULL )
 	{
-		fprintf( stderr, "mssql_msg_handler(): dbgetuserdata returned NULL pointer\n" );
 		fprintf( stderr, "mssql_msg_handler(): msg = %s\n", dberrstr );
 		return 0;
 	}
