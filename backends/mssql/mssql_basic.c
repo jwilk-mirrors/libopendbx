@@ -190,7 +190,7 @@ static int mssql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = APINUMBER;
 			break;
 		case ODBX_OPT_TLS:
 		case ODBX_OPT_PAGED_RESULTS:

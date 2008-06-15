@@ -162,7 +162,7 @@ static int pgsql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = APINUMBER;
 			break;
 		case ODBX_OPT_THREAD_SAFE:
 #ifdef HAVE_PQ_ESCAPE_STRING_CONN

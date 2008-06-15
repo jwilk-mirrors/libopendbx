@@ -15,7 +15,6 @@
 #include <string.h>
 
 
-
 /*
  *  Declaration of Sybase capabilities
  */
@@ -232,7 +231,7 @@ static int sybase_odbx_get_option( odbx_t* handle, unsigned int option, void* va
 	{
 		case ODBX_OPT_API_VERSION:
 
-			*(int*) value = 10100;
+			*(int*) value = APINUMBER;
 			break;
 
 		case ODBX_OPT_TLS:
@@ -852,7 +851,7 @@ static int sybase_priv_convert( odbx_result_t* result )
 				val[i].length = snprintf( val[i].value, sybase_priv_collength( fmt + i ), "%ld", (long) *((CS_INT*) val[i].value) );
 				break;
 
-#ifdef CS_BIGINT_TYPE
+#if defined( CS_BIGINT_TYPE )
 			case CS_BIGINT_TYPE:
 
 				val[i].length = snprintf( val[i].value, sybase_priv_collength( fmt + i ), "%lld", *((CS_BIGINT*) val[i].value) );

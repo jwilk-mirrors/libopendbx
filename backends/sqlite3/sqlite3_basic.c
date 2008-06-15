@@ -177,7 +177,7 @@ static int sqlite3_odbx_get_option( odbx_t* handle, unsigned int option, void* v
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
-			*(int*) value = 10100;
+			*(int*) value = APINUMBER;
 			break;
 		case ODBX_OPT_MULTI_STATEMENTS:
 			*(int*) value = ODBX_ENABLE;
