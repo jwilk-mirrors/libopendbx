@@ -1265,7 +1265,7 @@ Depending on the native database library, it's also possible to use database spe
 
 		<para>The statement stored in the <parameter>stmt</parameter> parameter must be a valid statement understood by the receiving database server and it should be terminated by a \0 character. Some backends support multiple statements per query, which can be tested by calling <function>odbx_get_option</function>().</para>
 
-		<para>The <parameter>length</parameter> parameter must contain the length of the statement in bytes without the terminating \0 character. If variable sized character sets like UTF-8 are used, the same rule applies. This function doesn't support the wide character type (wchar_t) which uses two or four bytes per character.</para>
+		<para>The <parameter>length</parameter> parameter must contain the length of the statement in bytes without the terminating \0 character. If variable sized character sets like UTF-8 are used, the same rule applies. This function doesn't support the wide character type (wchar_t) which uses two or four bytes per character. If you feed 0 (zero) as length parameter to the function, it will calculate the size of the statement on its own.</para>
 	</refsect1>
 
 	<refsect1>
