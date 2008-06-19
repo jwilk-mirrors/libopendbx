@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstdlib>
 #include <opendbx/api>
 
 #ifdef HAVE_CONFIG_H
