@@ -759,7 +759,7 @@ static int mssql_err_handler( DBPROCESS* dbproc, int severity, int dberr, int os
 	}
 
 	tc->errtype = 1;
-	if( severity > EXPROGRAM ) { tc->errtype = -1; }
+	if( severity > 16 ) { tc->errtype = -1; }
 
 	return INT_CANCEL;
 }
