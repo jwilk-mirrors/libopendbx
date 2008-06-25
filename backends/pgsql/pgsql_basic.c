@@ -14,8 +14,10 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+
+#ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#include <stdio.h>
+#endif
 
 
 
@@ -312,6 +314,7 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		return -ODBX_ERR_PARAM;
 	}
 
+#ifdef HAVE_SELECT
 	if( timeout != NULL && PQisBusy( (PGconn*) handle->generic ) == 1 )
 	{
 		int fd;
@@ -334,6 +337,7 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 				return ODBX_RES_TIMEOUT;   /* timeout while waiting for a result */
 		}
 	}
+#endif
 
 	PGresult* res;
 
