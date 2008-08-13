@@ -235,8 +235,6 @@ static int mysql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 #endif
 			break;
 		case ODBX_OPT_PAGED_RESULTS:
-			*((int*) value) = ODBX_DISABLE;
-			break;
 		case ODBX_OPT_TLS:   // FIXME: Howto find out if compiled with SSL support
 		case ODBX_OPT_COMPRESS:
 		case ODBX_OPT_MODE:
