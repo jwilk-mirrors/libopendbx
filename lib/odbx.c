@@ -206,6 +206,19 @@ int odbx_set_option( odbx_t* handle, unsigned int option, void* value )
 
 	if( option == ODBX_OPT_LIB_VERSION ) { return -ODBX_ERR_OPTRO; }
 
+	if( option == ODBX_OPT_TLS )
+	{
+		switch( *((int* ) value) )
+		{
+			case ODBX_TLS_NEVER:
+			case ODBX_TLS_TRY:
+			case ODBX_TLS_ALWAYS:
+				break;
+			default:
+				return -ODBX_ERR_PARAM;
+		}
+	}
+
 	if( handle != NULL && handle->ops != NULL && handle->ops->basic != NULL && handle->ops->basic->set_option != NULL )
 	{
 		return handle->ops->basic->set_option( handle, option, value );
