@@ -92,8 +92,8 @@ MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 
 # Checks for additional programs
-AC_CHECK_PROG([db2man], [docbook2x-man], [yes], [no])
-if test "x${db2man}" != xyes; then AC_MSG_RESULT([Warning: docbook2x-man not found - skip generating man pages]); fi
+AC_CHECK_PROG([db2man], [db2x_manxml], [yes], [no])
+if test "x${db2man}" != xyes; then AC_MSG_RESULT([Warning: docbook man page converter not found - skip generating man pages]); fi
 AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes])
 
 
