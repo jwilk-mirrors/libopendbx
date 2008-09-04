@@ -26248,8 +26248,8 @@ MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 
 # Checks for additional programs
-# Extract the first word of "docbook2x-man", so it can be a program name with args.
-set dummy docbook2x-man; ac_word=$2
+# Extract the first word of "db2x_manxml", so it can be a program name with args.
+set dummy db2x_manxml; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
 if test "${ac_cv_prog_db2man+set}" = set; then
@@ -26286,8 +26286,8 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
-if test "x${db2man}" != xyes; then { echo "$as_me:$LINENO: result: Warning: docbook2x-man not found - skip generating man pages" >&5
-echo "${ECHO_T}Warning: docbook2x-man not found - skip generating man pages" >&6; }; fi
+if test "x${db2man}" != xyes; then { echo "$as_me:$LINENO: result: Warning: docbook man page converter not found - skip generating man pages" >&5
+echo "${ECHO_T}Warning: docbook man page converter not found - skip generating man pages" >&6; }; fi
  if test "x${db2man}" = xyes; then
   ENABLEMAN_TRUE=
   ENABLEMAN_FALSE='#'
