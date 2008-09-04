@@ -8,3 +8,5 @@ Main developers:
 Contributors:
 - Kees Monshouwer
   (excellent spec file for building rpm packages)
+- Sven Wegener
+  (gcc compatibilty improvements)
