@@ -289,7 +289,7 @@ static int mysql_odbx_set_option( odbx_t* handle, unsigned int option, void* val
 
 		case ODBX_OPT_PAGED_RESULTS:
 
-			return -ODBX_ERR_OPTWR;
+			return -ODBX_ERR_SUCCESS;
 
 		case ODBX_OPT_COMPRESS:
 
