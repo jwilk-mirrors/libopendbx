@@ -5,7 +5,7 @@
     ODBX_OPT_TLS: 1 
     ODBX_OPT_CONNECT_TIMEOUT: 1 (using)
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
-    ODBX_OPT_PAGED_RESULTS: 0 
+    ODBX_OPT_PAGED_RESULTS: 1 (using)
     ODBX_OPT_COMPRESS: 1 (using)
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
@@ -14,7 +14,7 @@
     ODBX_OPT_TLS: 1 
     ODBX_OPT_CONNECT_TIMEOUT: 1 (using)
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
-    ODBX_OPT_PAGED_RESULTS: 0 
+    ODBX_OPT_PAGED_RESULTS: 1 (using)
     ODBX_OPT_COMPRESS: 1 (using)
     Affected rows: 0
     Affected rows: 1
