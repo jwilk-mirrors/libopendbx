@@ -12,7 +12,7 @@ libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL)
 libopendbxplus_la_SOURCES =  odbx.cpp odbx_impl.hpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbxplus_la_LDFLAGS = -no-undefined -version-info @APIPLUSVERSION@
-libopendbxplus_la_LIBADD = $(LTLIBINTL) libopendbx.la
+libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
 
 
 if SINGLELIB

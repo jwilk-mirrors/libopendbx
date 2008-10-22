@@ -69,7 +69,8 @@ libopendbx_la_OBJECTS = $(am_libopendbx_la_OBJECTS)
 libopendbx_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libopendbx_la_LDFLAGS) $(LDFLAGS) -o $@
-libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) libopendbx.la
+libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	.libs/libopendbx.la
 am_libopendbxplus_la_OBJECTS = libopendbxplus_la-odbx.lo
 libopendbxplus_la_OBJECTS = $(am_libopendbxplus_la_OBJECTS)
 libopendbxplus_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -107,6 +108,7 @@ CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+APINUMBER = @APINUMBER@
 APIPLUSVERSION = @APIPLUSVERSION@
 APIVERSION = @APIVERSION@
 AR = @AR@
@@ -264,7 +266,7 @@ libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
 libopendbxplus_la_SOURCES = odbx.cpp odbx_impl.hpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbxplus_la_LDFLAGS = -no-undefined -version-info @APIPLUSVERSION@
-libopendbxplus_la_LIBADD = $(LTLIBINTL) libopendbx.la
+libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
 all: all-am
 
 .SUFFIXES:
