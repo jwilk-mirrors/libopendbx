@@ -525,7 +525,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_lo_open( result, &m_lo, value ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) ) );
+			throw Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) );
 		}
 	}
 
@@ -537,7 +537,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_lo_close( m_lo ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) ) );
+			throw Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) );
 		}
 	}
 
@@ -589,13 +589,13 @@ namespace OpenDBX
 			if( ( err = odbx_result_finish( m_result ) ) != ODBX_ERR_SUCCESS )
 			{
 				m_result = NULL;
-				throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+				throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 			}
 		}
 
 		if( ( err = odbx_result( m_handle, &m_result, timeout, chunk ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		m_pos.clear();
@@ -611,7 +611,7 @@ namespace OpenDBX
 
 		if( ( err =  odbx_row_fetch( m_result ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		return (odbxrow) err;
@@ -641,7 +641,7 @@ namespace OpenDBX
 		{
 			if( ( it = m_pos.find( name ) ) != m_pos.end() ) { return it->second; }
 
-			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 		}
 
 		for( unsigned long i = 0; i < odbx_column_count( m_result ); i++ )
@@ -651,7 +651,7 @@ namespace OpenDBX
 
 		if( ( it = m_pos.find( name ) ) != m_pos.end() ) { return it->second; }
 
-		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -668,7 +668,7 @@ namespace OpenDBX
 			return string();
 		}
 
-		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -680,7 +680,7 @@ namespace OpenDBX
 			return (odbxtype) odbx_column_type( m_result, pos );
 		}
 
-		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -692,7 +692,7 @@ namespace OpenDBX
 			return odbx_field_length( m_result, pos );
 		}
 
-		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -704,7 +704,7 @@ namespace OpenDBX
 			return odbx_field_value( m_result, pos );
 		}
 
-		throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -737,7 +737,7 @@ namespace OpenDBX
 			case Stmt::Simple:
 				return new StmtSimple_Impl( handle, sql );
 			default:
-				throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+				throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 		}
 	}
 
@@ -795,7 +795,7 @@ namespace OpenDBX
 // 	{
 // 		if( pos >= m_pos.size() )
 // 		{
-// 			throw( Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) ) );
+// 			throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 // 		}
 //
 // 		if( ( flags & Stmt::Null ) == 0 )
@@ -832,7 +832,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_query( m_handle, m_sql.c_str(), m_sql.size() ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -866,7 +866,7 @@ namespace OpenDBX
 //
 // 				if( (err = odbx_escape( m_handle, (const char*) m_binds[i], m_bindsize[i], m_buffer + bufpos, &esclen ) ) < 0 )
 // 				{
-// 					throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+// 					throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 // 				}
 //
 // 				bufpos += esclen;
@@ -887,7 +887,7 @@ namespace OpenDBX
 //
 // 		if( ( err = odbx_query( m_handle, m_buffer, bufpos ) ) < 0 )
 // 		{
-// 			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+// 			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 // 		}
 // 	}
 
@@ -911,7 +911,7 @@ namespace OpenDBX
 
 		if( ( err =  odbx_init( &m_handle, backend, host, port ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -930,7 +930,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_bind( m_handle, database, who, cred, method ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		m_bound = true;
@@ -944,7 +944,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_unbind( m_handle ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		m_bound = false;
@@ -958,12 +958,12 @@ namespace OpenDBX
 
 		if( m_bound && ( err =  odbx_unbind( m_handle ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		if( ( err =  odbx_finish( m_handle ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -980,7 +980,7 @@ namespace OpenDBX
 			case ODBX_DISABLE:
 				return false;
 			default:
-				throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+				throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -992,7 +992,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_get_option( m_handle, option, value ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -1004,7 +1004,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_set_option( m_handle, option, value ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 	}
 
@@ -1026,7 +1026,7 @@ namespace OpenDBX
 
 		if( (err = odbx_escape( m_handle, from, fromlen, m_escbuf, &size ) ) < 0 )
 		{
-			throw( Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) ) );
+			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
 		}
 
 		to.assign( m_escbuf, size );
@@ -1046,7 +1046,7 @@ namespace OpenDBX
 	{
 		if( ( buffer = (char*) std::realloc( buffer, size ) ) == NULL )
 		{
-			throw( Exception( string( odbx_error( m_handle, -ODBX_ERR_NOMEM ) ), -ODBX_ERR_NOMEM, odbx_error_type( m_handle, -ODBX_ERR_NOMEM ) ) );
+			throw Exception( string( odbx_error( m_handle, -ODBX_ERR_NOMEM ) ), -ODBX_ERR_NOMEM, odbx_error_type( m_handle, -ODBX_ERR_NOMEM ) );
 		}
 
 		return buffer;
