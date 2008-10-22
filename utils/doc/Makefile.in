@@ -53,6 +53,7 @@ MANS = $(man_MANS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+APINUMBER = @APINUMBER@
 APIPLUSVERSION = @APIPLUSVERSION@
 APIVERSION = @APIVERSION@
 AR = @AR@
@@ -422,10 +423,10 @@ uninstall-man: uninstall-man1
 
 
 @ENABLEMAN_TRUE@odbx-sql.1: opendbx-utils.en.xml
-@ENABLEMAN_TRUE@	docbook2x-man --solinks opendbx-utils.en.xml
+@ENABLEMAN_TRUE@	db2x_xsltproc -s man opendbx-utils.en.xml | db2x_manxml --solinks
 
 @ENABLEMAN_TRUE@clean:
-@ENABLEMAN_TRUE@	for file in `ls odbx*.1`; do rm -f $$file; done
+@ENABLEMAN_TRUE@	rm -f odbx-sql.1
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

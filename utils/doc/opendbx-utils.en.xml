@@ -32,12 +32,18 @@
 
 		<cmdsynopsis>
 			<command>odbx-sql</command>
-			<arg choice='req'>-c <replaceable>configfile</replaceable></arg>
-			<arg>-d <replaceable>delimiter</replaceable></arg>
-			<arg>-h</arg>
+			<arg>-?</arg>
+			<arg>-b <replaceable>backend</replaceable></arg>
+			<arg>-c <replaceable>configfile</replaceable></arg>
+			<arg>-d <replaceable>database</replaceable></arg>
+			<arg>-f <replaceable>delimiter</replaceable></arg>
+			<arg>-h <replaceable>host</replaceable></arg>
 			<arg>-i</arg>
 			<arg>-k <replaceable>keywordfile</replaceable></arg>
+			<arg>-p <replaceable>port</replaceable></arg>
 			<arg>-s <replaceable>separator</replaceable></arg>
+			<arg>-u <replaceable>username</replaceable></arg>
+			<arg>-w</arg>
 		</cmdsynopsis>
 
 	</refsynopsisdiv>
@@ -54,39 +60,75 @@
 		<para>
 			<variablelist>
 				<varlistentry>
-					<term>-c configfile</term>
+					<term>-h, --help</term>
 					<listitem>
-						<para>Supplying a configuration file with parameters required for connecting to the database is an required options. The file have to include values for the backend that should be used, the host name or ip address (and maybe the port if required), the database name and the user and password. These values must be placed into a configuration file to be able to access them from non-interactive program execution savely without revealing the password anywhere. A full example of such a configuration file can be found in the example section of this manual.</para>
+						<para>Print help including a short description of available options.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term>-d delimiter</term>
+					<term>-b, --backend=name</term>
+					<listitem>
+						<para>Name of the database backend that should be used or path to the backend library of the OpenDBX driver.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-c, --config=configfile</term>
+					<listitem>
+						<para>Configuration file with parameters required for connecting to the database. The file can include values for the backend that should be used, the host name or ip address (and maybe the port if required), the database name and the user and password. These values should be placed into the configuration file to be able to access them from non-interactive program execution savely without revealing the password anywhere. A full example of such a configuration file can be found in the example section of this manual.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-d, --database=name</term>
+					<listitem>
+						<para>Name of the database on the server or path to the database file in the local file system.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-f, --delimiter=character</term>
 					<listitem>
 						<para>Single character or string that should surround field values which are returned by SELECT-like statements and printed to stdout.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term>-h</term>
+					<term>-h, --host=name</term>
 					<listitem>
-						<para>Print help including a short description of available options</para>
+						<para>Host name, IP address or path to the database file. It can also be the path to a named pipe in order to communicate to the database server only locally.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
-					<term>-i</term>
+					<term>-i, --interactive</term>
 					<listitem>
-						<para>Run in interactive mode and provide a convenient SQL shell contrary to batch mode which is waiting for input from stdin and printing results to stdout</para>
+						<para>Run in interactive mode and provide a convenient SQL shell contrary to batch mode which is waiting for input from stdin and printing results to stdout.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>-k keywordfile</term>
 					<listitem>
-						<para>Location of a keyword file used for providing auto-completion of keywords</para>
+						<para>Location of a keyword file used for providing auto-completion of keywords.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-p, --port=port</term>
+					<listitem>
+						<para>TCP/IP port name or number the database server is listening to. If this parameter isn't added at the command line, most database client libraries use the default value. Many but not all database server can resolve the port number from its name and for a maximum of portability the parameter value should be the port number.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>-s separator</term>
 					<listitem>
 						<para>Single character or string that should separate field values which are returned by SELECT-like statements and printed to stdout.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-u, --username=name</term>
+					<listitem>
+						<para>Name of the user which is sent to the database server for authentication.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>-w, --password</term>
+					<listitem>
+						<para>Prompt for a password at the command line.</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -99,12 +141,14 @@
 		<example>
 			<title>Configuration file</title>
 
-			<literallayout>backend = mysql</literallayout>
-			<literallayout>host = localhost</literallayout>
-			<literallayout>port = 3306</literallayout>
-			<literallayout>database = test</literallayout>
-			<literallayout>username = myuser</literallayout>
-			<literallayout>password = secret</literallayout>
+			<literallayout>
+ backend = mysql
+ host = localhost
+ port = 3306
+ database = test
+ username = myuser
+ password = secret
+			</literallayout>
 		</example>
 
 		<example>

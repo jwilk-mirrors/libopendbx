@@ -4,10 +4,10 @@ EXTRA_DIST = opendbx-utils.en.xml
 if ENABLEMAN
 
 odbx-sql.1: opendbx-utils.en.xml
-	docbook2x-man --solinks opendbx-utils.en.xml
+	db2x_xsltproc -s man opendbx-utils.en.xml | db2x_manxml --solinks
 
 clean:
-	for file in `ls odbx*.1`; do rm -f $$file; done
+	rm -f odbx-sql.1
 
 man_MANS = \
 	odbx-sql.1
