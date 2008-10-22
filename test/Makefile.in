@@ -52,14 +52,16 @@ am__odbxplustest_SOURCES_DIST = odbxplus-regression.cpp
 @ENABLETEST_TRUE@am_odbxplustest_OBJECTS =  \
 @ENABLETEST_TRUE@	odbxplus-regression.$(OBJEXT)
 odbxplustest_OBJECTS = $(am_odbxplustest_OBJECTS)
-@ENABLETEST_TRUE@odbxplustest_DEPENDENCIES = ../lib/libopendbxplus.la
+@ENABLETEST_TRUE@odbxplustest_DEPENDENCIES =  \
+@ENABLETEST_TRUE@	../lib/.libs/libopendbx.so \
+@ENABLETEST_TRUE@	../lib/.libs/libopendbxplus.so
 odbxplustest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(odbxplustest_LDFLAGS) $(LDFLAGS) -o $@
 am__odbxtest_SOURCES_DIST = odbx-regression.c odbx-regression.h
 @ENABLETEST_TRUE@am_odbxtest_OBJECTS = odbx-regression.$(OBJEXT)
 odbxtest_OBJECTS = $(am_odbxtest_OBJECTS)
-@ENABLETEST_TRUE@odbxtest_DEPENDENCIES = ../lib/libopendbx.la
+@ENABLETEST_TRUE@odbxtest_DEPENDENCIES = ../lib/.libs/libopendbx.so
 odbxtest_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(odbxtest_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -92,6 +94,7 @@ CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+APINUMBER = @APINUMBER@
 APIPLUSVERSION = @APIPLUSVERSION@
 APIVERSION = @APIVERSION@
 AR = @AR@
@@ -240,10 +243,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I../lib
 @ENABLETEST_TRUE@odbxtest_SOURCES = odbx-regression.c odbx-regression.h
-@ENABLETEST_TRUE@odbxtest_LDADD = ../lib/libopendbx.la
+@ENABLETEST_TRUE@odbxtest_LDADD = ../lib/.libs/libopendbx.so
 @ENABLETEST_TRUE@odbxtest_LDFLAGS = -static
 @ENABLETEST_TRUE@odbxplustest_SOURCES = odbxplus-regression.cpp
-@ENABLETEST_TRUE@odbxplustest_LDADD = ../lib/libopendbxplus.la
+@ENABLETEST_TRUE@odbxplustest_LDADD = ../lib/.libs/libopendbx.so ../lib/.libs/libopendbxplus.so
 @ENABLETEST_TRUE@odbxplustest_LDFLAGS = -static
 EXTRA_DIST = \
 	odbxtest.site.template \
