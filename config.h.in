@@ -12,9 +12,6 @@
    the CoreFoundation framework. */
 #undef HAVE_CFPREFERENCESCOPYAPPVALUE
 
-/* Define to 1 if you have the <confuse.h> header file. */
-#undef HAVE_CONFUSE_H
-
 /* Define to 1 if you have the <ctpublic.h> header file. */
 #undef HAVE_CTPUBLIC_H
 
@@ -45,9 +42,6 @@
 
 /* Have -lclntsh */
 #undef HAVE_LIBCLNTSH
-
-/* Have -lconfuse */
-#undef HAVE_LIBCONFUSE
 
 /* Have -lct */
 #undef HAVE_LIBCT
@@ -249,7 +243,7 @@
 /* Version number of package */
 #undef VERSION
 
-/* Using Win32 platform */
+/* Using Win32 API functions */
 #undef WIN32
 
 /* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,

@@ -1,3 +1,21 @@
+2008-10-22 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Utilities and test suite is compiled by default but can be disabled via ./configure option
+	* Feature: Increased gcc-4.3 compability (thanks to Sven Wegener)
+	* Feature: Updated spec file and added packages for odbc backend and utilities
+	* Feature: Added check for valid TLS options
+	* Feature: Builds on Solaris
+	* Change: Removed dependency on libconfuse using ArgMap
+	* Change: Removed unnecessary include of sys/select.h in mysql backend
+	* Change: Mssql backend is thread safe
+	* Change: Used db2x command directly to generate man pages
+	* Bugfix: Timeouts are now optional in pgsql backend so it compiles on Win32 platforms
+	* Bugfix: Fixed severity level for error types in mssql backend (fix for FreeTDS for 0.82)
+	* Bugfix: Oracle backend doesn't return an error if odbx_row_fetch() is called more often than necessary
+	* Bugfix: Fixed memory leak in mssql backend which occured in odbx_finish()
+	* Bugfix: Supports concurrent make jobs now while building RPM files
+	* Bugfix: Builds cleanly on systems where an old version of the OpenDBX library is already installed
+
 2008-06-12 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Builds on Win32 platform using Cygwin or MinGW

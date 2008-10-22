@@ -108,19 +108,14 @@ AC_ARG_ENABLE([utils], [AS_HELP_STRING([--disable-utils], [don't build OpenDBX u
 AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
 
 if test "x${utils}" = xyes; then
-	AC_CHECK_HEADERS([confuse.h], , [AC_MSG_ERROR([libconfuse header (confuse.h) not found])])
 	AC_CHECK_HEADERS([readline/readline.h], , [AC_MSG_ERROR([libreadline header (readline.h) not found])])
 	AC_CHECK_HEADERS([readline/history.h], , [AC_MSG_ERROR([libreadline header (history.h) not found])])
-	AC_CHECK_LIB(
-		[confuse], [cfg_init],
-		[AC_DEFINE([HAVE_LIBCONFUSE], 1, [Have -lconfuse])],
-		[AC_MSG_ERROR([configuration parser library (libconfuse) not found])]
-	)
-	AC_CHECK_LIB(
-		[readline], [readline],
-		[AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])],
-		[AC_MSG_ERROR([readline library (libreadline) not found])]
-	)
+#	AC_CHECK_LIB(
+#		[readline], [readline],
+#		[AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])],
+#		[AC_MSG_ERROR([readline library (libreadline) not found])]
+#	)
+	AC_CHECK_LIB([readline], [readline], [AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])])
 fi
 
 
