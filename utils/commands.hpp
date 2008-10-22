@@ -3,6 +3,18 @@
 #include <string>
 #include <map>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef ENABLE_NLS
+#  ifdef HAVE_LIBINTL_H
+#    include <libintl.h>
+#  endif
+#else
+#  define gettext(string) string
+#endif
+
 
 using std::string;
 using std::map;

@@ -5,10 +5,10 @@
 
 
 
-Completion::Completion( const char* filename )
+Completion::Completion( const string& filename )
 {
 	string keyword;
-	std::ifstream ifs( filename, std::ifstream::in );
+	std::ifstream ifs( filename.c_str() );
 
 	while( getline( ifs, keyword ) )
 	{

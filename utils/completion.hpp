@@ -24,7 +24,7 @@ protected:
 
 public:
 
-	Completion( const char* filename );
+	Completion( const string& filename );
 
 	void find( const char* keyword );
 	const char* get();

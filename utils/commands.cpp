@@ -1,5 +1,6 @@
 #include "commands.hpp"
 #include <iostream>
+#include <cstdlib>
 
 
 
@@ -61,5 +62,5 @@ void Commands::help( const string& str, struct format* fparam )
 void Commands::quit( const string& str, struct format* fparam )
 {
 	std::cout << gettext( "Good bye" ) << std::endl;
-	exit( 0 );
+	::exit( 0 );
 }

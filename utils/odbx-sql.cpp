@@ -1,4 +1,4 @@
-#include "config.hpp"
+#include "argmap.hpp"
 #include "commands.hpp"
 #include "completion.hpp"
 #include "odbx-sql.hpp"
@@ -7,12 +7,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stddef.h>
-#include <locale.h>
-#include <libintl.h>
+#include <cstddef>
+#include <cstdlib>
+#include <clocale>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -20,8 +17,12 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
+#ifdef ENABLE_NLS
+#  ifdef HAVE_LIBINTL_H
+#    include <libintl.h>
+#  endif
+#else
+#  define gettext(string) string
 #endif
 
 
@@ -32,6 +33,12 @@ using std::string;
 using std::cout;
 using std::cerr;
 using std::endl;
+
+
+string help( ArgMap& A, const string& progname )
+{
+	return "\nOpenDBX SQL shell, version " + string( PACKAGE_VERSION ) + "\n\n" + progname + " [options]\n\n" + A.help() + "\n";
+}
 
 
 // hack to access completion
@@ -56,25 +63,6 @@ char* complete( const char* text, int state )
 }
 
 
-const string help( const string& filename )
-{
-	std::ostringstream help;
-
-	help << gettext( "Read and execute semicolon-terminated SQL statements from stdin" ) << endl;
-	help << endl;
-	help << gettext( "Usage: " ) << filename << " " << " -c <configfile> [-d <delimiter>] [-h] [-i] [-k <keywordfile>] [-s <separator>]" << endl;
-	help << endl;
-	help << "    -c      " << gettext( "read configuration from file" ) << endl;
-	help << "    -d      " << gettext( "start/end delimiter for fields in output" ) << endl;
-	help << "    -h      " << gettext( "print help" ) << endl;
-	help << "    -i      " << gettext( "interactive mode" ) << endl;
-	help << "    -k      " << gettext( "SQL keyword file" ) << endl;
-	help << "    -s      " << gettext( "separator between fields in output" ) << endl;
-
-	return help.str();
-}
-
-
 
 void output( Result& result, struct format* fparam )
 {
@@ -96,11 +84,11 @@ void output( Result& result, struct format* fparam )
 
 		if( fparam->header == true && fields > 0 )
 		{
-			cout << fparam->delimiter << result.columnName( 0 ) << fparam->delimiter;
+			cout << result.columnName( 0 );
 
 			for( unsigned long i = 1; i < fields; i++ )
 			{
-				cout << fparam->separator << fparam->delimiter << result.columnName( i ) << fparam->delimiter;
+				cout << fparam->separator << result.columnName( i );
 			}
 			cout << endl << "---" << endl;
 		}
@@ -150,7 +138,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		if( line[0] == '.' ) { cmd.exec( string( line ), fparam ); continue; }
 
 		sql = string( line, len );
-		free( line );
+		::free( line );
 
 		if( sql[len-1] != ';' )
 		{
@@ -165,7 +153,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 		}
 
 		if( iactive ) { add_history( sql.c_str() ); }
-		sql.erase( sql.size()-1, 1 );
+		if( sql[sql.size()-1] == ';' ) { sql.erase( sql.size()-1, 1 ); }
 
 		try
 		{
@@ -190,90 +178,62 @@ int main( int argc, char* argv[] )
 {
 	try
 	{
-		int param;
-		bool iactive = false;
-		char* conffile = NULL;
-		char* keywordfile = NULL;
-		struct format fparam;
-
+		ArgMap A;
+		string config;
 
 		setlocale( LC_ALL, "" );
 		textdomain( "opendbx-utils" );
 		bindtextdomain( "opendbx-utils", LOCALEDIR );
 
-		fparam.delimiter = "";
-		fparam.separator = "\t";
-		fparam.header = false;
-
-		cfg_opt_t opts[] =
-		{
-			CFG_STR( "backend", "mysql", CFGF_NONE ),
-			CFG_STR( "host", "localhost", CFGF_NONE ),
-			CFG_STR( "port", "", CFGF_NONE ),
-			CFG_STR( "database", "", CFGF_NONE ),
-			CFG_STR( "username", "", CFGF_NONE ),
-			CFG_STR( "password", "", CFGF_NONE ),
-			CFG_END()
-		};
-
-		while( ( param = getopt( argc, argv, "c:d:hik:s:" ) ) != -1 )
-		{
-			switch( param )
-			{
-				case 'c':
-					conffile = optarg;
-					break;
-				case 'd':
-					fparam.delimiter = optarg;
-					break;
-				case 'h':
-					cout << help( string( argv[0] ) ) << endl;
-					return 0;
-				case 'i':
-					iactive = true;
-					fparam.header = true;
-					break;
-				case 'k':
-					keywordfile = optarg;
-					break;
-				case 's':
-					fparam.separator = optarg;
-					break;
-				default:
-					const char tmp = (char) param;
-					throw std::runtime_error( "Unknown option '" + string( &tmp ) + "' with value '" + string( optarg ) + "'" );
-			}
+		if( !A.checkArgv( argc, argv, "--config", config ) ) {
+			if( !A.checkArgv( argc, argv, "-c", config ) ) { config = ""; }
 		}
 
-		if( keywordfile == NULL ) {
-			keywordfile = KEYWORDFILE;
+		A.set( "help", "?", string( gettext( "print this help" ) ), false );
+		A.set( "backend", "b", string( gettext( "name of the backend or path to the backend library" ) ) ) = "mysql";
+		A.set( "config", "c", string( gettext( "read configuration from file" ) ) ) = config;
+		A.set( "database", "d", string( gettext( "database name or database file name" ) ) );
+		A.set( "delimiter", "f", string( gettext( "start/end field delimiter in output" ) ) ) = "\"";
+		A.set( "host", "h", string( gettext( "host name, IP address or path to the database server" ) ) ) = "localhost";
+		A.set( "interactive", "i", string( gettext( "interactive mode" ) ), false );
+		A.set( "keywordfile", "k", string( gettext( "SQL keyword file for command completion" ) ) ) = KEYWORDFILE;
+		A.set( "port", "p", string( gettext( "port name or number of the database server" ) ) );
+		A.set( "separator", "s", string( gettext( "separator between fields in output" ) ) ) = "|";
+		A.set( "username", "u", string( gettext( "user name for authentication" ) ) );
+		string& password = A.set( "password", "w", string( gettext( "with prompt asking for the passphrase" ) ), false );
+
+		if( A.asString( "config" ) != "" ) {
+			A.parseFile( A.asString( "config" ) );
+		}
+		A.parseArgv( argc, argv );
+
+		if( A.mustDo( "help" ) ) {
+			std::cout << help( A, string( argv[0] ) );
+			return 0;
 		}
 
-		Config cfg( conffile, opts );
-		g_comp = new Completion( keywordfile );
+		if( A.mustDo( "password" ) ) {
+			std::cout << gettext( "Password: " );
+			std::cin >> password;
+		}
 
+		struct format fparam;
+		fparam.delimiter = A.asString( "delimiter" );
+		fparam.separator = A.asString( "separator" );
+		fparam.header = true;
+
+		g_comp = new Completion( A.asString( "keywordfile" ) );
 		rl_completion_entry_function = &complete;
 
-		Conn conn( cfg.getStr( "backend" ), cfg.getStr( "host" ), cfg.getStr( "port" ) );
-		conn.bind( cfg.getStr( "database" ), cfg.getStr( "username" ), cfg.getStr( "password" ), ODBX_BIND_SIMPLE );
+		Conn conn( A.asString( "backend" ), A.asString( "host" ), A.asString( "port" ) );
+		conn.bind( A.asString( "database" ), A.asString( "username" ), A.asString( "password" ) );
 
-		loopstmts( conn, &fparam, iactive );
+		loopstmts( conn, &fparam, A.mustDo( "interactive" ) );
 
 		conn.finish();
 		delete g_comp;
 	}
-	catch( OpenDBX::Exception& oe )
-	{
-		cerr << gettext( "Error: " ) << oe.what() << endl;
-		return 1;
-	}
-	catch( ConfigException& ce )
-	{
-		cerr << gettext( "Error: " ) << ce.what() << endl;
-		cerr << help( string( argv[0] ) ) << endl;
-		return 1;
-	}
-	catch( runtime_error& e )
+	catch( std::runtime_error &e )
 	{
 		cerr << gettext( "Error: " ) << e.what() << endl;
 		return 1;

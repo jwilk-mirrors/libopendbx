@@ -50,15 +50,15 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgdatadir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am__odbx_sql_SOURCES_DIST = odbx-sql.hpp odbx-sql.cpp config.cpp \
-	config.hpp commands.cpp commands.hpp completion.cpp \
-	completion.hpp
-@ENABLEUTILS_TRUE@am_odbx_sql_OBJECTS = odbx_sql-odbx-sql.$(OBJEXT) \
-@ENABLEUTILS_TRUE@	odbx_sql-config.$(OBJEXT) \
+am__odbx_sql_SOURCES_DIST = argmap.cpp argmap.hpp commands.cpp \
+	commands.hpp completion.cpp completion.hpp odbx-sql.hpp \
+	odbx-sql.cpp
+@ENABLEUTILS_TRUE@am_odbx_sql_OBJECTS = odbx_sql-argmap.$(OBJEXT) \
 @ENABLEUTILS_TRUE@	odbx_sql-commands.$(OBJEXT) \
-@ENABLEUTILS_TRUE@	odbx_sql-completion.$(OBJEXT)
+@ENABLEUTILS_TRUE@	odbx_sql-completion.$(OBJEXT) \
+@ENABLEUTILS_TRUE@	odbx_sql-odbx-sql.$(OBJEXT)
 odbx_sql_OBJECTS = $(am_odbx_sql_OBJECTS)
-@ENABLEUTILS_TRUE@odbx_sql_DEPENDENCIES =  \
+@ENABLEUTILS_TRUE@odbx_sql_DEPENDENCIES = ../lib/.libs/libopendbx.so \
 @ENABLEUTILS_TRUE@	../lib/.libs/libopendbxplus.so
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -106,6 +106,7 @@ DIST_SUBDIRS = doc po
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+APINUMBER = @APINUMBER@
 APIPLUSVERSION = @APIPLUSVERSION@
 APIVERSION = @APIVERSION@
 AR = @AR@
@@ -254,11 +255,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @ENABLEUTILS_TRUE@SUBDIRS = doc po
 @ENABLEUTILS_TRUE@INCLUDES = -I../lib
-@ENABLEUTILS_TRUE@odbx_sql_SOURCES = odbx-sql.hpp odbx-sql.cpp config.cpp config.hpp commands.cpp commands.hpp completion.cpp completion.hpp
+@ENABLEUTILS_TRUE@odbx_sql_SOURCES = argmap.cpp argmap.hpp commands.cpp commands.hpp completion.cpp completion.hpp odbx-sql.hpp odbx-sql.cpp
 @ENABLEUTILS_TRUE@odbx_sql_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DKEYWORDFILE=\"$(pkgdatadir)/keywords\"
-@ENABLEUTILS_TRUE@odbx_sql_LDADD = ../lib/.libs/libopendbxplus.so -lconfuse -lreadline
-EXTRA_DIST = keywords
-pkgdata_DATA = keywords
+@ENABLEUTILS_TRUE@odbx_sql_LDADD = ../lib/.libs/libopendbx.so ../lib/.libs/libopendbxplus.so -lreadline -lncurses
+@ENABLEUTILS_TRUE@EXTRA_DIST = keywords
+@ENABLEUTILS_TRUE@pkgdata_DATA = keywords
 all: all-recursive
 
 .SUFFIXES:
@@ -330,9 +331,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/odbx_sql-argmap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/odbx_sql-commands.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/odbx_sql-completion.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/odbx_sql-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/odbx_sql-odbx-sql.Po@am__quote@
 
 .cpp.o:
@@ -356,33 +357,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-odbx_sql-odbx-sql.o: odbx-sql.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-odbx-sql.o -MD -MP -MF $(DEPDIR)/odbx_sql-odbx-sql.Tpo -c -o odbx_sql-odbx-sql.o `test -f 'odbx-sql.cpp' || echo '$(srcdir)/'`odbx-sql.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-odbx-sql.Tpo $(DEPDIR)/odbx_sql-odbx-sql.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='odbx-sql.cpp' object='odbx_sql-odbx-sql.o' libtool=no @AMDEPBACKSLASH@
+odbx_sql-argmap.o: argmap.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-argmap.o -MD -MP -MF $(DEPDIR)/odbx_sql-argmap.Tpo -c -o odbx_sql-argmap.o `test -f 'argmap.cpp' || echo '$(srcdir)/'`argmap.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-argmap.Tpo $(DEPDIR)/odbx_sql-argmap.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='argmap.cpp' object='odbx_sql-argmap.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-odbx-sql.o `test -f 'odbx-sql.cpp' || echo '$(srcdir)/'`odbx-sql.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-argmap.o `test -f 'argmap.cpp' || echo '$(srcdir)/'`argmap.cpp
 
-odbx_sql-odbx-sql.obj: odbx-sql.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-odbx-sql.obj -MD -MP -MF $(DEPDIR)/odbx_sql-odbx-sql.Tpo -c -o odbx_sql-odbx-sql.obj `if test -f 'odbx-sql.cpp'; then $(CYGPATH_W) 'odbx-sql.cpp'; else $(CYGPATH_W) '$(srcdir)/odbx-sql.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-odbx-sql.Tpo $(DEPDIR)/odbx_sql-odbx-sql.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='odbx-sql.cpp' object='odbx_sql-odbx-sql.obj' libtool=no @AMDEPBACKSLASH@
+odbx_sql-argmap.obj: argmap.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-argmap.obj -MD -MP -MF $(DEPDIR)/odbx_sql-argmap.Tpo -c -o odbx_sql-argmap.obj `if test -f 'argmap.cpp'; then $(CYGPATH_W) 'argmap.cpp'; else $(CYGPATH_W) '$(srcdir)/argmap.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-argmap.Tpo $(DEPDIR)/odbx_sql-argmap.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='argmap.cpp' object='odbx_sql-argmap.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-odbx-sql.obj `if test -f 'odbx-sql.cpp'; then $(CYGPATH_W) 'odbx-sql.cpp'; else $(CYGPATH_W) '$(srcdir)/odbx-sql.cpp'; fi`
-
-odbx_sql-config.o: config.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-config.o -MD -MP -MF $(DEPDIR)/odbx_sql-config.Tpo -c -o odbx_sql-config.o `test -f 'config.cpp' || echo '$(srcdir)/'`config.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-config.Tpo $(DEPDIR)/odbx_sql-config.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='config.cpp' object='odbx_sql-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-config.o `test -f 'config.cpp' || echo '$(srcdir)/'`config.cpp
-
-odbx_sql-config.obj: config.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-config.obj -MD -MP -MF $(DEPDIR)/odbx_sql-config.Tpo -c -o odbx_sql-config.obj `if test -f 'config.cpp'; then $(CYGPATH_W) 'config.cpp'; else $(CYGPATH_W) '$(srcdir)/config.cpp'; fi`
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-config.Tpo $(DEPDIR)/odbx_sql-config.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='config.cpp' object='odbx_sql-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-config.obj `if test -f 'config.cpp'; then $(CYGPATH_W) 'config.cpp'; else $(CYGPATH_W) '$(srcdir)/config.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-argmap.obj `if test -f 'argmap.cpp'; then $(CYGPATH_W) 'argmap.cpp'; else $(CYGPATH_W) '$(srcdir)/argmap.cpp'; fi`
 
 odbx_sql-commands.o: commands.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-commands.o -MD -MP -MF $(DEPDIR)/odbx_sql-commands.Tpo -c -o odbx_sql-commands.o `test -f 'commands.cpp' || echo '$(srcdir)/'`commands.cpp
@@ -411,6 +398,20 @@ odbx_sql-completion.obj: completion.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='completion.cpp' object='odbx_sql-completion.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-completion.obj `if test -f 'completion.cpp'; then $(CYGPATH_W) 'completion.cpp'; else $(CYGPATH_W) '$(srcdir)/completion.cpp'; fi`
+
+odbx_sql-odbx-sql.o: odbx-sql.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-odbx-sql.o -MD -MP -MF $(DEPDIR)/odbx_sql-odbx-sql.Tpo -c -o odbx_sql-odbx-sql.o `test -f 'odbx-sql.cpp' || echo '$(srcdir)/'`odbx-sql.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-odbx-sql.Tpo $(DEPDIR)/odbx_sql-odbx-sql.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='odbx-sql.cpp' object='odbx_sql-odbx-sql.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-odbx-sql.o `test -f 'odbx-sql.cpp' || echo '$(srcdir)/'`odbx-sql.cpp
+
+odbx_sql-odbx-sql.obj: odbx-sql.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT odbx_sql-odbx-sql.obj -MD -MP -MF $(DEPDIR)/odbx_sql-odbx-sql.Tpo -c -o odbx_sql-odbx-sql.obj `if test -f 'odbx-sql.cpp'; then $(CYGPATH_W) 'odbx-sql.cpp'; else $(CYGPATH_W) '$(srcdir)/odbx-sql.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/odbx_sql-odbx-sql.Tpo $(DEPDIR)/odbx_sql-odbx-sql.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='odbx-sql.cpp' object='odbx_sql-odbx-sql.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(odbx_sql_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o odbx_sql-odbx-sql.obj `if test -f 'odbx-sql.cpp'; then $(CYGPATH_W) 'odbx-sql.cpp'; else $(CYGPATH_W) '$(srcdir)/odbx-sql.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
