@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opendbx 1.3.11\n"
+"Project-Id-Version: opendbx 1.3.11rc3\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-06-15 01:08+0200\n"
+"POT-Creation-Date: 2008-10-14 12:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,106 +16,118 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: utils/commands.cpp:30
+#: utils/commands.cpp:31
 msgid "Unknown command, use .help to list available commands"
 msgstr ""
 
-#: utils/commands.cpp:41
+#: utils/commands.cpp:42
 msgid "Printing column names is now enabled"
 msgstr ""
 
-#: utils/commands.cpp:44
+#: utils/commands.cpp:45
 msgid "Printing column names is now disabled"
 msgstr ""
 
-#: utils/commands.cpp:53
+#: utils/commands.cpp:54
 msgid "Available commands:"
 msgstr ""
 
-#: utils/commands.cpp:54
+#: utils/commands.cpp:55
 msgid "toggle printing column names for result sets"
 msgstr ""
 
-#: utils/commands.cpp:55
+#: utils/commands.cpp:56 utils/config.cpp:118 utils/odbx-sql.cpp:192
 msgid "print this help"
 msgstr ""
 
-#: utils/commands.cpp:56
+#: utils/commands.cpp:57
 msgid "exit program"
 msgstr ""
 
-#: utils/commands.cpp:63
+#: utils/commands.cpp:64
 msgid "Good bye"
 msgstr ""
 
-#: utils/config.cpp:9
+#: utils/config.cpp:66
 msgid "Configuration file parameter is mandatory"
 msgstr ""
 
-#: utils/config.cpp:14
-msgid "Configuration options are mandatory"
-msgstr ""
-
-#: utils/config.cpp:19
+#: utils/config.cpp:71
 msgid "Unable to initialize configuration file parser"
 msgstr ""
 
-#: utils/config.cpp:27
-msgid "Unable to open configuration file: "
-msgstr ""
-
-#: utils/config.cpp:29
-msgid "Unable to parse configuration file: "
-msgstr ""
-
-#: utils/config.cpp:31
-msgid "Unknown error returned from configuration parser. File name: "
-msgstr ""
-
-#: utils/odbx-sql.cpp:63
+#: utils/config.cpp:114
 msgid "Read and execute semicolon-terminated SQL statements from stdin"
 msgstr ""
 
-#: utils/odbx-sql.cpp:65
+#: utils/config.cpp:116
 msgid "Usage: "
 msgstr ""
 
-#: utils/odbx-sql.cpp:67
+#: utils/config.cpp:119 utils/odbx-sql.cpp:193
+msgid "name of the backend or path to the backend library"
+msgstr ""
+
+#: utils/config.cpp:120 utils/odbx-sql.cpp:194
 msgid "read configuration from file"
 msgstr ""
 
-#: utils/odbx-sql.cpp:68
+#: utils/config.cpp:121 utils/odbx-sql.cpp:195
+msgid "database name or database file name"
+msgstr ""
+
+#: utils/config.cpp:122
 msgid "start/end delimiter for fields in output"
 msgstr ""
 
-#: utils/odbx-sql.cpp:69
-msgid "print help"
+#: utils/config.cpp:123 utils/odbx-sql.cpp:197
+msgid "host name, IP address or path to the database server"
 msgstr ""
 
-#: utils/odbx-sql.cpp:70
+#: utils/config.cpp:124 utils/odbx-sql.cpp:198
 msgid "interactive mode"
 msgstr ""
 
-#: utils/odbx-sql.cpp:71
-msgid "SQL keyword file"
+#: utils/config.cpp:125 utils/odbx-sql.cpp:199
+msgid "SQL keyword file for command completion"
 msgstr ""
 
-#: utils/odbx-sql.cpp:72
+#: utils/config.cpp:126 utils/odbx-sql.cpp:200
+msgid "port name or number of the database server"
+msgstr ""
+
+#: utils/config.cpp:127 utils/odbx-sql.cpp:201
 msgid "separator between fields in output"
 msgstr ""
 
-#: utils/odbx-sql.cpp:140
+#: utils/config.cpp:128 utils/odbx-sql.cpp:202
+msgid "user name for authentication"
+msgstr ""
+
+#: utils/config.cpp:129 utils/odbx-sql.cpp:203
+msgid "with prompt asking for the passphrase"
+msgstr ""
+
+#: utils/odbx-sql.cpp:128
 msgid "Interactive SQL shell, use .help to list available commands"
 msgstr ""
 
-#: utils/odbx-sql.cpp:181
+#: utils/odbx-sql.cpp:169
 msgid "Warning: "
 msgstr ""
 
-#: utils/odbx-sql.cpp:267 utils/odbx-sql.cpp:272 utils/odbx-sql.cpp:278
+#: utils/odbx-sql.cpp:196
+msgid "start/end field delimiter in output"
+msgstr ""
+
+#: utils/odbx-sql.cpp:216
+msgid "Password: "
+msgstr ""
+
+#: utils/odbx-sql.cpp:238
 msgid "Error: "
 msgstr ""
 
-#: utils/odbx-sql.cpp:283
+#: utils/odbx-sql.cpp:243
 msgid "Error: Caught unknown exception"
 msgstr ""
