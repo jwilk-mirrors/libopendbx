@@ -55,6 +55,8 @@ Summary:    Utility application for manipulating database content
 Summary(de.UTF-8):    Hilfswerkzeuge für die Manipulation von Datenbankinhalten
 Group:    Applications/Databases
 Requires:    %{name} >= %{version}
+Requires:    readline
+BuildRequires:    readline-devel
 
 %description utils
 Utility application for manipulating database content either interactively by
@@ -296,7 +298,12 @@ Backend bazy danych ODBC dla biblioteki opendbx.
 
 %build
 %configure \
-    --prefix=/usr \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --mandir=%{_mandir} \
     --disable-static \
     --with-backends="\
 %{!?_without_mysql:mysql }\
@@ -321,7 +328,9 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{__make} DESTDIR=%{buildroot} install
 rm %{buildroot}%{_libdir}/opendbx/lib*.*a
 rm %{buildroot}%{_libdir}/libopendbx.*a
+rm %{buildroot}%{_libdir}/libopendbxplus.*a
 %find_lang %{name}
+%find_lang %{name}-utils
 
 
 %clean
@@ -338,13 +347,24 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %defattr(-,root,root,-)
 %{_libdir}/opendbx
 %{_libdir}/libopendbx.so.*
+%{_libdir}/libopendbxplus.so.*
+%{_mandir}/man3/*
 %doc AUTHORS COPYING ChangeLog NEWS README TODO
+
+
+%files utils -f %{name}-utils.lang
+%defattr(-,root,root,-)
+%{_bindir}/odbx-sql
+%{_mandir}/man1/*
+%{_datadir}/%{name}/keywords
 
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/odbx.h
+%{_includedir}/opendbx/api*
 %{_libdir}/libopendbx.so
+%{_libdir}/libopendbxplus.so
 %{_libdir}/pkgconfig/opendbx.pc
 
 
