@@ -457,6 +457,11 @@ namespace OpenDBX
 
 	string& Conn::escape( const string& from, string& to )
 	{
+		if( m_impl == NULL )
+		{
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
+		}
+
 		return m_impl->escape( from.c_str(), from.size(), to );
 	}
 
@@ -464,6 +469,11 @@ namespace OpenDBX
 
 	string& Conn::escape( const char* from, unsigned long fromlen, string& to )
 	{
+		if( m_impl == NULL )
+		{
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
+		}
+
 		return m_impl->escape( from, fromlen, to );
 	}
 
