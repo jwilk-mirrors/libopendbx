@@ -71,7 +71,8 @@ libopendbx_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(libopendbx_la_LDFLAGS) $(LDFLAGS) -o $@
 libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	.libs/libopendbx.la
-am_libopendbxplus_la_OBJECTS = libopendbxplus_la-odbx.lo
+am_libopendbxplus_la_OBJECTS = libopendbxplus_la-odbx_impl.lo \
+	libopendbxplus_la-odbx.lo
 libopendbxplus_la_OBJECTS = $(am_libopendbxplus_la_OBJECTS)
 libopendbxplus_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -263,7 +264,7 @@ libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ \
 	-DLOCALEDIR=\"$(localedir)\" $(am__append_1) $(am__append_3)
 libopendbx_la_LDFLAGS = -no-undefined -version-info @APIVERSION@
 libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
-libopendbxplus_la_SOURCES = odbx.cpp odbx_impl.hpp
+libopendbxplus_la_SOURCES = odbx_iface.hpp odbx_impl.hpp odbx_impl.cpp odbx.cpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbxplus_la_LDFLAGS = -no-undefined -version-info @APIPLUSVERSION@
 libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
@@ -341,6 +342,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopendbx_la-odbx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopendbx_la-odbxlib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopendbxplus_la-odbx.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopendbxplus_la-odbx_impl.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -397,6 +399,13 @@ libopendbx_la-odbx.lo: odbx.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libopendbxplus_la-odbx_impl.lo: odbx_impl.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopendbxplus_la_CXXFLAGS) $(CXXFLAGS) -MT libopendbxplus_la-odbx_impl.lo -MD -MP -MF $(DEPDIR)/libopendbxplus_la-odbx_impl.Tpo -c -o libopendbxplus_la-odbx_impl.lo `test -f 'odbx_impl.cpp' || echo '$(srcdir)/'`odbx_impl.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libopendbxplus_la-odbx_impl.Tpo $(DEPDIR)/libopendbxplus_la-odbx_impl.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='odbx_impl.cpp' object='libopendbxplus_la-odbx_impl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopendbxplus_la_CXXFLAGS) $(CXXFLAGS) -c -o libopendbxplus_la-odbx_impl.lo `test -f 'odbx_impl.cpp' || echo '$(srcdir)/'`odbx_impl.cpp
 
 libopendbxplus_la-odbx.lo: odbx.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopendbxplus_la_CXXFLAGS) $(CXXFLAGS) -MT libopendbxplus_la-odbx.lo -MD -MP -MF $(DEPDIR)/libopendbxplus_la-odbx.Tpo -c -o libopendbxplus_la-odbx.lo `test -f 'odbx.cpp' || echo '$(srcdir)/'`odbx.cpp

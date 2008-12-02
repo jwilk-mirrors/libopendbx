@@ -38,33 +38,29 @@ extern "C++" {
 
 namespace OpenDBX
 {
-	class Lob_Impl;
-	class Result_Impl;
-	class Stmt_Impl;
-	class Conn_Impl;
-}
-
-
-
-namespace OpenDBX
-{
 	using std::string;
 
-
-	class Lob;
-	class Result;
-	class Stmt;
-	class Conn;
+	class Lob_Iface;
+	class Result_Iface;
+	class Stmt_Iface;
+	class Conn_Iface;
 
 
 
 	/**
 	 * Exception thrown by OpenDBX objects.
+	 * Most calls to methods of OpenDBX objects does throw an exception in case
+	 * an error occurs in the underlying database library. Additionally to other
+	 * exceptions which inherit from the STL exception class it will not only
+	 * contain a translated error message depending on the user settings but
+	 * also a machine readable error code and an indicator for the severity of
+	 * the eror.
+	 *
+	 * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+	 * @version 1.0
 	 */
 	class Exception : public std::runtime_error
 	{
-	protected:
-
 		/**
 		 * Error code (negative).
 		 */
@@ -78,55 +74,83 @@ namespace OpenDBX
 	public:
 
 		/**
-		 * Initializes exception object.
+		 * Initializes the exception object.
+		 * The first parameter, the error message, should be the human readable
+		 * description of what has gone wrong. It should also be already translated
+		 * to the language of the user which depends on his environment settings
+		 * when e.g GNU gettext is used. Errors thrown by the OpenDBX C++ library
+		 * are already translated.
+		 * The OpenDBX error code is the machine readable code for the error which
+		 * has been occured.
+		 * The last parameter must be a value indicating the severity of the
+		 * thrown error. If the value is smaller than zero, the error is fatal
+		 * and the connection to the database can't be recovered and has to be
+		 * closed and reopened before the application can try to continue.
 		 *
-		 * @param msg Error message
+		 * @param msg Human readable error message
 		 * @param err OpenDBX error code
 		 * @param type Severity of error (negative: fatal, zero: success, positive: warning)
 		 * @return Exception
 		 */
-		Exception( string msg, int err, int type );
+		Exception( const string& msg, int err, int type ) throw();
 
 		/**
 		 * Returns the OpenDBX error code related to the error.
+		 * The machine readable code describing the error which occured can be
+		 * used by the application to act differently depending on the specific
+		 * error.
 		 *
 		 * @return Error code
 		 */
-		int getCode();
+		int getCode() const throw();
 
 		/**
 		 * Returns severity indicator.
+		 * The returned value classifies the error thrown. In case it is negative,
+		 * the error is fatal (e.g. the connection to the database is lost) and
+		 * the application can't continue without closing and reopening the
+		 * connection.
+		 * If the value is positive, the database wasn't able to perform the
+		 * requested action but the connection is still OK and can be used to
+		 * send more requests to the database.
+		 * On zero, everything was successfull and no error occured. This
+		 * shouldn't happen when catching one of these exceptions.
 		 *
 		 * @return Severity of error (negative: fatal, zero: success, positive: warning)
 		 */
-		int getType();
+		int getType() const throw();
 	};
 
 
 
 	/**
 	 * Handling large objects if supported by the database.
+	 *
+	 * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+	 * @version 1.0
 	 */
 	class Lob
 	{
-	protected:
+		friend class Result;
 
 		/**
 		 * Private implementation of object.
 		 */
-		Lob_Impl* m_impl;
+		Lob_Iface* m_impl;
 
 		/**
 		 * Reference counter of copies.
 		 */
 		int* m_ref;
 
+	protected:
+
 		/**
 		 * Default constructor.
 		 *
 		 * @return Lob instance
 		 */
-		Lob();
+		Lob() throw() {};
 
 		/**
 		 * Create large object instance.
@@ -134,16 +158,22 @@ namespace OpenDBX
 		 * @param impl Pointer to private implementation
 		 * @return Lob instance
 		 */
-		Lob( Lob_Impl* impl );
-
-		friend class Result;
+		Lob( Lob_Iface* impl ) throw( std::exception );
 
 	public:
 
 		/**
 		 * Destroy large object instance if no other references exist.
 		 */
-		~Lob();
+		~Lob() throw();
+
+		/**
+		 * Copy constructor.
+		 * Enables two large object instances to reference the same LOB.
+		 *
+		 * @param ref Original large object instance
+		 */
+		Lob( const Lob& ref ) throw();
 
 		/**
 		 * Assign large object instance to another one.
@@ -151,12 +181,12 @@ namespace OpenDBX
 		 * @param ref Large object instance
 		 * @return Large object reference of this instance
 		 */
-		Lob& operator=( const Lob& ref );
+		Lob& operator=( const Lob& ref ) throw();
 
 		/**
 		 * Close Lob and commit changes.
 		 */
-		void close();
+		void close() throw( std::exception );
 
 		/**
 		 * Reads content from large object into the buffer.
@@ -165,7 +195,7 @@ namespace OpenDBX
 		 * @param buflen Length of the given buffer in bytes
 		 * @return Number of bytes written into the buffer
 		 */
-		ssize_t read( void* buffer, size_t buflen );
+		ssize_t read( void* buffer, size_t buflen ) throw( std::exception );
 
 		/**
 		 * Writes data from the buffer into the large object.
@@ -174,34 +204,39 @@ namespace OpenDBX
 		 * @param buflen Length of the data in the buffer in bytes
 		 * @return Number of bytes written into the large object
 		 */
-		ssize_t write( void* buffer, size_t buflen );
+		ssize_t write( void* buffer, size_t buflen ) throw( std::exception );
 	};
 
 
 
 	/**
 	 * Provides result sets from the database.
+	 *
+	 * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+	 * @version 1.0
 	 */
 	class Result
 	{
-	protected:
+		friend class Stmt;
 
 		/**
 		 * Private implementation of object.
 		 */
-		Result_Impl* m_impl;
+		Result_Iface* m_impl;
 
 		/**
 		 * Reference counter of copies.
 		 */
 		int* m_ref;
 
+	protected:
+
 		/**
 		 * Default constructor.
 		 *
 		 * @return Result instance
 		 */
-		Result();
+		Result() throw() {};
 
 		/**
 		 * Create Result instance.
@@ -209,16 +244,22 @@ namespace OpenDBX
 		 * @param impl Pointer to private implementation
 		 * @return Result instance
 		 */
-		Result( Result_Impl* impl );
-
-		friend class Stmt;
+		Result( Result_Iface* impl ) throw( std::exception );
 
 	public:
 
 		/**
 		 * Destroy Result instance if no other references exist.
 		 */
-		~Result();
+		~Result() throw();
+
+		/**
+		 * Copy constructor.
+		 * Enables two object instances to reference the same result object.
+		 *
+		 * @param ref Original result object instance
+		 */
+		Result( const Result& ref ) throw();
 
 		/**
 		 * Assign Result instance to another one.
@@ -226,12 +267,12 @@ namespace OpenDBX
 		 * @param ref Result instance
 		 * @return Result reference of this instance
 		 */
-		Result& operator=( const Result& ref );
+		Result& operator=( const Result& ref ) throw();
 
 		/**
 		 * Get unfetched rows and clean up the current result set.
 		 */
-		void finish();
+		void finish() throw( std::exception );
 
 		/**
 		 * Fetch one result set from the database server.
@@ -241,28 +282,28 @@ namespace OpenDBX
 		 * @return Status or error code
 		 * @see odbxres
 		 */
-		odbxres getResult( struct timeval* timeout = NULL, unsigned long chunk = 0 );
+		odbxres getResult( struct timeval* timeout = NULL, unsigned long chunk = 0 ) throw( std::exception );
 
 		/**
 		 * Makes data of next row available.
 		 *
 		 * @return Status or error code
 		 */
-		odbxrow getRow();
+		odbxrow getRow() throw( std::exception );
 
 		/**
 		 * Returns the number of rows affected by DELETE, INSERT of UPDATE statements.
 		 *
 		 * @return Number of rows touched
 		 */
-		uint64_t rowsAffected();
+		uint64_t rowsAffected() throw( std::exception );
 
 		/**
 		 * Returns the number of columns available in this result set.
 		 *
 		 * @return Number of columns
 		 */
-		unsigned long columnCount();
+		unsigned long columnCount() throw( std::exception );
 
 		/**
 		 * Maps the column name to the column number required by other methods.
@@ -270,7 +311,7 @@ namespace OpenDBX
 		 * @param name Name of the column in the result set
 		 * @return Position of column in result set
 		 */
-		unsigned long columnPos( const string& name );
+		unsigned long columnPos( const string& name ) throw( std::exception );
 
 		/**
 		 * Returns the name of the column in the current result set.
@@ -278,7 +319,7 @@ namespace OpenDBX
 		 * @param pos Position of column in result set
 		 * @return Column name
 		 */
-		string columnName( unsigned long pos );
+		const string columnName( unsigned long pos ) throw( std::exception );
 
 		/**
 		 * Returns the type of the column in the current result set.
@@ -287,7 +328,7 @@ namespace OpenDBX
 		 * @return Column type
 		 * @see odbxtype
 		 */
-		odbxtype columnType( unsigned long pos );
+		odbxtype columnType( unsigned long pos ) throw( std::exception );
 
 		/**
 		 * Returns the size of the content in the current row at the specified postion.
@@ -295,7 +336,7 @@ namespace OpenDBX
 		 * @param pos Position of column in result set
 		 * @return Size of the data in bytes
 		 */
-		unsigned long fieldLength( unsigned long pos );
+		unsigned long fieldLength( unsigned long pos ) throw( std::exception );
 
 		/**
 		 * Returns a pointer to the content in the current row at the specified postion.
@@ -303,7 +344,7 @@ namespace OpenDBX
 		 * @param pos Position of column in result set
 		 * @return Pointer to the data
 		 */
-		const char* fieldValue( unsigned long pos );
+		const char* fieldValue( unsigned long pos ) throw( std::exception );
 
 		/**
 		 * Create a large object instance if supported by the database.
@@ -312,34 +353,39 @@ namespace OpenDBX
 		 * @return Large object instance
 		 * @see Lob
 		 */
-		Lob getLob( const char* value );
+		Lob getLob( const char* value ) throw( std::exception );
 	};
 
 
 
 	/**
 	 * Statement object.
+	 *
+	 * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+	 * @version 1.0
 	 */
 	class Stmt
 	{
-	protected:
+		friend class Conn;
 
 		/**
 		 * Private implementation of object.
 		 */
-		Stmt_Impl* m_impl;
+		Stmt_Iface* m_impl;
 
 		/**
 		 * Reference counter of copies.
 		 */
 		int* m_ref;
 
+	protected:
+
 		/**
 		 * Default constructor.
 		 *
 		 * @return Statement instance
 		 */
-		Stmt();
+		Stmt() throw() {};
 
 		/**
 		 * Create statement instance.
@@ -347,9 +393,7 @@ namespace OpenDBX
 		 * @param impl Pointer to private implementation
 		 * @return Statement instance
 		 */
-		Stmt( Stmt_Impl* impl );
-
-		friend class Conn;
+		Stmt( Stmt_Iface* impl ) throw( std::exception );
 
 	public:
 
@@ -361,7 +405,15 @@ namespace OpenDBX
 		/**
 		 * Destroy statement instance if no other references exist.
 		 */
-		~Stmt();
+		~Stmt() throw();
+
+		/**
+		 * Copy constructor.
+		 * Enables two object instances to reference the same statement object.
+		 *
+		 * @param ref Original statement object instance
+		 */
+		Stmt( const Stmt& ref ) throw();
 
 		/**
 		 * Assign statement instance to another one.
@@ -369,7 +421,7 @@ namespace OpenDBX
 		 * @param ref Stmt instance
 		 * @return Statement reference of this instance
 		 */
-		Stmt& operator=( const Stmt& ref );
+		Stmt& operator=( const Stmt& ref ) throw();
 
 		/**
 		 * Execute statement and return Result instance.
@@ -377,22 +429,23 @@ namespace OpenDBX
 		 * @return Result instance
 		 * @see Result
 		 */
-		Result execute();
+		Result execute() throw( std::exception );
 	};
 
 
 
 	/**
-	 * Handling a connection to a database.
+	 * Encapsulates a connection to a database.
+	 *
+	 * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+	 * @version 1.0
 	 */
 	class Conn
 	{
-	protected:
-
 		/**
-		 * Private implementation of object.
+		 * Private implementation of the connection object.
 		 */
-		Conn_Impl* m_impl;
+		Conn_Iface* m_impl;
 
 		/**
 		 * Reference counter of copies.
@@ -402,138 +455,313 @@ namespace OpenDBX
 	public:
 
 		/**
-		 * Default constructor.
+		 * The default constructor for newly created connection objects without
+		 * parameters.
 		 *
-		 * @return Connection instance
+		 * This is method is provided to enable programmers to use connection
+		 * objects as member variables of other classes. They are initialized
+		 * at construction time of the encapsulating object when no values
+		 * for backend, host and port are available yet.
+		 *
+		 * It's necessary to replace the created object later on by a connection
+		 * instance where the necessary parameters have been given via one of
+		 * the other constructors. Calling one of the member functions of an
+		 * instance created by the default constructor isn't possible and will
+		 * throw an exception.
+		 *
+		 * @return Empty connection instance
+		 * @see #Conn( const char*, const char*, const char* )
+		 * @see #Conn( const string&, const string&, const string& )
 		 */
-		Conn();
+		Conn() throw();
 
 		/**
-		 * Build connection object using C string parameters.
+		 * Creates a connection object using C style string parameters.
+		 *
+		 * Initializes a new connection using the parameters backend, host and
+		 * port, but doesn't open the connection to the database yet. This method
+		 * allows C style strings as values for all parameters. Another construtor
+		 * for C++ style strings is also available. It returns a new connection
+		 * instance, which can be used to query options implemented by the driver
+		 * or to create a statement. In case of an error, it throws an OpenDBX
+		 * exception with error message, code and severity.
+		 *
+		 * The parameter "backend" is the name of the driver the OpenDBX library
+		 * should use to connect to a database. The name must be one of the
+		 * implemented and available drivers on the system and is case sensitive.
+		 * All driver names are in lower case, e.g. "mysql".
+		 *
+		 * Depending on the database driver, "host" can have different mearings.
+		 * Normally, it's the name or IP address of the server hosting the
+		 * database server application. In case of serverless database
+		 * implementations like SQLite it's the directory path where the database
+		 * file is located. The path must contain the platform specific path
+		 * separators like slash ("/") on Unix-like systems and backslash ("\")
+		 * on Windows systems. Also the path must end with the path separator
+		 * like "/path/to/file/".
+		 *
+		 * Furthermore "port" can be the number or name the database server
+		 * application is listening to. If a name instead of the number is
+		 * allowed depends on the database client library but the number as
+		 * string does always work. If an empty string is given, the default
+		 * port of the database server application is used by the database
+		 * client library.
 		 *
 		 * @param backend Name of the backend module to use
 		 * @param host Name or IP address of the database server
 		 * @param port Name or number of the port used by the database server
 		 * @return Connection instance
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
+		 * @see #Conn( const string&, const string&, const string& )
 		 */
-		Conn( const char* backend, const char* host = "", const char* port = "" );
+		Conn( const char* backend, const char* host = "", const char* port = "" ) throw( std::exception );
 
 		/**
-		 * Build connection object using C++ string parameters.
+		 * Creates a connection object using C++ style string parameters.
+		 *
+		 * Initializes a new connection using the parameters backend, host and
+		 * port, but doesn't open the connection to the database yet. This method
+		 * allows C++ style strings as values for all parameters. Another
+		 * construtor for C style strings is also available. It returns a new
+		 * connection instance, which can be used to query options implemented
+		 * by the driver or to create a statement. In case of an error, it throws
+		 * an OpenDBX exception with error message, code and severity.
+		 *
+		 * The parameter "backend" is the name of the driver the OpenDBX library
+		 * should use to connect to a database. The name must be one of the
+		 * implemented and available drivers on the system and is case sensitive.
+		 * All driver names are in lower case, e.g. "mysql".
+		 *
+		 * Depending on the database driver, "host" can have different mearings.
+		 * Normally, it's the name or IP address of the server hosting the
+		 * database server application. In case of serverless database
+		 * implementations like SQLite it's the directory path where the database
+		 * file is located. The path must contain the platform specific path
+		 * separators like slash ("/") on Unix-like systems and backslash ("\")
+		 * on Windows systems. Also the path must end with the path separator
+		 * like "/path/to/file/".
+		 *
+		 * Furthermore "port" can be the number or name the database server
+		 * application is listening to. If a name instead of the number is
+		 * allowed depends on the database client library but the number as
+		 * string does always work. If an empty string is given, the default
+		 * port of the database server application is used by the database
+		 * client library.
 		 *
 		 * @param backend Name of the backend module to use
 		 * @param host Name or IP address of the database server
 		 * @param port Name or number of the port used by the database server
 		 * @return Connection instance
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
+		 * @see #Conn( const char*, const char*, const char* )
 		 */
-		Conn( const string& backend, const string& host = "", const string& port = "" );
+		Conn( const string& backend, const string& host = "", const string& port = "" ) throw( std::exception );
 
 		/**
-		 * Destroy connection instance if no other references exist.
+		 * Destroys the connection instance if no other references exist.
+		 *
+		 * Each connection object uses a reference counter to remember if the
+		 * connection is shared with other objects. If this isn't the case or
+		 * if this object is the last one referencing the connection, the
+		 * connection is closed and the allocated memory is freed.
 		 */
-		~Conn();
+		~Conn() throw();
 
 		/**
-		 * Assign connection instance to another one.
+		 * Copy constructor.
+		 *
+		 * Enables the transfer of the internal state of an object of the same
+		 * type to this object. Both objects share the same database connection
+		 * and the reference counter afterwards. The reference counter is
+		 * incremented each time an object is copied and will be decremented if
+		 * it is destroyed.
+		 *
+		 * @param ref Original connection object instance
+		 */
+		Conn( const Conn& ref ) throw();
+
+		/**
+		 * Assigns a connection instance to another one.
+		 *
+		 * Assigns the internal state of an object of the same type to this
+		 * object. Both objects share the same database connection and the
+		 * reference counter afterwards. The reference counter is incremented
+		 * each time an object is copied and will be decremented if it is
+		 * destroyed.
 		 *
 		 * @param ref Connection instance
 		 * @return Connection reference of this instance
 		 */
-		Conn& operator=( const Conn& ref );
+		Conn& operator=( const Conn& ref ) throw();
 
 		/**
-		 * Log into database server and select database using C string parameters.
+		 * Authenticates the user and selects the database using C style string
+		 * parameters.
+		 *
+		 * After initializing the object instance with one of the constructors
+		 * taking a backend, host and port string as parameter, it's necessary
+		 * to authenticate the user and select a database. Depending on the
+		 * database client library, it also establishes the connection to the
+		 * database server. This method accepts C style strings for the database
+		 * name, the user name and the password.
+		 *
+		 * The first parameter, the name of the database will be used to select
+		 * the database all further commands are operating on. The database is
+		 * the container for the tables, views, etc., which store the records
+		 * and provide access to them.
+		 *
+		 * Authentication is done in most cases by a combination of a user name
+		 * and a password. If the user name is known by the database server and
+		 * the supplied password matches with the stored one, the database
+		 * server will allow the user to operate on the selected database and
+		 * its tables provided the user has permissions to read and/or modify
+		 * the content.
+		 *
+		 * The "method" parameter can be used to select different methods of
+		 * authentication. At the moment, only simple authentication
+		 * (ODBX_BIND_SIMPLE) with user name and password is available.
 		 *
 		 * @param database Name of the database managed by the database server
 		 * @param who Name of the user account known by the database server
 		 * @param cred Necessary credential which belongs to the user account
 		 * @param method Method used for authentication
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void bind( const char* database, const char* who = "", const char* cred = "", odbxbind method = ODBX_BIND_SIMPLE );
+		void bind( const char* database, const char* who = "", const char* cred = "", odbxbind method = ODBX_BIND_SIMPLE ) throw( std::exception );
 
 		/**
-		 * Log into database server and select database using C++ string parameters.
+		 * Authenticates the user and selects the database using C++ style string
+		 * parameters.
+		 *
+		 * After initializing the object instance with one of the constructors
+		 * taking a backend, host and port string as parameter, it's necessary
+		 * to authenticate the user and select a database. Depending on the
+		 * database client library, it also establishes the connection to the
+		 * database server. This method accepts C++ style strings for the
+		 * database name, the user name and the password.
+		 *
+		 * The first parameter, the name of the database will be used to select
+		 * the database all further commands are operating on. The database is
+		 * the container for the tables, views, etc., which store the records
+		 * and provide access to them.
+		 *
+		 * Authentication is done in most cases by a combination of a user name
+		 * and a password. If the user name is known by the database server and
+		 * the supplied password matches with the stored one, the database
+		 * server will allow the user to operate on the selected database and
+		 * its tables provided the user has permissions to read and/or modify
+		 * the content.
+		 *
+		 * The "method" parameter can be used to select different methods of
+		 * authentication. At the moment, only simple authentication
+		 * (ODBX_BIND_SIMPLE) with user name and password is available.
 		 *
 		 * @param database Name of the database managed by the database server
 		 * @param who Name of the user account known by the database server
 		 * @param cred Necessary credential which belongs to the user account
 		 * @param method Method used for authentication
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void bind( const string& database, const string& who = "", const string& cred = "", odbxbind method = ODBX_BIND_SIMPLE );
+		void bind( const string& database, const string& who = "", const string& cred = "", odbxbind method = ODBX_BIND_SIMPLE ) throw( std::exception );
 
 		/**
-		 * Close connection to the database server.
+		 * Releases the connection to the database and resets the authentication
+		 * status.
+		 *
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void unbind();
+		void unbind() throw( std::exception );
 
 		/**
-		 * Clean up connection object.
+		 * Cleans up the connection object.
+		 *
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void finish();
+		void finish() throw( std::exception );
 
 		/**
-		 * Test if the database driver module does understand certain extensions.
+		 * Tests if the database driver module does understand certain extensions.
 		 *
 		 * @param cap Constant of the capability
 		 * @return True if supported, false if not
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		bool getCapability( odbxcap cap );
+		bool getCapability( odbxcap cap ) throw( std::exception );
 
 		/**
-		 * Get the value of certain options provided by the database driver module.
+		 * Gets the value of a certain option provided by the database driver module.
 		 *
 		 * @param option Constant of the option
 		 * @param value Pointer to memory where the result is stored
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void getOption( odbxopt option, void* value );
+		void getOption( odbxopt option, void* value ) throw( std::exception );
 
 		/**
-		 * Set certain options provided by the database driver module.
+		 * Sets a certain option provided by the database driver module.
 		 *
 		 * @param option Constant of the option
 		 * @param value Pointer to memory which contains the new value
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		void setOption( odbxopt option, void* value );
+		void setOption( odbxopt option, void* value ) throw( std::exception );
 
 		/**
-		 * Escape potentially dangerous characters in user input using a C++ string parameter.
+		 * Escapes potentially dangerous characters in user input using a C++ style string parameter.
 		 *
 		 * @param from Input string with which may contain dangerous characters
 		 * @param to String instance where the escaped characters should be written to
 		 * @return Reference to the second parameter containing the escaped characters
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		string& escape( const string& from, string& to );
+		string& escape( const string& from, string& to ) throw( std::exception );
 
 		/**
-		 * Escape potentially dangerous characters in user input using a C style buffer.
+		 * Escapes potentially dangerous characters in user input using a C style buffer.
 		 *
 		 * @param from Input string with which may contain dangerous characters
 		 * @param fromlen Size of the input string to escape in bytes
 		 * @param to String instance where the escaped characters should be written to
 		 * @return Reference to the second parameter containing the escaped characters
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
-		string& escape( const char* from, unsigned long fromlen, string& to );
+		string& escape( const char* from, unsigned long fromlen, string& to ) throw( std::exception );
 
 		/**
-		 * Create statement object from SQL text string using a C style buffer.
+		 * Creates a statement object from SQL text string using a C style buffer.
 		 *
 		 * @param sql SQL text string containing a valid statement understood by the database server
 		 * @param size Size of the SQL text string in bytes
-		 * @param type Type of statements object that should be created
-		 * @return Statement instance
+		 * @param type Type of statement object that should be created
+		 * @return Statement instance bound to this connection
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see Stmt
 		 */
-		Stmt create( const char* sql, unsigned long size = 0, Stmt::Type type = Stmt::Simple );
+		Stmt create( const char* sql, unsigned long size = 0, Stmt::Type type = Stmt::Simple ) throw( std::exception );
 
 		/**
-		 * Create statement object from SQL text string using a C++ string.
+		 * Creates a statement object from SQL text string using a C++ string.
 		 *
 		 * @param sql SQL text string containing a valid statement understood by the database server
-		 * @param type Type of statements object that should be created
-		 * @return Statement instance
+		 * @param type Type of statement object that should be created
+		 * @return Statement instance bound to this connection
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see Stmt
 		 */
-		Stmt create( const string& sql, Stmt::Type type = Stmt::Simple );
+		Stmt create( const string& sql, Stmt::Type type = Stmt::Simple ) throw( std::exception );
 	};
 
 
