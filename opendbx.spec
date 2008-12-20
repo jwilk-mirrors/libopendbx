@@ -19,7 +19,7 @@
 
 
 Name:    opendbx
-Version:    1.3.11
+Version:    1.4.0rc1
 Release:    1%{?dist}
 Summary:    Unified database layer with a clean and lightweight interface
 Summary(de.UTF-8):    Bibliothek zum Zugriff auf Datenbanken über eine einheitliche Schnittstelle
@@ -74,6 +74,7 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki OpenDBX
 Group:    Development/Libraries
 Requires:    %{name} = %{version}-%{release}
 Requires:    pkgconfig
+BuildRequires:    /usr/bin/db2x_xsltproc /usr/bin/db2x_manxml
 
 %description devel
 Header files for the OpenDBX database abstraction library
@@ -348,7 +349,6 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{_libdir}/opendbx
 %{_libdir}/libopendbx.so.*
 %{_libdir}/libopendbxplus.so.*
-%{_mandir}/man3/*
 %doc AUTHORS COPYING ChangeLog NEWS README TODO
 
 
@@ -366,6 +366,7 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{_libdir}/libopendbx.so
 %{_libdir}/libopendbxplus.so
 %{_libdir}/pkgconfig/opendbx.pc
+%{_mandir}/man3/*
 
 
 %if %{!?_without_mysql:1}%{?_without_mysql:0}
