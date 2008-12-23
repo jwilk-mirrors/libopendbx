@@ -148,6 +148,10 @@ namespace OpenDBX
 		/**
 		 * Default constructor.
 		 *
+		 * The default constructor isn't part of the public interface as the
+		 * object must not be created manually. Instead, the Result::getLob()
+		 * method is a factory for instances of the large object class.
+		 *
 		 * @return Lob instance
 		 */
 		Lob() throw() {};
@@ -155,8 +159,13 @@ namespace OpenDBX
 		/**
 		 * Create large object instance.
 		 *
+		 * The constructor isn't part of the public interface as the object must
+		 * not be created manually. Instead, the Result::getLob()  method is a
+		 * factory for instances of the large object class.
+		 *
 		 * @param impl Pointer to private implementation
 		 * @return Lob instance
+		 * @throws std::exception If an error occures
 		 */
 		Lob( Lob_Iface* impl ) throw( std::exception );
 
@@ -164,12 +173,22 @@ namespace OpenDBX
 
 		/**
 		 * Destroy large object instance if no other references exist.
+		 *
+		 * Each large object uses a reference counter to remember if the
+		 * internal variables are shared with other objects. If this isn't the
+		 * case or if this object is the last one referencing the variables,
+		 * the object is cleanup up and the allocated memory freed.
 		 */
 		~Lob() throw();
 
 		/**
 		 * Copy constructor.
-		 * Enables two large object instances to reference the same LOB.
+		 *
+		 * Enables the transfer of the internal state of an object of the same
+		 * type to this object. Both objects share the same variables
+		 * and the reference counter afterwards. The reference counter is
+		 * incremented each time an object is copied and will be decremented if
+		 * it is destroyed.
 		 *
 		 * @param ref Original large object instance
 		 */
@@ -178,13 +197,29 @@ namespace OpenDBX
 		/**
 		 * Assign large object instance to another one.
 		 *
+		 * Assigns the internal state of an object of the same type to this
+		 * object. Both objects share the same variables and the
+		 * reference counter afterwards. The reference counter is incremented
+		 * each time an object is copied and will be decremented if it is
+		 * destroyed.
+		 *
 		 * @param ref Large object instance
 		 * @return Large object reference of this instance
 		 */
 		Lob& operator=( const Lob& ref ) throw();
 
 		/**
-		 * Close Lob and commit changes.
+		 * Closes the large object and commits the changes.
+		 *
+		 * After reading from or writing new content into the large object, it
+		 * should be closed to commit changes to the disk and clean up the
+		 * resources. If this isn't done, the destructor of the object tries to
+		 * close the large object automatically, but there's no guarantee it
+		 * was successful as the destructor doesn't throw an exception in case
+		 * of an error. Therefore, it's highly recommended to call this method
+		 * once when you don't need the object any more.
+		 *
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		void close() throw( std::exception );
 
@@ -194,6 +229,7 @@ namespace OpenDBX
 		 * @param buffer Pointer to a byte array where the data should be written to
 		 * @param buflen Length of the given buffer in bytes
 		 * @return Number of bytes written into the buffer
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		ssize_t read( void* buffer, size_t buflen ) throw( std::exception );
 
@@ -203,6 +239,7 @@ namespace OpenDBX
 		 * @param buffer Pointer to a byte array where the content is stored
 		 * @param buflen Length of the data in the buffer in bytes
 		 * @return Number of bytes written into the large object
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		ssize_t write( void* buffer, size_t buflen ) throw( std::exception );
 	};
@@ -234,14 +271,23 @@ namespace OpenDBX
 		/**
 		 * Default constructor.
 		 *
+		 * The default constructor isn't part of the public interface as the
+		 * object must not be created manually. Instead, the Stmt::execute()
+		 * method is a factory for instances of the Result class.
+		 *
 		 * @return Result instance
 		 */
 		Result() throw() {};
 
 		/**
-		 * Create Result instance.
+		 * Creates a Result instance.
+		 *
+		 * The constructor isn't part of the public interface as the object must
+		 * not be created manually. Instead, the Stmt::execute()  method is a
+		 * factory for instances of the Result class.
 		 *
 		 * @param impl Pointer to private implementation
+		 * @throws std::exception If an error occures
 		 * @return Result instance
 		 */
 		Result( Result_Iface* impl ) throw( std::exception );
@@ -249,20 +295,36 @@ namespace OpenDBX
 	public:
 
 		/**
-		 * Destroy Result instance if no other references exist.
+		 * Destroys a Result instance if no other references exist.
+		 *
+		 * Each result object uses a reference counter to remember if the
+		 * internal variables are shared with other objects. If this isn't the
+		 * case or if this object is the last one referencing the variables,
+		 * the object is cleanup up and the allocated memory freed.
 		 */
 		~Result() throw();
 
 		/**
 		 * Copy constructor.
-		 * Enables two object instances to reference the same result object.
+		 *
+		 * Enables the transfer of the internal state of an object of the same
+		 * type to this object. Both objects share the same variables
+		 * and the reference counter afterwards. The reference counter is
+		 * incremented each time an object is copied and will be decremented if
+		 * it is destroyed.
 		 *
 		 * @param ref Original result object instance
 		 */
 		Result( const Result& ref ) throw();
 
 		/**
-		 * Assign Result instance to another one.
+		 * Assigns a Result instance to another one.
+		 *
+		 * Assigns the internal state of an object of the same type to this
+		 * object. Both objects share the same variables and the
+		 * reference counter afterwards. The reference counter is incremented
+		 * each time an object is copied and will be decremented if it is
+		 * destroyed.
 		 *
 		 * @param ref Result instance
 		 * @return Result reference of this instance
@@ -270,16 +332,26 @@ namespace OpenDBX
 		Result& operator=( const Result& ref ) throw();
 
 		/**
-		 * Get unfetched rows and clean up the current result set.
+		 * Retrieves unfetched rows and cleans up the available result sets.
+		 *
+		 * After executing a statement, at least one result set is returned by
+		 * the database server. In case of data manipulation statements, there
+		 * are no rows returned but you have to clean up the result set
+		 * nevertheless. This is usually done by calling and getResult() in a loop
+		 * until it returns "done". In order to simplify application development,
+		 * the finish() method does this for you.
+		 *
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		void finish() throw( std::exception );
 
 		/**
-		 * Fetch one result set from the database server.
+		 * Fetches one result set from the database server.
 		 *
 		 * @param timeout Pointer to a timeval struct specifying how long to wait for a result set from the database server
 		 * @param chunk Number of rows to fetch at once from the database server (zero means all rows at once)
 		 * @return Status or error code
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see odbxres
 		 */
 		odbxres getResult( struct timeval* timeout = NULL, unsigned long chunk = 0 ) throw( std::exception );
@@ -288,6 +360,7 @@ namespace OpenDBX
 		 * Makes data of next row available.
 		 *
 		 * @return Status or error code
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		odbxrow getRow() throw( std::exception );
 
@@ -295,6 +368,7 @@ namespace OpenDBX
 		 * Returns the number of rows affected by DELETE, INSERT of UPDATE statements.
 		 *
 		 * @return Number of rows touched
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		uint64_t rowsAffected() throw( std::exception );
 
@@ -302,6 +376,7 @@ namespace OpenDBX
 		 * Returns the number of columns available in this result set.
 		 *
 		 * @return Number of columns
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		unsigned long columnCount() throw( std::exception );
 
@@ -310,6 +385,7 @@ namespace OpenDBX
 		 *
 		 * @param name Name of the column in the result set
 		 * @return Position of column in result set
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		unsigned long columnPos( const string& name ) throw( std::exception );
 
@@ -318,6 +394,7 @@ namespace OpenDBX
 		 *
 		 * @param pos Position of column in result set
 		 * @return Column name
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		const string columnName( unsigned long pos ) throw( std::exception );
 
@@ -326,6 +403,7 @@ namespace OpenDBX
 		 *
 		 * @param pos Position of column in result set
 		 * @return Column type
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see odbxtype
 		 */
 		odbxtype columnType( unsigned long pos ) throw( std::exception );
@@ -335,6 +413,7 @@ namespace OpenDBX
 		 *
 		 * @param pos Position of column in result set
 		 * @return Size of the data in bytes
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		unsigned long fieldLength( unsigned long pos ) throw( std::exception );
 
@@ -343,6 +422,7 @@ namespace OpenDBX
 		 *
 		 * @param pos Position of column in result set
 		 * @return Pointer to the data
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		const char* fieldValue( unsigned long pos ) throw( std::exception );
 
@@ -351,6 +431,7 @@ namespace OpenDBX
 		 *
 		 * @param value Pointer to the content of a field returned by fieldValue()
 		 * @return Large object instance
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see Lob
 		 */
 		Lob getLob( const char* value ) throw( std::exception );
@@ -383,14 +464,23 @@ namespace OpenDBX
 		/**
 		 * Default constructor.
 		 *
+		 * The default constructor isn't part of the public interface as the
+		 * object must not be created manually. Instead, the Conn::create()
+		 * method is a factory for instances of the Stmt class.
+		 *
 		 * @return Statement instance
 		 */
 		Stmt() throw() {};
 
 		/**
-		 * Create statement instance.
+		 * Creates a statement instance.
+		 *
+		 * The constructor isn't part of the public interface as the object must
+		 * not be created manually. Instead, the Conn::create()  method is a
+		 * factory for instances of the Stmt class.
 		 *
 		 * @param impl Pointer to private implementation
+		 * @throws std::exception If an error occures
 		 * @return Statement instance
 		 */
 		Stmt( Stmt_Iface* impl ) throw( std::exception );
@@ -399,24 +489,46 @@ namespace OpenDBX
 
 		/**
 		 * Statement objects which can be created.
+		 *
+		 * Currently, only simple processing of statements is supported which
+		 * means that the statement sent to the database server consists of the
+		 * statement and the parameters in text form. Later on, also prepared
+		 * statements will be available which separates parsing and execution
+		 * with different parameters.
 		 */
 		enum Type { Simple };
 
 		/**
-		 * Destroy statement instance if no other references exist.
+		 * Destroys the statement instance if no other references exist.
+		 *
+		 * Each statement object uses a reference counter to remember if the
+		 * internal variables are shared with other objects. If this isn't the
+		 * case or if this object is the last one referencing the variables,
+		 * the object is cleanup up and the allocated memory freed.
 		 */
 		~Stmt() throw();
 
 		/**
 		 * Copy constructor.
-		 * Enables two object instances to reference the same statement object.
+		 *
+		 * Enables the transfer of the internal state of an object of the same
+		 * type to this object. Both objects share the same variables
+		 * and the reference counter afterwards. The reference counter is
+		 * incremented each time an object is copied and will be decremented if
+		 * it is destroyed.
 		 *
 		 * @param ref Original statement object instance
 		 */
 		Stmt( const Stmt& ref ) throw();
 
 		/**
-		 * Assign statement instance to another one.
+		 * Assigns a statement instance to another one.
+		 *
+		 * Assigns the internal state of an object of the same type to this
+		 * object. Both objects share the same variables and the
+		 * reference counter afterwards. The reference counter is incremented
+		 * each time an object is copied and will be decremented if it is
+		 * destroyed.
 		 *
 		 * @param ref Stmt instance
 		 * @return Statement reference of this instance
@@ -424,9 +536,14 @@ namespace OpenDBX
 		Stmt& operator=( const Stmt& ref ) throw();
 
 		/**
-		 * Execute statement and return Result instance.
+		 * Executes a statement and returns a Result instance.
+		 *
+		 * Sends the necessary data to the database server which will execute
+		 * the statement and return one or more result sets afterwards. The
+		 * result sets can be fetched via the returned Result object.
 		 *
 		 * @return Result instance
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 * @see Result
 		 */
 		Result execute() throw( std::exception );
@@ -491,7 +608,7 @@ namespace OpenDBX
 		 * implemented and available drivers on the system and is case sensitive.
 		 * All driver names are in lower case, e.g. "mysql".
 		 *
-		 * Depending on the database driver, "host" can have different mearings.
+		 * Depending on the database driver, "host" can have different meanings.
 		 * Normally, it's the name or IP address of the server hosting the
 		 * database server application. In case of serverless database
 		 * implementations like SQLite it's the directory path where the database
@@ -688,6 +805,25 @@ namespace OpenDBX
 		/**
 		 * Tests if the database driver module does understand certain extensions.
 		 *
+		 * The OpenDBX library consists of a basic set of functions that must be
+		 * implemented by all drivers and optional sets for additional
+		 * functionality. This method allows an application to ask the driver
+		 * selected by the first parameter of the constructor of this object if
+		 * it supports one or more optional sets. The available sets and its
+		 * constants are:
+		 *
+		 * ODBX_CAP_BASIC (basic set supported by all drivers)
+		 * ODBX_CAP_LO (special large object handling)
+		 *
+		 * The basic set makes sure that all drivers can handle connections to
+		 * the databases, send statements and retrieve results. It's supported
+		 * by all drivers and usually don't have to be checked.
+		 *
+		 * Some databases client libraries provide the content of large objects
+		 * not via the basic functions. Instead, the Result::fieldValue() method
+		 * returns only a handle to the large object and reading or modifying
+		 * the content of this data object requires calling additional methods.
+		 *
 		 * @param cap Constant of the capability
 		 * @return True if supported, false if not
 		 * @throws std::invalid_argument If the object was only initialized by the default constructor
@@ -716,18 +852,29 @@ namespace OpenDBX
 		void setOption( odbxopt option, void* value ) throw( std::exception );
 
 		/**
-		 * Escapes potentially dangerous characters in user input using a C++ style string parameter.
-		 *
-		 * @param from Input string with which may contain dangerous characters
-		 * @param to String instance where the escaped characters should be written to
-		 * @return Reference to the second parameter containing the escaped characters
-		 * @throws std::invalid_argument If the object was only initialized by the default constructor
-		 * @throws OpenDBX::Exception If the underlying database library returns an error
-		 */
-		string& escape( const string& from, string& to ) throw( std::exception );
-
-		/**
 		 * Escapes potentially dangerous characters in user input using a C style buffer.
+		 *
+		 * For preventing SQL injection attacks which can have desasterous
+		 * effects, all text input that will be part of an SQL statement must be
+		 * escaped. This does also apply to user content that is already stored
+		 * in the database and should be copied to another record or stored
+		 * again as the escaping is removed before the database server writes
+		 * the content to disk.
+		 *
+		 * The first parameter must contain the character sequence that should
+		 * be escaped as C style string. This string itself won't be modified
+		 * by this method.
+		 *
+		 * The escaped string will be written to the second parameter named
+		 * "to", which have to be also an C++ style string. After transforming
+		 * the input to an escaped string, the result may be more then twice
+		 * the size of the original input. The additional escape sequences
+		 * aren't stored in the database column so only the original string will
+		 * be written to the disk.
+		 *
+		 * A C++ reference of the second parameter containing the escaped string
+		 * afterwards is also returned by this method to providing the possibility
+		 * to write more elegant code.
 		 *
 		 * @param from Input string with which may contain dangerous characters
 		 * @param fromlen Size of the input string to escape in bytes
@@ -739,7 +886,77 @@ namespace OpenDBX
 		string& escape( const char* from, unsigned long fromlen, string& to ) throw( std::exception );
 
 		/**
-		 * Creates a statement object from SQL text string using a C style buffer.
+		 * Escapes potentially dangerous characters in user input using a C++
+		 * style string parameter.
+		 *
+		 * For preventing SQL injection attacks which can have desasterous
+		 * effects, all text input that will be part of an SQL statement must be
+		 * escaped. This does also apply to user content that is already stored
+		 * in the database and should be copied to another record or stored
+		 * again as the escaping is removed before the database server writes
+		 * the content to disk.
+		 *
+		 * The first parameter must contain the character sequence that should
+		 * be escaped as C++ style string. This string itself won't be modified
+		 * by this method.
+		 *
+		 * The escaped string will be written to the second parameter named
+		 * "to", which have to be also an C++ style string. After transforming
+		 * the input to an escaped string, the result may be more then twice
+		 * the size of the original input. The additional escape sequences
+		 * aren't stored in the database column so only the original string will
+		 * be written to the disk.
+		 *
+		 * A C++ reference of the second parameter containing the escaped string
+		 * afterwards is also returned by this method to providing the possibility
+		 * to write more elegant code.
+		 *
+		 * @param from Input string with which may contain dangerous characters
+		 * @param to String instance where the escaped characters should be written to
+		 * @return Reference to the second parameter containing the escaped characters
+		 * @throws std::invalid_argument If the object was only initialized by the default constructor
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
+		 */
+		string& escape( const string& from, string& to ) throw( std::exception );
+
+		/**
+		 * Creates a statement object from a SQL text string using a C style buffer.
+		 *
+		 * This method returns an instance of the Stmt class that contains the
+		 * statement sent to the database server later on. Currently, only simple
+		 * statements are supported, which are sent to the database server for
+		 * parsing and returning the result after calling Stmt::execute(). Later
+		 * on also prepared statements will be possible which are parsed by the
+		 * database server when creating the object and only the parameters
+		 * will be sent to the database server on execution. This can speed up
+		 * processing especially if the statement is executed multiple times
+		 * with different content for the parameters.
+		 *
+		 * The parameter named "sql" must contain the SQL text string that should be
+		 * sent to the database server for execution. It have to be a C style
+		 * buffer in this case. For a reference of valid SQL statements, please
+		 * have a look at the documentation of your database server.
+		 *
+		 * The length of the statement excluding the trailing "0" byte should
+		 * be given via the second parameter. If the length of the statement is
+		 * unknown, you can also supply zero (0) as size value which is also the
+		 * default value if you hand over only one parameter. In this case, the
+		 * length of the string is calculated internally by this function before
+		 * the statement is given to the native database library.
+		 *
+		 * Via the last parameter it can be selected how the statement should
+		 * be treated internally by the OpenDBX and the native database library.
+		 * Currently, only simple processing is available which sends complete
+		 * SQL statements including its parameters as string to the database
+		 * server for parsing and execution. Later on, also prepared statement
+		 * handling will be available which parses the statements first and
+		 * sends only the parameters to the server before execution. This
+		 * parameter is also optional.
+		 *
+		 * The returned object is representing the given statement, which can
+		 * be executed later on. The statement is only valid for the current
+		 * connection and as soon as the connection gets invalid or is closed,
+		 * working with this object will throw an error.
 		 *
 		 * @param sql SQL text string containing a valid statement understood by the database server
 		 * @param size Size of the SQL text string in bytes
@@ -752,7 +969,36 @@ namespace OpenDBX
 		Stmt create( const char* sql, unsigned long size = 0, Stmt::Type type = Stmt::Simple ) throw( std::exception );
 
 		/**
-		 * Creates a statement object from SQL text string using a C++ string.
+		 * Creates a statement object from a SQL text string using a C++ string.
+		 *
+		 * This method returns an instance of the Stmt class that contains the
+		 * statement sent to the database server later on. Currently, only simple
+		 * statements are supported, which are sent to the database server for
+		 * parsing and returning the result after calling Stmt::execute(). Later
+		 * on also prepared statements will be possible which are parsed by the
+		 * database server when creating the object and only the parameters
+		 * will be sent to the database server on execution. This can speed up
+		 * processing especially if the statement is executed multiple times
+		 * with different content for the parameters.
+		 *
+		 * The parameter named "sql" must contain the SQL text string that should be
+		 * sent to the database server for execution. It have to be a C++ style
+		 * string in this case. For a reference of valid SQL statements, please
+		 * have a look at the documentation of your database server.
+		 *
+		 * Via the last parameter it can be selected how the statement should
+		 * be treated internally by the OpenDBX and the native database library.
+		 * Currently, only simple processing is available which sends complete
+		 * SQL statements including its parameters as string to the database
+		 * server for parsing and execution. Later on, also prepared statement
+		 * handling will be available which parses the statements first and
+		 * sends only the parameters to the server before execution. This
+		 * parameter is also optional.
+		 *
+		 * The returned object is representing the given statement, which can
+		 * be executed later on. The statement is only valid for the current
+		 * connection and as soon as the connection gets invalid or is closed,
+		 * working with this object will throw an error.
 		 *
 		 * @param sql SQL text string containing a valid statement understood by the database server
 		 * @param type Type of statement object that should be created
