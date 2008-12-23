@@ -6,11 +6,11 @@ if ENABLETEST
 noinst_PROGRAMS = odbxtest odbxplustest
 
 odbxtest_SOURCES = odbx-regression.c odbx-regression.h
-odbxtest_LDADD = ../lib/.libs/libopendbx.so
+odbxtest_LDADD = ../lib/.libs/$(LIBPREFIX)opendbx$(LIBSUFFIX)
 odbxtest_LDFLAGS = -static
 
 odbxplustest_SOURCES = odbxplus-regression.cpp
-odbxplustest_LDADD = ../lib/.libs/libopendbx.so ../lib/.libs/libopendbxplus.so
+odbxplustest_LDADD = ../lib/.libs/$(LIBPREFIX)opendbx$(LIBSUFFIX) ../lib/.libs/$(LIBPREFIX)opendbxplus$(LIBSUFFIX)
 odbxplustest_LDFLAGS = -static
 
 endif
