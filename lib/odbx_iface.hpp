@@ -26,7 +26,7 @@ namespace OpenDBX
 	{
 	public:
 
-		virtual ~Lob_Iface() throw( std::exception ) {}
+		virtual ~Lob_Iface() throw() {}
 		virtual void close() throw( std::exception ) = 0;
 
 		virtual ssize_t read( void* buffer, size_t buflen ) throw( std::exception ) = 0;
@@ -39,7 +39,7 @@ namespace OpenDBX
 	{
 	public:
 
-		virtual ~Result_Iface() throw( std::exception ) {}
+		virtual ~Result_Iface() throw() {}
 		virtual void finish() throw( std::exception ) = 0;
 
 		virtual odbxres getResult( struct timeval* timeout, unsigned long chunk ) throw( std::exception ) = 0;
