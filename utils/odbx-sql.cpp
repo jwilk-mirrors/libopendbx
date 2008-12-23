@@ -181,9 +181,11 @@ int main( int argc, char* argv[] )
 		ArgMap A;
 		string config;
 
+#ifdef ENABLE_NLS
 		setlocale( LC_ALL, "" );
 		textdomain( "opendbx-utils" );
 		bindtextdomain( "opendbx-utils", LOCALEDIR );
+#endif
 
 		if( !A.checkArgv( argc, argv, "--config", config ) ) {
 			if( !A.checkArgv( argc, argv, "-c", config ) ) { config = ""; }
