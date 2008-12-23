@@ -1,3 +1,21 @@
+2008-11-23 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Change: Specified thrown exceptions for all C++ functions
+	* Change: Used interfaces for all C++ implementation classes
+	* Change: Made C++ get*() functions in OpenDBX::Exception constant
+	* Change: Made return value of Result::columnName() constant
+	* Change: C++ implementation class variables are private now
+	* Change: Used STL invalid_argument and out_of_range exceptions where applicable
+	* Change: Used already existing C++ functions for functions with different parameter types
+	* Change: Cleanup inside C++ API functions
+	* Change: Added checks for libreadline and libncurses when the utilities should be build
+	* Bugfix: Added checks for Conn::escape() functions if connection instance wasn't initialized correctly
+	* Bugfix: Added copy constructors for all objects which are responsible for reference handling
+	* Bugfix: Protect C++ objects against self assignment
+	* Bugfix: Fixed build on windows with MinGW
+	* Bugfix: odbx-sql can now be built without gettext
+	* Bugfix: Added workaround necessary for building the odbc backend using MinGW
+
 2008-10-22 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Utilities and test suite is compiled by default but can be disabled via ./configure option
