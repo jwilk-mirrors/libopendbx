@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.3.11], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.4.0rc1], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -13,13 +13,13 @@ AM_ICONV
 
 
 # Library setup
-APIVERSION="2:0:1"
+APIVERSION="3:0:2"
 AC_SUBST([APIVERSION])
 
-APINUMBER="10100"
+APINUMBER="10200"
 AC_SUBST([APINUMBER])
 
-APIPLUSVERSION="0:0:0"
+APIPLUSVERSION="1:0:0"
 AC_SUBST([APIPLUSVERSION])
 
 LIBVERSION=`echo $VERSION. | sed -e 's/[[^0-9.]]//g; s/\./  /g; s/ \([[0-9]]\) / 0\\1 /g; s/ //g'`
@@ -71,7 +71,7 @@ AC_STRUCT_TM
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h])
+AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h windef.h])
 
 
 # Checks for library functions.
@@ -110,12 +110,8 @@ AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
 if test "x${utils}" = xyes; then
 	AC_CHECK_HEADERS([readline/readline.h], , [AC_MSG_ERROR([libreadline header (readline.h) not found])])
 	AC_CHECK_HEADERS([readline/history.h], , [AC_MSG_ERROR([libreadline header (history.h) not found])])
-#	AC_CHECK_LIB(
-#		[readline], [readline],
-#		[AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])],
-#		[AC_MSG_ERROR([readline library (libreadline) not found])]
-#	)
-	AC_CHECK_LIB([readline], [readline], [AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])])
+	AC_CHECK_LIB([readline], [readline], [AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])], [AC_MSG_ERROR([readline library (libreadline) not found])])
+	AC_CHECK_LIB([ncurses], [initscr], [AC_DEFINE([HAVE_LIBNCURSES], 1, [Have -lncurses])], [AC_MSG_ERROR([ncurses library (libncurses) not found])])
 fi
 
 
@@ -171,7 +167,11 @@ do
 #			)
 		;;
 		odbc)
-			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])])
+			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])], [
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
+			])
 			AC_SUBST([LIBODBC])
 			AC_CHECK_LIB(
 				[odbc], [SQLConnect],
@@ -179,7 +179,12 @@ do
 				AC_CHECK_LIB(
 					[iodbc], [SQLConnect],
 					[AC_DEFINE([HAVE_LIBODBC], 1, [Have -liodbc]) LIBODBC="iodbc"],
-					[AC_MSG_ERROR([odbc library (libodbc or libiodbc) not found])]
+					[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc32]) LIBODBC="odbc32"]
+#					AC_CHECK_LIB(
+#						[odbc32], [SQLConnect],
+#						[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc32]) LIBODBC="odbc32"],
+#						[AC_MSG_ERROR([odbc library (libodbc, libiodbc or libodbc32) not found])]
+#					)
 				)
 			)
 		;;
