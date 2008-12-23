@@ -21,6 +21,11 @@
 
 
 
+// MinGW workaround
+#ifdef HAVE_WINDEF_H
+#	include <windef.h>
+#endif
+
 #include <sql.h>
 #include <sqlext.h>
 
