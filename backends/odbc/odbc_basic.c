@@ -337,7 +337,7 @@ static int odbc_odbx_query( odbx_t* handle, const char* query, unsigned long len
 	}
 
 	gen->err = SQLExecDirect( gen->stmt, (SQLCHAR*) query, (SQLINTEGER) length );
-	if( !SQL_SUCCEEDED( gen->err ) )
+	if( !SQL_SUCCEEDED( gen->err ) && gen->err != SQL_NO_DATA )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
