@@ -207,7 +207,7 @@ static int mysql_odbx_finish( odbx_t* handle )
 	if( handle->generic != NULL )
 	{
 		mysql_thread_end();
-		mysql_server_end();
+		mysql_server_end();   /** @todo Might crash if more than one connection is used */
 
 		free( handle->generic );
 		handle->generic = NULL;
