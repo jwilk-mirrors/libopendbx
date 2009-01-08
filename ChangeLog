@@ -9,6 +9,9 @@
 	* Change: Used already existing C++ functions for functions with different parameter types
 	* Change: Cleanup inside C++ API functions
 	* Change: Added checks for libreadline and libncurses when the utilities should be build
+	* Change: Added update statements in regression for testing statements which affects no rows
+	* Bugfix: odbc_odbx_query() returned wrong code if a statement affected no rows (thanks to Mariano)
+	* Bugfix: Fixed memleak in mysql backend during finishing connections
 	* Bugfix: Added checks for Conn::escape() functions if connection instance wasn't initialized correctly
 	* Bugfix: Added copy constructors for all objects which are responsible for reference handling
 	* Bugfix: Protect C++ objects against self assignment
