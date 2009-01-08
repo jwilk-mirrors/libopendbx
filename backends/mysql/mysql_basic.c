@@ -206,8 +206,8 @@ static int mysql_odbx_finish( odbx_t* handle )
 
 	if( handle->generic != NULL )
 	{
-		mysql_server_end();
 		mysql_thread_end();
+		mysql_server_end();
 
 		free( handle->generic );
 		handle->generic = NULL;
