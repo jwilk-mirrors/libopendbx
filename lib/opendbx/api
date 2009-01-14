@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2008 Norbert Sendetzky <norbert@linuxnetworks.de>
+ *  Copyright (C) 2004-2009 Norbert Sendetzky <norbert@linuxnetworks.de>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -75,17 +75,24 @@ namespace OpenDBX
 
 		/**
 		 * Initializes the exception object.
+		 *
 		 * The first parameter, the error message, should be the human readable
 		 * description of what has gone wrong. It should also be already translated
 		 * to the language of the user which depends on his environment settings
 		 * when e.g GNU gettext is used. Errors thrown by the OpenDBX C++ library
 		 * are already translated.
+		 *
 		 * The OpenDBX error code is the machine readable code for the error which
 		 * has been occured.
+		 *
 		 * The last parameter must be a value indicating the severity of the
 		 * thrown error. If the value is smaller than zero, the error is fatal
 		 * and the connection to the database can't be recovered and has to be
-		 * closed and reopened before the application can try to continue.
+		 * closed and reopened before the application can try to continue. In
+		 * case it's greater than zero, the operation failed but the database
+		 * connection is still usable. Zero represents a successful operation
+		 * and shouldn't be used because an exception should only be thrown in
+		 * error conditions.
 		 *
 		 * @param msg Human readable error message
 		 * @param err OpenDBX error code
@@ -98,7 +105,41 @@ namespace OpenDBX
 		 * Returns the OpenDBX error code related to the error.
 		 * The machine readable code describing the error which occured can be
 		 * used by the application to act differently depending on the specific
-		 * error.
+		 * error. Currently defined codes are:
+		 *
+		 * - ODBX_ERR_SUCCESS\n
+		 *   The operation was successfully completed.
+		 * - ODBX_ERR_BACKEND\n
+		 *   An error occured in the native database library or in the
+		 *   database server.
+		 * - ODBX_ERR_NOCAP\n
+		 *   The capability isn't available in the currently selected backend.
+		 * - ODBX_ERR_PARAM\n
+		 *   One of the given parameters is invalid and doesn't match the
+		 *   expectations.
+		 * - ODBX_ERR_NOMEM\n
+		 *   An out of memory condition occured.
+		 * - ODBX_ERR_SIZE\n
+		 *   The internally allocated memory is unable to store the value.
+		 * - ODBX_ERR_NOTEXIST\n
+		 *   The backend library wasn't found or loading the library failed.
+		 * - ODBX_ERR_NOOP\n
+		 *   The required function isn't available or the operation isn't
+		 *   possible in this backend.
+		 * - ODBX_ERR_OPTION\n
+		 *   The given option is unknown an therefore invalid.
+		 * - ODBX_ERR_OPTRO\n
+		 *   The requested option is read-only and its value can't be changed.
+		 * - ODBX_ERR_OPTWR\n
+		 *   Setting the given option to the new value failed.
+		 * - ODBX_ERR_RESULT\n
+		 *   Waiting for the result set after sending a statement to the
+		 *   database server failed.
+		 * - ODBX_ERR_NOTSUP\n
+		 *   The requested functionality isn't supported by the backend.
+		 * - ODBX_ERR_HANDLE\n
+		 *   The internal data structure which should store the details for
+		 *   accessing the database are invalid.
 		 *
 		 * @return Error code
 		 */
@@ -226,6 +267,21 @@ namespace OpenDBX
 		/**
 		 * Reads content from large object into the buffer.
 		 *
+		 * To get the content of a large object, this method fetches the data
+		 * in one or more pieces from the server and stores it into the user
+		 * supplied buffer. The first call to read() will return the bytes from
+		 * the beginning. The second and all other calls will store subsequent
+		 * parts of the large object content into the buffer until the end of
+		 * the data is reached. To reread the content a second time, you have
+		 * to close the large object handle and reopen it again as some databases
+		 * provide no way to reposition the internal file position indicator for
+		 * the stream. The large object content fetched from the server is
+		 * stored into the user supplied "buffer" up to "buflen" bytes.
+		 *
+		* The method returns the number of bytes placed into buffer, which may
+		* be up to "buflen" bytes. If the end of the content is reached and no
+		* more data is available, the return value will be 0 (zero).
+		 *
 		 * @param buffer Pointer to a byte array where the data should be written to
 		 * @param buflen Length of the given buffer in bytes
 		 * @return Number of bytes written into the buffer
@@ -235,6 +291,20 @@ namespace OpenDBX
 
 		/**
 		 * Writes data from the buffer into the large object.
+		 *
+		 * It sends the data supplied in buffer to the server for storing it
+		 * inside the large object. The function can be called more than once
+		 * to add subsequent parts of the content to the object. If it isn't a
+		 * new or empty object, the existing data will be overwritten and
+		 * truncated to the new size. It's not possible to update only parts of
+		 * the content as some databases doesn't support to position the
+		 * internal file position indicator. The data which should be send to
+		 * the server is read from buffer up to buflen bytes.
+		 *
+		 *The method returns the number of bytes read from buffer and sent to
+		 * the database server, which may be up to "buflen" bytes. It isn't
+		 * guaranteed that the complete chunk was sent to the server, so the
+		 * returned size may be less than the value in "buflen".
 		 *
 		 * @param buffer Pointer to a byte array where the content is stored
 		 * @param buflen Length of the data in the buffer in bytes
@@ -348,6 +418,36 @@ namespace OpenDBX
 		/**
 		 * Fetches one result set from the database server.
 		 *
+		 * Retrieves the result of a query statement from the database server.
+		 * If the statement was an INSERT, UPDATE, DELETE or a similar
+		 * statement, the number of affected rows is available via rowsAffected().
+		 *
+		 * The timeout parameter restricts the time the function is waiting for
+		 * a result form the server. It may be NULL to wait until a result
+		 * arrives. Otherwise, it can contain any number of seconds and
+		 * microseconds in a timeval structure to wait for. The timeval structure
+		 * must be set each time before calling getResult() because its content
+		 * may get changed by the function. If the server doesn't respond within
+		 * the timeout, the query isn't canceled! Instead, the next call to this
+		 * function will wait for the same result set. Waiting the specified time
+		 * may be implemented in the backends if it is possible, but there is no
+		 * guarantee. If not, getResult() will return not before a responds
+		 * arrives.
+		 *
+		 * Dependent on the native database library, it may be possible to
+		 * retrieve all rows at once (if chunk is zero), one by one or more than
+		 * one row at once. All positive values including zero are allowed as
+		 * values for chunk If paging (more than one row at once) is not
+		 * supported by the backend, it will use "one by one" or "all at once"
+		 * if this is the only option provided.
+		 *
+		 * getResult() returns ODBX_RES_ROWS if a result set is available and
+		 * ODBX_RES_DONE if no more results will be returned by the last
+		 * successful query. ODBX_RES_NOROWS is returned if the statement was
+		 * executed successfully but will not return a results set (like for
+		 * INSERT, UPDATE and DELETE statements) and ODBX_RES_TIMEOUT indicates
+		 * a timeout.
+		 *
 		 * @param timeout Pointer to a timeval struct specifying how long to wait for a result set from the database server
 		 * @param chunk Number of rows to fetch at once from the database server (zero means all rows at once)
 		 * @return Status or error code
@@ -359,13 +459,31 @@ namespace OpenDBX
 		/**
 		 * Makes data of next row available.
 		 *
-		 * @return Status or error code
+		 * Retrieves the values of a row from the current result set returned
+		 * by getResult(). Until this function is invoked, no row and field data
+		 * is available via fieldLength() or fieldValue() and these functions
+		 * will throw an exception.
+		 *
+		 * getRow() will return ODBX_ROW_NEXT as long as rows are available
+		 * from the result set. After the last row has been made available,
+		 * further calls to this function will return ODBX_ROW_DONE indicating
+		 * that the result set doesn't contain more rows.
+		 *
+		 * @return Status of the attempt to fetch one more row
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
 		odbxrow getRow() throw( std::exception );
 
 		/**
 		 * Returns the number of rows affected by DELETE, INSERT of UPDATE statements.
+		 *
+		 * Returns the number of rows that have been changed by the current
+		 * statement whose result set was retrieved by getResult() and zero
+		 * if the database server didn't alter any rows. Affected rows are only
+		 * returned for DELETE, INSERT or UPDATE statements and their concrete
+		 * number depends on the database implementation. Some database server
+		 * like MySQL may return a lower number than expected because they
+		 * doesn't modify records whose values wouldn't change.
 		 *
 		 * @return Number of rows touched
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
@@ -375,6 +493,12 @@ namespace OpenDBX
 		/**
 		 * Returns the number of columns available in this result set.
 		 *
+		 * The number of columns will never change within a result set with one
+		 * notable exception: MySQL returns all outstanding rows of a previous
+		 * result set first if they were not fetched completely by getRow()
+		 * before. Therefore, the column count might change in this special
+		 * situation.
+		 *
 		 * @return Number of columns
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
 		 */
@@ -382,6 +506,10 @@ namespace OpenDBX
 
 		/**
 		 * Maps the column name to the column number required by other methods.
+		 *
+		 * This method returns the index of the column which is named like the
+		 * content of the string given via the parameter. The column index will
+		 * not change within the result set.
 		 *
 		 * @param name Name of the column in the result set
 		 * @return Position of column in result set
@@ -392,6 +520,11 @@ namespace OpenDBX
 		/**
 		 * Returns the name of the column in the current result set.
 		 *
+		 * Gets the name of the column specified by pos in the current result
+		 * set. The column names will not change within the result set with the
+		 * exception of MySQL when the first result set wasn't retrieved
+		 * completely before getResult() was called again.
+		 *
 		 * @param pos Position of column in result set
 		 * @return Column name
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
@@ -400,6 +533,53 @@ namespace OpenDBX
 
 		/**
 		 * Returns the type of the column in the current result set.
+		 *
+		 * The column type applies to all fields at the same position of the
+		 * rows fetched via getRow(). The definitions are based on the SQL2003
+		 * standard and the data types of the database server have to comply to
+		 * the specification of the standard. These are:
+		 *
+		 * Exact numeric values:
+		 * - ODBX_TYPE_BOOLEAN: True/false values
+		 * - ODBX_TYPE_SMALLINT: Signed 16 bit integer
+		 * -  ODBX_TYPE_INTEGER: Signed 32 bit integer
+		 * -  ODBX_TYPE_BIGINT: Signed 64 bit integer
+		 * -  ODBX_TYPE_DECIMAL: Exact signed numeric values with user defined precision
+		 *
+		 * Approximate numeric values:
+		 * - ODBX_TYPE_REAL: Approximate numeric values (signed) with 32 bit precision
+		 * - ODBX_TYPE_DOUBLE: Approximate numeric values (signed) with 64 bit precision
+		 * - ODBX_TYPE_FLOAT: Approximate numeric values (signed) with user defined precision
+		 *
+		 * String values:
+		 * - ODBX_TYPE_CHAR: Fixed number of characters
+		 * - ODBX_TYPE_NCHAR: Fixed number of characters using a national character set
+		 * - ODBX_TYPE_VARCHAR: Variable number of characters
+		 * - ODBX_TYPE_NVARCHAR: Variable number of characters using a national character set
+		 *
+		 * Large objects:
+		 * - ODBX_TYPE_CLOB: Large text object
+		 * - ODBX_TYPE_NCLOB: Large text object using a national character set
+		 * - ODBX_TYPE_XML: XML tree in text format
+		 * - ODBX_TYPE_BLOB: Large binary object
+		 *
+		 * Date and time values:
+		 * - ODBX_TYPE_TIME: Time including hours, minutes and seconds
+		 * - ODBX_TYPE_TIME_TZ: Time with timezone information
+		 * - ODBX_TYPE_TIMESTAMP: Date and time
+		 * - ODBX_TYPE_TIMESTAMP_TZ: Date and time with timezone information
+		 * - ODBX_TYPE_DATE: Date including year, month and day
+		 * - ODBX_TYPE_INTERVAL: Date interval
+		 *
+		 * Arrays and sets:
+		 * - ODBX_TYPE_ARRAY: Array of values
+		 * - ODBX_TYPE_MULTISET: Associative arrays
+		 *
+		 * External links:
+		 * - ODBX_TYPE_DATALINK: URI locators like URL links
+		 *
+		 * Data types provided by database implementations which are not covered
+		 * by the SQL2003 standard are subsumed as ODBX_TYPE_UNKNOWN.
 		 *
 		 * @param pos Position of column in result set
 		 * @return Column type
@@ -411,6 +591,10 @@ namespace OpenDBX
 		/**
 		 * Returns the size of the content in the current row at the specified postion.
 		 *
+		 * The field is part of the current row which was retrieved by the
+		 * latest call to getRow() and is specified by the column index given by
+		 * pos.
+		 *
 		 * @param pos Position of column in result set
 		 * @return Size of the data in bytes
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
@@ -420,6 +604,16 @@ namespace OpenDBX
 		/**
 		 * Returns a pointer to the content in the current row at the specified postion.
 		 *
+		 * This function returns a pointer to the field data specified by the
+		 * column index pos. The field is part of the current row which was
+		 * retrieved by the latest call to getRow(). All values except binary
+		 * objects are handed back as strings terminated by the zero character.
+		 * This does also apply to numeric values, dates, etc. They have to be
+		 * converted to their binary machine dependent representation before
+		 * arithmetic operations can be done. If a value is undefined, i.e.
+		 * "NULL" is attached to the field in the database, an equivalent NULL
+		 * pointer is returned.
+		 *
 		 * @param pos Position of column in result set
 		 * @return Pointer to the data
 		 * @throws OpenDBX::Exception If the underlying database library returns an error
@@ -427,7 +621,18 @@ namespace OpenDBX
 		const char* fieldValue( unsigned long pos ) throw( std::exception );
 
 		/**
-		 * Create a large object instance if supported by the database.
+		 * Creates a large object instance if supported by the database.
+		 *
+		 * Returns a Lob class instance representing a large object stored in
+		 * the database. It references the large object and provided methods for
+		 * accessing and modifying its content.
+		 *
+		 * The parameter required by this method must be the value returned by
+		 * the fieldValue() method of a large object column.
+		 *
+		 * This method must only be used if the underlying driver states that it
+		 * supports large objects via the Conn::getCapabilities(). Otherwise,
+		 * the content can be retrieved directly by the fieldValue() method.
 		 *
 		 * @param value Pointer to the content of a field returned by fieldValue()
 		 * @return Large object instance
@@ -812,8 +1017,15 @@ namespace OpenDBX
 		 * it supports one or more optional sets. The available sets and its
 		 * constants are:
 		 *
-		 * ODBX_CAP_BASIC (basic set supported by all drivers)
-		 * ODBX_CAP_LO (special large object handling)
+		 * - ODBX_CAP_BASIC\n
+		 *   The core function set which have to be implemented by all backends.
+		 *   It consists of all functions necessary to connect to, send textual
+		 *   queries to and process simple results returned from the database
+		 *   server as well as error handling functions.
+		 * - ODBX_CAP_LO\n
+		 *   The function set for handling large objects whose content isn't
+		 *   accessible by the basic function. Currently, Firebird/Interbase
+		 *   and Oracle requires using the LOB functions.
 		 *
 		 * The basic set makes sure that all drivers can handle connections to
 		 * the databases, send statements and retrieve results. It's supported
@@ -834,6 +1046,53 @@ namespace OpenDBX
 		/**
 		 * Gets the value of a certain option provided by the database driver module.
 		 *
+		 * It asks the backend module for implemented options and their current
+		 * values. This function can be used at every stage and its primary use
+		 * is to find out supported features of the backend module. This features
+		 * can be enable with setOption() before the connection to the database
+		 * server is established by calling bind().
+		 *
+		 * There are several option values defined as named constants in the
+		 * opendbx/api.h header file. A few of them are for informational purpose
+		 * only while most of the options can also be set to different values
+		 * by setOption() to change the behavior of the backend module. These
+		 * options are:
+		 *
+		 * - ODBX_OPT_API_VERSION\n
+		 *   The API version implemented by the backend. It returns a five digit
+		 *   number representing the API version of the backend module in the
+		 *   form XYYZZ where X is the major number, YY the revision and ZZ the
+		 *   minor number of the API.
+		 * - ODBX_OPT_THREAD_SAFE\n
+		 *   If it is safe to use this backend and especially the native database
+		 *   client library in an application which uses threads where more than
+		 *   one thread opens database connections via the OpenDBX library.
+		 * - ODBX_OPT_TLS\n
+		 *   The database client library may support transmitting all data
+		 *   securely by encrypting the network traffic via SSL or TLS.
+		 * - ODBX_OPT_MULTI_STATEMENTS\n
+		 *   The database server may be able to support multiple SQL statements
+		 *   in one string sent to the database.
+		 * - ODBX_OPT_PAGED_RESULTS\n
+		 *   All database servers and client libraries are able to transfer the
+		 *   records row by row. Some of them can also transfer multiple rows
+		 *   or even all at once to minimize server load, network traffic and
+		 *   latency. The downside of this is an increased memory consumption.
+		 * - ODBX_OPT_COMPRESS\n
+		 *   Support of compressed network traffic between database client and
+		 *   server. This can lead to higher throughput if the network is the
+		 *   bottleneck.
+		 * - ODBX_OPT_MODE\n
+		 *   Some database servers support different modes of operation, e.g.
+		 *   modes for compliance to other SQL implementations or completely
+		 *   different query languages.
+		 *
+		 * The parameter "value" must be a pointer to an integer variable where
+		 * the backend module will store the result for the supplied option. If
+		 * it's not stated otherwise, the value assigned to the this parameter
+		 * will be of boolean nature and therefore is ODBX_ENABLE for a supported
+		 * option or ODBX_DISABLE for an option which isn't supported.
+		 *
 		 * @param option Constant of the option
 		 * @param value Pointer to memory where the result is stored
 		 * @throws std::invalid_argument If the object was only initialized by the default constructor
@@ -843,6 +1102,51 @@ namespace OpenDBX
 
 		/**
 		 * Sets a certain option provided by the database driver module.
+		 *
+		 * Changes the value of the specified option in the backend module or
+		 * the native database library. Before trying to set an option, it should
+		 * be tested with getOption() first to ensure that it is supported by
+		 * the backend. Almost all options need to be set before connecting to
+		 * the database server using bind() to take any effect.
+		 *
+		 * There are several option values defined as named constants in the
+		 * opendbx/api.h header file. The possible options are:
+		 *
+		 * - ODBX_OPT_TLS\n
+		 *   Use encryption to transmit all data securely over the network via
+		 *   SSL or TLS. This option can be set to ODBX_TLS_NEVER (the default
+		 *   value) to prevent encrpytion, ODBX_TLS_ALWAYS to enforce encryption
+		 *   and to fail if it can't be used between the client library and the
+		 *   server or ODBX_TLS_TRY to use encryption if possible with the
+		 *   option to fall back to a connection which isn't encrypted.
+		 * - ODBX_OPT_MULTI_STATEMENTS\n
+		 *   Enables the database server to accept multiple statements in one
+		 *   string to the database if the value of value is set to ODBX_ENABLE.
+		 *   Although, it might be possible to disable it by setting it to
+		 *   ODBX_DISABLE.
+		 * - ODBX_OPT_PAGED_RESULTS\n
+		 *   All database servers and client libraries are able to transfer the
+		 *   records row by row. Some of them can also transfer multiple rows
+		 *   or even all at once to minimize server load, network traffic and
+		 *   latency. The downside of this is an increased memory consumption.
+		 *   If paged results are supported by the backend, passing positive
+		 *   values will fetch the specified number of records at once from the
+		 *   database server. The value of zero ("0") is special in this case
+		 *   because it asks the backend module to retrieve all records at once.
+		 * - ODBX_OPT_COMPRESS\n
+		 *   Enable compressed network traffic between database client and
+		 *   server. This can maximize the throughput if the network is the
+		 *   bottleneck. Pass an integer variable with ODBX_ENABLE to enable
+		 *   compression or with ODBX_DISABLE to disable it for this connection.
+		 * - ODBX_OPT_MODE\n
+		 *   Some database servers support different modes of operation, e.g.
+		 *   modes for compliance to other SQL implementations or completely
+		 *   different query languages. The value for this option must point to
+		 *   a zero terminated string.
+		 *
+		 * If not stated otherwise, the type of the variable passed to the second
+		 * parameter named "value" must be an integer pointer. Its values
+		 * must be in the range specified by the option being changed.
 		 *
 		 * @param option Constant of the option
 		 * @param value Pointer to memory which contains the new value
