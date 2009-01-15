@@ -57,7 +57,7 @@ namespace OpenDBX
 	public:
 
 		Result_Impl( odbx_t* handle ) throw( std::exception );
-		~Result_Impl() throw() {}
+		~Result_Impl() throw();
 
 		void finish() throw( std::exception );
 

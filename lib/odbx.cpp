@@ -374,7 +374,10 @@ namespace OpenDBX
 
 	Conn::Conn( const string& backend, const string& host, const string& port ) throw( std::exception )
 	{
-		Conn( backend.c_str(), host.c_str(), port.c_str() );
+		m_impl = new Conn_Impl( backend.c_str(), host.c_str(), port.c_str() );
+		m_ref = new int;
+
+		*m_ref = 1;
 	}
 
 
@@ -416,7 +419,20 @@ namespace OpenDBX
 
 	Conn& Conn::operator=( const Conn& ref ) throw()
 	{
-		if( this != &ref ) { Conn( ref ); }
+		if( m_ref != NULL && --(*m_ref) == 0 )
+		{
+			try
+			{
+				delete m_impl;
+				delete m_ref;
+			}
+			catch( std::exception& e ) {}
+		}
+
+		m_impl = ref.m_impl;
+		m_ref = ref.m_ref;
+
+		if( m_ref != NULL ) { ++(*m_ref); }
 
 		return *this;
 	}

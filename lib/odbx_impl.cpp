@@ -96,6 +96,17 @@ namespace OpenDBX
 
 
 
+	Result_Impl::~Result_Impl() throw()
+	{
+		try
+		{
+			this->finish();
+		}
+		catch( Exception& e ) {}
+	}
+
+
+
 	void Result_Impl::finish() throw( std::exception )
 	{
 		while( this->getResult( NULL, 0 ) != ODBX_RES_DONE );
@@ -349,6 +360,7 @@ namespace OpenDBX
 
 		if( ( err = odbx_query( this->_getHandle(), m_sql.c_str(), m_sql.size() ) ) < 0 )
 		{
+std::cerr << "error in odbx_query()" << std::endl;
 			throw Exception( string( odbx_error( this->_getHandle(), err ) ), err, odbx_error_type( this->_getHandle(), err ) );
 		}
 	}
