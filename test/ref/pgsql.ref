@@ -1,25 +1,66 @@
+
+Parameter:
+  backend=pgsql
+  host=192.168.1.252
+  database=odbx
+  user=odbx
+  password=odbx
+  runs=1
+  verbose=1
+
+1. Run:
+  odbx_init()
+  odbx_capabilities()
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10100 
+  odbx_{get/set}_option()
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 1 
     ODBX_OPT_TLS: 1 
     ODBX_OPT_CONNECT_TIMEOUT: 1 (using)
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
     ODBX_OPT_PAGED_RESULTS: 0 
     ODBX_OPT_COMPRESS: 0 
+  odbx_bind()
+  odbx_init()
+  odbx_capabilities()
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10100 
+  odbx_{get/set}_option()
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 1 
     ODBX_OPT_TLS: 1 
     ODBX_OPT_CONNECT_TIMEOUT: 1 (using)
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
     ODBX_OPT_PAGED_RESULTS: 0 
     ODBX_OPT_COMPRESS: 0 
+  odbx_bind()
+  odbx_query(0): 'SELECT * FROM odbxtest WHERE col = 'a''''\\''b' '
+  odbx_result()
+  odbx_result(n+1)
+  odbx_query(0): 'SELECT * FROM "odbxtest"'
+  odbx_result()
+  odbx_result(n+1)
+  odbx_query(0): 'CREATE TABLE "odbxtest" (   "i1" BOOLEAN,   "i16" SMALLINT,   "i32" INTEGER,   "i64" BIGINT,   "d9" DECIMAL(9,3),   "f4" REAL,   "f3" FLOAT(15),   "f8" DOUBLE PRECISION,   "c2" CHARACTER(2),   "nc12" NATIONAL CHARACTER(12),   "str20" CHARACTER VARYING(20),   "nstr24" NATIONAL CHARACTER VARYING(24),   "clob1g" TEXT,   "timeval" TIME,   "timestmp" TIMESTAMP,   "dateval" DATE)'
+  odbx_result()
     Affected rows: 0
+  odbx_result(n+1)
+  odbx_query(1): 'INSERT INTO "odbxtest" ( "i1", "i16", "i32", "i64", "d9", "f4", "f3", "f8", "c2", "nc12", "str20", "nstr24", "clob1g", "timeval", "timestmp", "dateval" ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )'
+  odbx_result()
     Affected rows: 1
+  odbx_result(n+1)
+  odbx_query(0): 'INSERT INTO "odbxtest" ( "i1", "i16", "i32", "i64", "d9", "f4", "f3", "f8", "c2", "nc12", "str20", "nstr24", "clob1g", "timeval", "timestmp", "dateval" ) VALUES ( '1', 2, 4, 8, 1.333, 4.5, 3.99, 8.0, 'EN', 'aouaou', 'varstring', 'aouaouaouaou', 'clob', '23:59:59', '1999-01-01 00:00:00', '1999-01-01' )'
+  odbx_result()
     Affected rows: 1
+  odbx_result(n+1)
+  odbx_query(1): 'INSERT INTO "odbxtest" ( "i1", "i16", "i32", "i64", "d9", "f4", "f3", "f8", "c2", "nc12", "str20", "nstr24", "clob1g", "timeval", "timestmp", "dateval" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )'
+  odbx_result()
     Affected rows: 1
+  odbx_result(n+1)
+  odbx_query(0): 'SELECT * FROM "odbxtest" WHERE "i16" = 2; SELECT * FROM "odbxtest" WHERE "str20" = 'empty''
+  odbx_result()
+  odbx_column_count()
+  odbx_row_fetch()
     column 0 (type 0): i1 = '1'
     column 1 (type 1): i16 = '2'
     column 2 (type 2): i32 = '4'
@@ -36,6 +77,7 @@
     column 13 (type 48): timeval = '23:59:59'
     column 14 (type 50): timestmp = '1999-01-01 00:00:00'
     column 15 (type 52): dateval = '1999-01-01'
+  odbx_row_fetch()
     column 0 (type 0): i1 = NULL
     column 1 (type 1): i16 = '2'
     column 2 (type 2): i32 = '4'
@@ -52,9 +94,31 @@
     column 13 (type 48): timeval = '15:00:00'
     column 14 (type 50): timestmp = '2005-12-31 23:59:59'
     column 15 (type 52): dateval = '2005-12-01'
+  odbx_row_fetch(n+1)
+  odbx_result_finish()
+  odbx_result()
+  odbx_column_count()
+  odbx_row_fetch(n+1)
+  odbx_result_finish()
+  odbx_result(n+1)
+  odbx_query(1): 'START TRANSACTION; UPDATE odbxtest SET i16 = 3 WHERE str20 LIKE '%string'; DELETE FROM "odbxtest" WHERE "str20" LIKE '%string'; ROLLBACK'
+  odbx_result()
     Affected rows: 0
+  odbx_result()
     Affected rows: 2
+  odbx_result()
+    Affected rows: 2
+  odbx_result()
     Affected rows: 0
+  odbx_result(n+1)
+  odbx_query(0): 'UPDATE odbxtest SET c2 = '' WHERE c2 = 'AA''
+  odbx_result()
+    Affected rows: 0
+  odbx_result(n+1)
+  odbx_query(1): 'SELECT * FROM "odbxtest"'
+  odbx_result()
+  odbx_column_count()
+  odbx_row_fetch()
     column 0 (type 0): i1 = '0'
     column 1 (type 1): i16 = '1000'
     column 2 (type 2): i32 = '100000'
@@ -71,6 +135,7 @@
     column 13 (type 48): timeval = '15:00:00'
     column 14 (type 50): timestmp = '2000-01-01 00:00:01'
     column 15 (type 52): dateval = '2000-02-29'
+  odbx_row_fetch()
     column 0 (type 0): i1 = '1'
     column 1 (type 1): i16 = '2'
     column 2 (type 2): i32 = '4'
@@ -87,6 +152,7 @@
     column 13 (type 48): timeval = '23:59:59'
     column 14 (type 50): timestmp = '1999-01-01 00:00:00'
     column 15 (type 52): dateval = '1999-01-01'
+  odbx_row_fetch()
     column 0 (type 0): i1 = NULL
     column 1 (type 1): i16 = '2'
     column 2 (type 2): i32 = '4'
@@ -103,6 +169,26 @@
     column 13 (type 48): timeval = '15:00:00'
     column 14 (type 50): timestmp = '2005-12-31 23:59:59'
     column 15 (type 52): dateval = '2005-12-01'
+  odbx_row_fetch(n+1)
+  odbx_result_finish()
+  odbx_result(n+1)
+  odbx_query(0): 'DELETE FROM "odbxtest" WHERE "str20" LIKE '%string''
+  odbx_result()
     Affected rows: 2
+  odbx_result(n+1)
+  odbx_query(1): 'SELECT COUNT(*) AS "count" FROM "odbxtest"'
+  odbx_result()
+  odbx_column_count()
+  odbx_row_fetch()
     column 0 (type 3): count = '1'
+  odbx_row_fetch(n+1)
+  odbx_result_finish()
+  odbx_result(n+1)
+  odbx_query(0): 'DROP TABLE "odbxtest"'
+  odbx_result()
     Affected rows: 0
+  odbx_result(n+1)
+  odbx_unbind()
+  odbx_unbind()
+  odbx_finish()
+  odbx_finish()

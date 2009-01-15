@@ -81,12 +81,14 @@ static struct odbxstmt firebird_basic[] = {
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2" },
 	{ 1, "SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
 	{ 0, "SET TRANSACTION" },
+	{ 0, "UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'" },
 	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
 	{ 0, "ROLLBACK" },
-	{ 1, "SELECT * FROM \"odbxtest\"" },
-	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 0, "DROP TABLE \"odbxtest\"" },
+	{ 1, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 0, "SELECT * FROM \"odbxtest\"" },
+	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 1, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -122,11 +124,12 @@ static struct odbxstmt mssql_multi[] = {
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"timeval\", \"timestmp\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2   SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 1, "BEGIN TRANSACTION   DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'   ROLLBACK" },
-	{ 0, "SELECT * FROM \"odbxtest\"" },
-	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 1, "DROP TABLE \"odbxtest\"" },
+	{ 1, "BEGIN TRANSACTION   UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'   DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'   ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 1, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 0, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -164,12 +167,14 @@ static struct odbxstmt mysql_basic[] = {
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2" },
 	{ 1, "SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
 	{ 0, "START TRANSACTION" },
+	{ 0, "UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'" },
 	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
 	{ 0, "ROLLBACK" },
-	{ 1, "SELECT * FROM \"odbxtest\"" },
-	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 0, "DROP TABLE \"odbxtest\"" },
+	{ 1, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 0, "SELECT * FROM \"odbxtest\"" },
+	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 1, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -201,11 +206,12 @@ static struct odbxstmt mysql_multi[] = {
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"timeval\", \"timestmp\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2; SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 1, "START TRANSACTION; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
-	{ 0, "SELECT * FROM \"odbxtest\"" },
-	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 1, "DROP TABLE \"odbxtest\"" },
+	{ 1, "START TRANSACTION; UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 1, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 0, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -216,39 +222,48 @@ static struct odbxstmt* mysql_stmt[] = { mysql_basic, mysql_multi };
 static struct odbxstmt odbc_basic[] = {
 	{ 0, "SELECT * FROM odbxtest" },
 	{ 0, "CREATE TABLE odbxtest ("
-	"   i1 BOOLEAN,"
+// 	"   i1 BOOLEAN,"
+// 	"   i1 BIT,"
 	"   i16 SMALLINT,"
 	"   i32 INTEGER,"
-	"   i64 BIGINT,"
+// 	"   i64 BIGINT,"
 	"   d9 DECIMAL(9,3),"
 	"   f4 REAL,"
 	"   f3 FLOAT(15),"
 	"   f8 DOUBLE PRECISION,"
 	"   c2 CHARACTER(2),"
-	"   nc12 NATIONAL CHARACTER(12),"
+// 	"   nc12 NATIONAL CHARACTER(12),"
+// 	"   nc12 NCHAR(12),"
 	"   str20 CHARACTER VARYING(20),"
-	"   nstr24 NATIONAL CHARACTER VARYING(24),"
-	"   clob64k TEXT,"
+// 	"   nstr24 NATIONAL CHARACTER VARYING(24),"
+// 	"   nstr24 NVARCHAR(24),"
+// 	"   clob64k TEXT,"
+// 	"   clob64k LONGVARCHAR,"
 	"   timeval TIME,"
 	"   timestmp TIMESTAMP,"
 	"   dateval DATE"
 	")" },
 
-	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
+// 	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '0', 1000, 100000, 10000000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'äöüäöü', 'first string', 'äöüäöüäöüäöü', 'a very long text', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
+	{ 1, "INSERT INTO odbxtest ( i16, i32, d9, f4, f3, f8, c2, str20, timeval, timestmp, dateval ) VALUES ( 1000, 100000, 12345.123, 10000.1, 100.1, 10000000.1, 'DE', 'first string', '15:00:00', '2000-01-01 00:00:01', '2000-02-29' )" },
 
-	{ 0, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '1', 2, 4, 8, 1.333, 4.5, 3.99, 8.0, 'EN', 'aouaou', 'varstring', 'aouaouaouaou', 'clob', '23:59:59', '1999-01-01 00:00:00', '1999-01-01' )" },
+// 	{ 0, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( '1', 2, 4, 8, 1.333, 4.5, 3.99, 8.0, 'EN', 'aouaou', 'varstring', 'aouaouaouaou', 'clob', '23:59:59', '1999-01-01 00:00:00', '1999-01-01' )" },
+	{ 0, "INSERT INTO odbxtest ( i16, i32, d9, f4, f3, f8, c2, str20, timeval, timestmp, dateval ) VALUES ( 2, 4, 1.333, 4.5, 3.99, 8.0, 'EN', 'varstring', '23:59:59', '1999-01-01 00:00:00', '1999-01-01' )" },
 
-	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
+// 	{ 1, "INSERT INTO odbxtest ( i1, i16, i32, i64, d9, f4, f3, f8, c2, nc12, str20, nstr24, clob64k, timeval, timestmp, dateval ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
+	{ 1, "INSERT INTO odbxtest ( i16, i32, d9, f4, f3, f8, c2, str20, timeval, timestmp, dateval ) VALUES ( 2, 4, 2.5, 4.0, 3.1, 8.5, 'FR', NULL, '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM odbxtest WHERE i16 = 2" },
 	{ 1, "SELECT * FROM odbxtest WHERE str20 = 'empty'" },
 	{ 0, "START TRANSACTION" },
+	{ 0, "UPDATE odbxtest SET i16 = 3 WHERE str20 LIKE '%string'" },
 	{ 0, "DELETE FROM odbxtest WHERE str20 LIKE '%string'" },
 	{ 0, "ROLLBACK" },
-	{ 1, "SELECT * FROM odbxtest" },
-	{ 0, "DELETE FROM odbxtest WHERE str20 LIKE '%string'" },
-	{ 1, "SELECT COUNT(*) AS count FROM odbxtest" },
-	{ 0, "DROP TABLE odbxtest" },
+	{ 1, "UPDATE odbxtest SET c2 = '' WHERE c2 = 'AA'" },
+	{ 0, "SELECT * FROM odbxtest" },
+	{ 1, "DELETE FROM odbxtest WHERE str20 LIKE '%string'" },
+	{ 0, "SELECT COUNT(*) AS count FROM odbxtest" },
+	{ 1, "DROP TABLE odbxtest" },
 	{ -1, NULL }
 };
 
@@ -285,12 +300,14 @@ static struct odbxstmt oracle_basic[] = {
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2 ORDER BY \"i1\"" },
 	{ 1, "SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty' ORDER BY \"i1\"" },
 	{ 0, "SET TRANSACTION ISOLATION LEVEL READ COMMITTED" },
+	{ 0, "UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'" },
 	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
 	{ 0, "ROLLBACK" },
-	{ 1, "SELECT * FROM \"odbxtest\" ORDER BY \"i1\"" },
-	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 0, "DROP TABLE \"odbxtest\"" },
+	{ 1, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 0, "SELECT * FROM \"odbxtest\" ORDER BY \"i1\"" },
+	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 1, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -326,11 +343,12 @@ static struct odbxstmt pgsql_multi[] = {
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob1g\", \"timeval\", \"timestmp\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2; SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 1, "START TRANSACTION; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
-	{ 0, "SELECT * FROM \"odbxtest\"" },
-	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 1, "DROP TABLE \"odbxtest\"" },
+	{ 1, "START TRANSACTION; UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 1, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 0, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 
@@ -369,7 +387,8 @@ static struct odbxstmt sqlite_multi[] = {
 	{ 0, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"nclob64k\", \"timeval\", \"timevaltz\", \"timestmp\", \"timestmptz\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', 'éçè very long national text éçè', '15:00:00', '15:00:00+00', '2005-12-31 23:59:59', '2005-12-31 23:59:59+00', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2; SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 0, "BEGIN TRANSACTION; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
+	{ 0, "BEGIN TRANSACTION; UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
 	{ 0, "SELECT * FROM \"odbxtest\"" },
 	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
 	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
@@ -412,10 +431,11 @@ static struct odbxstmt sqlite3_multi[] = {
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"nclob64k\", \"timeval\", \"timevaltz\", \"timestmp\", \"timestmptz\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', 'éçè very long national text éçè', '15:00:00', '15:00:00+00', '2005-12-31 23:59:59', '2005-12-31 23:59:59+00', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2; SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 1, "BEGIN TRANSACTION; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
-	{ 0, "SELECT * FROM \"odbxtest\"" },
-	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 1, "BEGIN TRANSACTION; UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'; DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'; ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 1, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
 	{ 0, "DROP TABLE \"odbxtest\"" },   // Can't create table immediately again after dropping it via second connection
 	{ -1, NULL }
 };
@@ -452,11 +472,12 @@ static struct odbxstmt sybase_multi[] = {
 	{ 1, "INSERT INTO \"odbxtest\" ( \"i1\", \"i16\", \"i32\", \"i64\", \"d9\", \"f4\", \"f3\", \"f8\", \"c2\", \"nc12\", \"str20\", \"nstr24\", \"clob64k\", \"timeval\", \"timestmp\", \"dateval\" ) VALUES ( NULL, 2, 4, 8, 2.5, 4.0, 3.1, 8.5, 'FR', 'éçèéçè', NULL, 'éçèéçèéçèéçè', 'text', '15:00:00', '2005-12-31 23:59:59', '2005-12-01' )" },
 
 	{ 0, "SELECT * FROM \"odbxtest\" WHERE \"i16\" = 2   SELECT * FROM \"odbxtest\" WHERE \"str20\" = 'empty'" },
-	{ 1, "BEGIN TRANSACTION   DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'   ROLLBACK" },
-	{ 0, "SELECT * FROM \"odbxtest\"" },
-	{ 1, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
-	{ 0, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
-	{ 1, "DROP TABLE \"odbxtest\"" },
+	{ 1, "BEGIN TRANSACTION   UPDATE \"odbxtest\" SET \"i16\" = 3 WHERE \"str20\" LIKE '%string'   DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'   ROLLBACK" },
+	{ 0, "UPDATE \"odbxtest\" SET \"c2\" = '' WHERE \"c2\" = 'AA'" },
+	{ 1, "SELECT * FROM \"odbxtest\"" },
+	{ 0, "DELETE FROM \"odbxtest\" WHERE \"str20\" LIKE '%string'" },
+	{ 1, "SELECT COUNT(*) AS \"count\" FROM \"odbxtest\"" },
+	{ 0, "DROP TABLE \"odbxtest\"" },
 	{ -1, NULL }
 };
 

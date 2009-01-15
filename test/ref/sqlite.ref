@@ -1,6 +1,6 @@
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10100 
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 0 
     ODBX_OPT_TLS: 0 
     ODBX_OPT_CONNECT_TIMEOUT: 0 
@@ -9,7 +9,7 @@
     ODBX_OPT_COMPRESS: 0 
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10100 
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 0 
     ODBX_OPT_TLS: 0 
     ODBX_OPT_CONNECT_TIMEOUT: 0 
@@ -58,7 +58,8 @@
     column 16 (type 32): timestmp = '2005-12-31 23:59:59'
     column 17 (type 32): timestmptz = '2005-12-31 23:59:59+00'
     column 18 (type 32): dateval = '2005-12-01'
-    Affected rows: 2
+    Affected rows: 4
+    Affected rows: 0
     column 0 (type 32): i1 = '0'
     column 1 (type 32): i16 = '1000'
     column 2 (type 32): i32 = '100000'

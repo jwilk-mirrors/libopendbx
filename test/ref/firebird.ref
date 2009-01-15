@@ -1,6 +1,6 @@
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 1
-    ODBX_OPT_API_VERSION: 10100 
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 1 
     ODBX_OPT_TLS: 0 
     ODBX_OPT_CONNECT_TIMEOUT: 0 
@@ -9,7 +9,7 @@
     ODBX_OPT_COMPRESS: 0 
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 1
-    ODBX_OPT_API_VERSION: 10100 
+    ODBX_OPT_API_VERSION: 10200 
     ODBX_OPT_THREAD_SAFE: 1 
     ODBX_OPT_TLS: 0 
     ODBX_OPT_CONNECT_TIMEOUT: 0 
@@ -54,6 +54,8 @@
     column 15 (type 52): dateval = '2005-12-01'
     Affected rows: 0
     Affected rows: 2
+    Affected rows: 2
+    Affected rows: 0
     Affected rows: 0
     column 0 (type 16): i1 = '0'
     column 1 (type 1): i16 = '1000'
