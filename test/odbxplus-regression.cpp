@@ -182,6 +182,9 @@ int main( int argc, char* argv[] )
 
 			for( k = 0; k < 2; k++ )
 			{
+				if( verbose ) { cout << "  Conn::unbind()" << endl; }
+				conn[k].unbind();
+
 				if( verbose ) { cout << "  Conn::finish()" << endl; }
 				conn[k].finish();
 			}
@@ -223,7 +226,7 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 		{
 			if( verbose ) { cout << "  Stmt::execute(" << qptr->num << "): '" << qptr->str << "'" << endl; }
 
-			Stmt stmt = conn[qptr->num].create( string( qptr->str ) );
+			Stmt stmt = conn[qptr->num].create( qptr->str );
 			Result result = stmt.execute();
 
 			tv.tv_sec = 3;
@@ -298,7 +301,7 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 		catch( OpenDBX::Exception& oe )
 		{
 			if( oe.getType() < 0 ) { throw oe; }
-			cerr << "Error in exec(): " << oe.what() << endl;
+			cout << "Error in exec(): " << oe.what() << endl;
 		}
 
 		qptr++;
