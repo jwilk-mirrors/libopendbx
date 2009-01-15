@@ -8,5 +8,7 @@ Main developers:
 Contributors:
 - Kees Monshouwer
   (excellent spec file for building rpm packages)
+- Mariano Martinez Peck
+  (much testing especially on Windows)
 - Sven Wegener
   (gcc compatibilty improvements)

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.4.0rc1], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.4.0], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -160,11 +160,6 @@ do
 				[$LIBMYSQL], [mysql_next_result],
 				[AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Define to 1 if you have mysql_next_result])]
 			)
-#			AC_CHECK_LIB(
-#				[z], [compress],
-#				[AC_DEFINE([HAVE_LIBZ], 1, [Have -lz)]) LIBMYSQL="$LIBMYSQL -lz"],
-#				[AC_MSG_ERROR([zlib not found])]
-#			)
 		;;
 		odbc)
 			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])], [

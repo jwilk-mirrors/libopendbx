@@ -1,5 +1,6 @@
-2008-11-23 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-01-13 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Change: Fully documented C++ functions
 	* Change: Specified thrown exceptions for all C++ functions
 	* Change: Used interfaces for all C++ implementation classes
 	* Change: Made C++ get*() functions in OpenDBX::Exception constant
@@ -10,14 +11,16 @@
 	* Change: Cleanup inside C++ API functions
 	* Change: Added checks for libreadline and libncurses when the utilities should be build
 	* Change: Added update statements in regression for testing statements which affects no rows
-	* Bugfix: odbc_odbx_query() returned wrong code if a statement affected no rows (thanks to Mariano)
-	* Bugfix: Fixed memleak in mysql backend during finishing connections
+	* Bugfix: odbc_odbx_query() returned wrong code if a statement affected no rows (thanks to Mariano Martinez Peck)
+	* Bugfix: Fixed memleak in mysql backend during finishing connections (thanks to Zhao Tongyi)
+	* Bugfix: Added destructor for Result_Impl class to clean up if an exception is thrown
 	* Bugfix: Added checks for Conn::escape() functions if connection instance wasn't initialized correctly
 	* Bugfix: Added copy constructors for all objects which are responsible for reference handling
 	* Bugfix: Protect C++ objects against self assignment
 	* Bugfix: Fixed build on windows with MinGW
 	* Bugfix: odbx-sql can now be built without gettext
 	* Bugfix: Added workaround necessary for building the odbc backend using MinGW
+	* Bugfix: Missing Conn::unbind() in odbxplustest
 
 2008-10-22 Norbert Sendetzky <norbert@linuxnetworks.de>
 
