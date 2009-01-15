@@ -314,7 +314,6 @@ static int odbc_odbx_error_type( odbx_t* handle )
 	err = SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
 	if( SQL_SUCCEEDED( err ) )
 	{
-		if( strncmp( sqlstate, "HY", 2 ) == 0 ) { return -1; }
 		if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
 		if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
 
