@@ -321,7 +321,7 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 
 	if( timeout != NULL )
 	{
-		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec );
+		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec / 1000 );
 	}
 
 	if( ( aux->err = sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
