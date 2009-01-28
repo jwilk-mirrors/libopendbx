@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -317,7 +318,7 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 #ifdef HAVE_SELECT
 	if( timeout != NULL && PQisBusy( (PGconn*) handle->generic ) == 1 )
 	{
-		int fd;
+		int fd, err;
 		fd_set fds;
 
 		if( ( fd = PQsocket( (PGconn*) handle->generic ) ) == -1 )
@@ -329,7 +330,9 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		FD_ZERO( &fds );
 		FD_SET( fd, &fds );
 
-		switch( select( fd + 1, &fds, NULL, NULL, timeout ) )
+		while( ( err = select( fd + 1, &fds, NULL, NULL, timeout ) ) < 0 && errno == EINTR );
+
+		switch( err )
 		{
 			case -1:
 				return -ODBX_ERR_RESULT;
