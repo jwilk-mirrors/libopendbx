@@ -443,7 +443,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->bind( database, who, cred, method );
@@ -455,7 +455,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->bind( database.c_str(), who.c_str(), cred.c_str(), method );
@@ -467,7 +467,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->unbind();
@@ -479,7 +479,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->finish();
@@ -491,7 +491,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		return m_impl->getCapability( cap );
@@ -503,7 +503,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->getOption( option, value );
@@ -515,7 +515,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		m_impl->setOption( option, value );
@@ -527,7 +527,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		return m_impl->escape( from.c_str(), from.size(), to );
@@ -539,7 +539,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		return m_impl->escape( from, fromlen, to );
@@ -560,7 +560,7 @@ namespace OpenDBX
 	{
 		if( m_impl == NULL )
 		{
-			throw std::invalid_argument( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ) );
+			throw Exception( string( odbx_error( NULL, -ODBX_ERR_HANDLE ) ), -ODBX_ERR_HANDLE, odbx_error_type( NULL, -ODBX_ERR_HANDLE ) );
 		}
 
 		return Stmt( m_impl->create( sql, type ) );

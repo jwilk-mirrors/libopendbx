@@ -216,7 +216,7 @@ namespace OpenDBX
 			return string();
 		}
 
-		throw std::out_of_range( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -228,7 +228,7 @@ namespace OpenDBX
 			return (odbxtype) odbx_column_type( m_result, pos );
 		}
 
-		throw std::out_of_range( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -240,7 +240,7 @@ namespace OpenDBX
 			return odbx_field_length( m_result, pos );
 		}
 
-		throw std::out_of_range( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
@@ -252,7 +252,7 @@ namespace OpenDBX
 			return odbx_field_value( m_result, pos );
 		}
 
-		throw std::out_of_range( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ) );
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
 	}
 
 
