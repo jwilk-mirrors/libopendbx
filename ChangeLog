@@ -1,4 +1,4 @@
-2009-01-13 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-02-20 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Change: Fully documented C++ functions
 	* Change: Specified thrown exceptions for all C++ functions
@@ -6,13 +6,14 @@
 	* Change: Made C++ get*() functions in OpenDBX::Exception constant
 	* Change: Made return value of Result::columnName() constant
 	* Change: C++ implementation class variables are private now
-	* Change: Used STL invalid_argument and out_of_range exceptions where applicable
 	* Change: Used already existing C++ functions for functions with different parameter types
 	* Change: Cleanup inside C++ API functions
 	* Change: Added checks for libreadline and libncurses when the utilities should be build
 	* Change: Added update statements in regression for testing statements which affects no rows
 	* Bugfix: odbc_odbx_query() returned wrong code if a statement affected no rows (thanks to Mariano Martinez Peck)
 	* Bugfix: Fixed memleak in mysql backend during finishing connections (thanks to Zhao Tongyi)
+	* Bugfix: Fixed timeout calculation in sqlite3_odbx_query() (thanks to Mariano Martinez Peck)
+	* Bugfix: Workaround for interupted select() call in pgsql backend (thanks to Mariano Martinez Peck)
 	* Bugfix: Added destructor for Result_Impl class to clean up if an exception is thrown
 	* Bugfix: Added checks for Conn::escape() functions if connection instance wasn't initialized correctly
 	* Bugfix: Added copy constructors for all objects which are responsible for reference handling
