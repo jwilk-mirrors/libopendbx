@@ -30,6 +30,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
+using std::vector;
 using OpenDBX::Conn;
 using OpenDBX::Stmt;
 using OpenDBX::Result;
@@ -37,7 +38,7 @@ using OpenDBX::Lob;
 
 
 
-void exec( Conn conn[], struct odbxstmt* qptr, int verbose );
+void exec( vector<Conn>& conn, struct odbxstmt* qptr, int verbose );
 void lob_read( Result& result, int pos );
 
 
@@ -65,7 +66,7 @@ int main( int argc, char* argv[] )
 	struct odbxstmt* queries = NULL;
 	string backend, host, port, db, user, pass;
 	int param, verbose = 0, encrypt = 0, runs = 1;
-	Conn conn[2];
+	vector<OpenDBX::Conn> conn;
 
 
 	while( ( param = getopt( argc, argv, "b:h:p:d:u:w:e:r:v" ) ) != -1 )
@@ -146,6 +147,8 @@ int main( int argc, char* argv[] )
 		{
 			if( verbose ) { cout << endl << j+1 << ". Run:" << endl; }
 
+			conn.resize( 2 );
+
 			for( k = 0; k < 2; k++ )
 			{
 				if( verbose ) { cout << "  Conn::Conn()" << endl; }
@@ -211,7 +214,7 @@ int main( int argc, char* argv[] )
 
 
 
-void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
+void exec( vector<Conn>& conn, struct odbxstmt* qptr, int verbose )
 {
 	odbxres stat;
 	unsigned long fields, i;
@@ -301,7 +304,7 @@ void exec( Conn conn[], struct odbxstmt* qptr, int verbose )
 		catch( OpenDBX::Exception& oe )
 		{
 			if( oe.getType() < 0 ) { throw oe; }
-			cout << "Error in exec(): " << oe.what() << endl;
+			cerr << "Error in exec(): " << oe.what() << endl;
 		}
 
 		qptr++;
