@@ -112,39 +112,31 @@ static int odbc_odbx_bind( odbx_t* handle, const char* database, const char* who
 		return -ODBX_ERR_BACKEND;
 	}
 
-	SQLUINTEGER mode = SQL_AUTOCOMMIT_ON;
-
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, &mode, SQL_IS_UINTEGER );
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_DEFAULT_TXN_ISOLATION, (SQLPOINTER) SQL_TXN_READ_COMMITTED, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
 
-	mode = SQL_TXN_READ_COMMITTED;
-
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_DEFAULT_TXN_ISOLATION, &mode, SQL_IS_UINTEGER );
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ASYNC_ENABLE, (SQLPOINTER) SQL_ASYNC_ENABLE_ON, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
 
-	mode = SQL_ASYNC_ENABLE_ON;
-
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ASYNC_ENABLE, &mode, SQL_IS_UINTEGER );
-	if( !SQL_SUCCEEDED( gen->err ) )
-	{
-		return -ODBX_ERR_BACKEND;
-	}
-
-	mode = SQL_AA_FALSE;
-
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ANSI_APP, &mode, SQL_IS_UINTEGER );
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ANSI_APP, (SQLPOINTER) SQL_AA_FALSE, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
 
 	gen->err = SQLConnect( gen->conn, (SQLCHAR*) gen->server, strlen( gen->server ), (SQLCHAR*) who, wlen, (SQLCHAR*) cred, clen );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) SQL_AUTOCOMMIT_ON, SQL_IS_INTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
@@ -311,13 +303,54 @@ static int odbc_odbx_error_type( odbx_t* handle )
 	SQLSMALLINT msglen = 0;
 	SQLCHAR buffer;
 
-	err = SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
-	if( SQL_SUCCEEDED( err ) )
+	if( gen->stmt != NULL )
 	{
-		if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
-		if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
+		err = SQLGetDiagRec( SQL_HANDLE_STMT, gen->stmt, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
+		switch( err )
+		{
+			case SQL_SUCCESS:
+			case SQL_SUCCESS_WITH_INFO:
+				if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
+				if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
+			case SQL_NEED_DATA:
+			case SQL_NO_DATA:
+			case SQL_STILL_EXECUTING:
+				return 1;
+		}
+	}
 
-		return 1;
+	if( gen->conn != NULL )
+	{
+		err = SQLGetDiagRec( SQL_HANDLE_DBC, gen->conn, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
+		switch( err )
+		{
+			case SQL_SUCCESS:
+			case SQL_SUCCESS_WITH_INFO:
+				if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
+				if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
+				break;
+			case SQL_NEED_DATA:
+			case SQL_NO_DATA:
+			case SQL_STILL_EXECUTING:
+				return 1;
+		}
+	}
+
+	if( gen->env != NULL )
+	{
+		err = SQLGetDiagRec( SQL_HANDLE_ENV, gen->env, 1, (SQLCHAR*) sqlstate, &nerror, &buffer, sizeof( buffer ), &msglen );
+		switch( err )
+		{
+			case SQL_SUCCESS:
+			case SQL_SUCCESS_WITH_INFO:
+				if( strncmp( sqlstate, "08", 2 ) == 0 ) { return -1; }
+				if( strncmp( sqlstate, "IM", 2 ) == 0 ) { return -1; }
+				break;
+			case SQL_NEED_DATA:
+			case SQL_NO_DATA:
+			case SQL_STILL_EXECUTING:
+				return 1;
+		}
 	}
 
 	return -1;
@@ -329,19 +362,60 @@ static int odbc_odbx_query( odbx_t* handle, const char* query, unsigned long len
 {
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
-	gen->err = SQLAllocHandle( SQL_HANDLE_STMT, gen->conn, &(gen->stmt) );
-	if( !SQL_SUCCEEDED( gen->err ) )
-	{
-		return -ODBX_ERR_BACKEND;
-	}
-
-	gen->err = SQLExecDirect( gen->stmt, (SQLCHAR*) query, (SQLINTEGER) length );
-	if( !SQL_SUCCEEDED( gen->err ) && gen->err != SQL_NO_DATA )
-	{
-		return -ODBX_ERR_BACKEND;
-	}
 
 	gen->resnum = 0;
+
+	if( gen->stmt != NULL )
+	{
+		gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			gen->stmt = NULL;
+			return -ODBX_ERR_BACKEND;
+		}
+	}
+	gen->stmt = NULL;
+
+	if( strncasecmp( "BEGIN TRAN", query, 10 ) == 0 )
+	{
+		return odbc_priv_setautocommit( gen, SQL_AUTOCOMMIT_OFF );
+	}
+	else if( strncasecmp( "COMMIT", query, 6 ) == 0 )
+	{
+		gen->err = SQLEndTran( SQL_HANDLE_DBC, gen->conn, SQL_COMMIT );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
+
+		return odbc_priv_setautocommit( gen, SQL_AUTOCOMMIT_ON );
+	}
+	else if( strncasecmp( "ROLLBACK", query, 8 ) == 0 )
+	{
+		gen->err = SQLEndTran( SQL_HANDLE_DBC, gen->conn, SQL_ROLLBACK );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			return -ODBX_ERR_BACKEND;
+		}
+
+		return odbc_priv_setautocommit( gen, SQL_AUTOCOMMIT_ON );
+	}
+	else
+	{
+		gen->err = SQLAllocHandle( SQL_HANDLE_STMT, gen->conn, &(gen->stmt) );
+		if( !SQL_SUCCEEDED( gen->err ) )
+		{
+			gen->stmt = NULL;
+			return -ODBX_ERR_BACKEND;
+		}
+
+		gen->err = SQLExecDirect( gen->stmt, (SQLCHAR*) query, (SQLINTEGER) length );
+		if( !SQL_SUCCEEDED( gen->err ) && gen->err != SQL_NO_DATA )
+		{
+			// don't free stmt handle as we need it for error reporting
+			return -ODBX_ERR_BACKEND;
+		}
+	}
 
 	return ODBX_ERR_SUCCESS;
 }
@@ -353,10 +427,8 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 	struct odbcgen* gen = (struct odbcgen*) handle->generic;
 
 
-	if( gen == NULL )
-	{
-		return -ODBX_ERR_PARAM;
-	}
+	if( gen == NULL ) { return -ODBX_ERR_PARAM; }
+	if( gen->stmt == NULL ) { return ODBX_RES_DONE; }   // If called more often than necessary
 
 	if( gen->resnum != 0 )
 	{
@@ -366,11 +438,28 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 			case SQL_SUCCESS_WITH_INFO:
 				break;
 			case SQL_NO_DATA:
-				gen->resnum = -1;
+
+				gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt );
+				if( !SQL_SUCCEEDED( gen->err ) )
+				{
+					gen->stmt = NULL;
+					return -ODBX_ERR_BACKEND;
+				}
+
+				gen->stmt = NULL;
 				return ODBX_RES_DONE;
+
 			case SQL_STILL_EXECUTING:   // TODO: How to handle this?
 			default:
 				return -ODBX_ERR_BACKEND;
+		}
+	}
+	else
+	{
+		if( gen->err == SQL_NO_DATA )
+		{
+			gen->resnum++;
+			return ODBX_RES_NOROWS;   // For PostgreSQL ODBC driver
 		}
 	}
 	gen->resnum++;
@@ -461,24 +550,7 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 
 static int odbc_odbx_result_finish( odbx_result_t* result )
 {
-	struct odbcgen* gen = (struct odbcgen*) result->handle->generic;
 	struct odbcraux* raux = (struct odbcraux*) result->aux;
-
-	if( gen != NULL && gen->resnum == -1 )
-	{
-		gen->err = SQLCloseCursor( gen->stmt );
-		if( !SQL_SUCCEEDED( gen->err ) )
-		{
-			return -ODBX_ERR_BACKEND;
-		}
-
-		if( gen->stmt != NULL && ( gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt ) ) != SQL_SUCCESS )
-		{
-			return -ODBX_ERR_BACKEND;
-		}
-
-		gen->stmt = NULL;
-	}
 
 	if( raux != NULL ) {
 		odbc_priv_cleanup( result, raux->cols );
@@ -739,3 +811,17 @@ static void odbc_priv_cleanup( odbx_result_t* result, SQLSMALLINT cols )
 
 	free( result );
 }
+
+
+
+static int odbc_priv_setautocommit( struct odbcgen* gen, SQLUINTEGER mode )
+{
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) mode, SQL_IS_INTEGER );
+	if( !SQL_SUCCEEDED( gen->err ) )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	return ODBX_ERR_SUCCESS;
+}
+

@@ -67,5 +67,7 @@ static SQLLEN odbc_priv_collength( struct odbcgen* gen, SQLSMALLINT col, SQLSMAL
 
 static void odbc_priv_cleanup( odbx_result_t* result, SQLSMALLINT cols );
 
+static int odbc_priv_setautocommit( struct odbcgen* gen, SQLUINTEGER mode );
+
 
 #endif
