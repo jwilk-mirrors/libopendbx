@@ -68,14 +68,28 @@ namespace OpenDBX
 
 	ssize_t Lob_Impl::read( void* buffer, size_t buflen ) throw( std::exception )
 	{
-		return odbx_lo_read( m_lo, buffer, buflen );
+		ssize_t err;
+
+		if( ( err = odbx_lo_read( m_lo, buffer, buflen ) ) < 0 )
+		{
+			throw Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) );
+		}
+
+		return err;
 	}
 
 
 
 	ssize_t Lob_Impl::write( void* buffer, size_t buflen ) throw( std::exception )
 	{
-		return odbx_lo_write( m_lo, buffer, buflen );
+		ssize_t err;
+
+		if( ( err = odbx_lo_write( m_lo, buffer, buflen ) ) < 0 )
+		{
+			throw Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) );
+		}
+
+		return err;
 	}
 
 
