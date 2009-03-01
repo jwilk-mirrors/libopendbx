@@ -36,6 +36,59 @@ extern "C++" {
 
 
 
+/**
+ * OpenDBX C++ API
+ *
+ * The OpenDBX C++ API is an object-oriented database abstraction layer based
+ * on the procedural C API of the OpenDBX library. The C++ API provides objects
+ * encapsulating connections, statements, result sets and large objects.
+ *
+ * Using the API starts with establishing a connection to the database server by
+ * creating an instance of the Conn class with the parameters backend, host and
+ * port. Conn::getCapability() tests the implemented capabilites of the underlying
+ * database library while Conn::getOption() and Conn::setOption() cas be used to
+ * test for and change a number of options. The options must be changed before
+ * authenticating the connection with the Conn::bind() method to have any effect.
+ * It's also possible to rebind a connection using different credentials after
+ * Conn::unbind() had been called. Additionally, the Conn class is able to
+ * escape potentially dangerous character sequences with Conn::escape() if e.g.
+ * user input should be part of a statement as value.
+ *
+ * The Conn::create() method creates and initializes a new statement instance
+ * from a SQL string. Currently, there are only simple statement objects
+ * implemented, which needs to be complete statements which can be sent to the
+ * database with Stmt::execute(). This method returns a Result object
+ * encapsulating one or more result sets returned by the database depending on
+ * the statement sent.
+ *
+ * Each result set must be retrieved using Result::getResult(), while
+ * Result::getRows() fetches a row from the current result set if the statement
+ * was a SELECT like statement. Otherwise, Result::rowsAffected() can be used
+ * to get the number of rows that were touched by the statement. If the statement
+ * may return rows, the Result::columnName() and Result::columnType() methods
+ * are able to provide some informations about the columns indexed from 0 to n.
+ * It's also possible to map the column name with the Result::columnPos() method
+ * to the column index which is required be the other column methods. To get
+ * the actual value and length of the content in the current row at the given
+ * position, the Result::fieldValue() and Result::fieldLength() must be called.
+ *
+ * In case the unterlying database library requires special handling of large
+ * objects (binary or text LOBs), the value of Result::fieldValue() has to be
+ * feed into the Result::getLob() method. It returns a Lob object which enables
+ * the application to read from and write to a large object using Lob::read()
+ * respectively Lob::write(). This is only necessary if the Conn::getCapability()
+ * method returns true when asking for ODBX_CAP_LO.
+ *
+ * If an error occurs in any of the object methods, the objects will throw an
+ * instance of the Exception class with extends the runtime_error exception of
+ * the STL. The instance contains an error message, the OpenDBX error code and
+ * an error type indicating the severity of the error. This information can be
+ * retrieved by the methods Exception::what(), Exception::getCode() and
+ * Exception::getType().
+ *
+ * @author Norbert Sendetzky <norbert@linuxnetworks.de>
+ * @version 1.0
+ */
 namespace OpenDBX
 {
 	using std::string;
@@ -48,7 +101,8 @@ namespace OpenDBX
 
 
 	/**
-	 * Exception thrown by OpenDBX objects.
+	 * Exceptions thrown by the OpenDBX classes.
+	 *
 	 * Most calls to methods of OpenDBX objects does throw an exception in case
 	 * an error occurs in the underlying database library. Additionally to other
 	 * exceptions which inherit from the STL exception class it will not only
@@ -103,6 +157,7 @@ namespace OpenDBX
 
 		/**
 		 * Returns the OpenDBX error code related to the error.
+		 *
 		 * The machine readable code describing the error which occured can be
 		 * used by the application to act differently depending on the specific
 		 * error. Currently defined codes are:
@@ -147,10 +202,12 @@ namespace OpenDBX
 
 		/**
 		 * Returns severity indicator.
+		 *
 		 * The returned value classifies the error thrown. In case it is negative,
 		 * the error is fatal (e.g. the connection to the database is lost) and
 		 * the application can't continue without closing and reopening the
 		 * connection.
+		 *
 		 * If the value is positive, the database wasn't able to perform the
 		 * requested action but the connection is still OK and can be used to
 		 * send more requests to the database.
@@ -225,7 +282,7 @@ namespace OpenDBX
 		/**
 		 * Copy constructor.
 		 *
-		 * Enables the transfer of the internal state of an object of the same
+		 * Enables the transfer of the internal state of an object \a ref of the same
 		 * type to this object. Both objects share the same variables
 		 * and the reference counter afterwards. The reference counter is
 		 * incremented each time an object is copied and will be decremented if
@@ -238,7 +295,7 @@ namespace OpenDBX
 		/**
 		 * Assign large object instance to another one.
 		 *
-		 * Assigns the internal state of an object of the same type to this
+		 * Assigns the internal state of an object \a ref of the same type to this
 		 * object. Both objects share the same variables and the
 		 * reference counter afterwards. The reference counter is incremented
 		 * each time an object is copied and will be decremented if it is
@@ -276,10 +333,10 @@ namespace OpenDBX
 		 * to close the large object handle and reopen it again as some databases
 		 * provide no way to reposition the internal file position indicator for
 		 * the stream. The large object content fetched from the server is
-		 * stored into the user supplied "buffer" up to "buflen" bytes.
+		 * stored into the user supplied \a buffer up to \a buflen bytes.
 		 *
-		* The method returns the number of bytes placed into buffer, which may
-		* be up to "buflen" bytes. If the end of the content is reached and no
+		* The method returns the number of bytes placed into \a buffer, which may
+		* be up to \a buflen bytes. If the end of the content is reached and no
 		* more data is available, the return value will be 0 (zero).
 		 *
 		 * @param buffer Pointer to a byte array where the data should be written to
@@ -299,12 +356,12 @@ namespace OpenDBX
 		 * truncated to the new size. It's not possible to update only parts of
 		 * the content as some databases doesn't support to position the
 		 * internal file position indicator. The data which should be send to
-		 * the server is read from buffer up to buflen bytes.
+		 * the server is read from \a buffer up to \a buflen bytes.
 		 *
-		 *The method returns the number of bytes read from buffer and sent to
-		 * the database server, which may be up to "buflen" bytes. It isn't
+		 *The method returns the number of bytes read from \a buffer and sent to
+		 * the database server, which may be up to \a buflen bytes. It isn't
 		 * guaranteed that the complete chunk was sent to the server, so the
-		 * returned size may be less than the value in "buflen".
+		 * returned size may be less than the value in \a buflen.
 		 *
 		 * @param buffer Pointer to a byte array where the content is stored
 		 * @param buflen Length of the data in the buffer in bytes
@@ -377,7 +434,7 @@ namespace OpenDBX
 		/**
 		 * Copy constructor.
 		 *
-		 * Enables the transfer of the internal state of an object of the same
+		 * Enables the transfer of the internal state of an object \a ref of the same
 		 * type to this object. Both objects share the same variables
 		 * and the reference counter afterwards. The reference counter is
 		 * incremented each time an object is copied and will be decremented if
@@ -390,7 +447,7 @@ namespace OpenDBX
 		/**
 		 * Assigns a Result instance to another one.
 		 *
-		 * Assigns the internal state of an object of the same type to this
+		 * Assigns the internal state of an object \a ref of the same type to this
 		 * object. Both objects share the same variables and the
 		 * reference counter afterwards. The reference counter is incremented
 		 * each time an object is copied and will be decremented if it is
@@ -422,7 +479,7 @@ namespace OpenDBX
 		 * If the statement was an INSERT, UPDATE, DELETE or a similar
 		 * statement, the number of affected rows is available via rowsAffected().
 		 *
-		 * The timeout parameter restricts the time the function is waiting for
+		 * The \a timeout parameter restricts the time the function is waiting for
 		 * a result form the server. It may be NULL to wait until a result
 		 * arrives. Otherwise, it can contain any number of seconds and
 		 * microseconds in a timeval structure to wait for. The timeval structure
@@ -437,7 +494,7 @@ namespace OpenDBX
 		 * Dependent on the native database library, it may be possible to
 		 * retrieve all rows at once (if chunk is zero), one by one or more than
 		 * one row at once. All positive values including zero are allowed as
-		 * values for chunk If paging (more than one row at once) is not
+		 * values for \a chunk If paging (more than one row at once) is not
 		 * supported by the backend, it will use "one by one" or "all at once"
 		 * if this is the only option provided.
 		 *
@@ -508,7 +565,7 @@ namespace OpenDBX
 		 * Maps the column name to the column number required by other methods.
 		 *
 		 * This method returns the index of the column which is named like the
-		 * content of the string given via the parameter. The column index will
+		 * content of the string given via the parameter \a name. The column index will
 		 * not change within the result set.
 		 *
 		 * @param name Name of the column in the result set
@@ -520,7 +577,7 @@ namespace OpenDBX
 		/**
 		 * Returns the name of the column in the current result set.
 		 *
-		 * Gets the name of the column specified by pos in the current result
+		 * Gets the name of the column specified by \a pos in the current result
 		 * set. The column names will not change within the result set with the
 		 * exception of MySQL when the first result set wasn't retrieved
 		 * completely before getResult() was called again.
@@ -593,7 +650,7 @@ namespace OpenDBX
 		 *
 		 * The field is part of the current row which was retrieved by the
 		 * latest call to getRow() and is specified by the column index given by
-		 * pos.
+		 * \a pos.
 		 *
 		 * @param pos Position of column in result set
 		 * @return Size of the data in bytes
@@ -605,7 +662,7 @@ namespace OpenDBX
 		 * Returns a pointer to the content in the current row at the specified postion.
 		 *
 		 * This function returns a pointer to the field data specified by the
-		 * column index pos. The field is part of the current row which was
+		 * column index \a pos. The field is part of the current row which was
 		 * retrieved by the latest call to getRow(). All values except binary
 		 * objects are handed back as strings terminated by the zero character.
 		 * This does also apply to numeric values, dates, etc. They have to be
@@ -716,7 +773,7 @@ namespace OpenDBX
 		/**
 		 * Copy constructor.
 		 *
-		 * Enables the transfer of the internal state of an object of the same
+		 * Enables the transfer of the internal state of an object \a ref of the same
 		 * type to this object. Both objects share the same variables
 		 * and the reference counter afterwards. The reference counter is
 		 * incremented each time an object is copied and will be decremented if
@@ -729,7 +786,7 @@ namespace OpenDBX
 		/**
 		 * Assigns a statement instance to another one.
 		 *
-		 * Assigns the internal state of an object of the same type to this
+		 * Assigns the internal state of an object \a ref of the same type to this
 		 * object. Both objects share the same variables and the
 		 * reference counter afterwards. The reference counter is incremented
 		 * each time an object is copied and will be decremented if it is
@@ -800,20 +857,20 @@ namespace OpenDBX
 		/**
 		 * Creates a connection object using C style string parameters.
 		 *
-		 * Initializes a new connection using the parameters backend, host and
-		 * port, but doesn't open the connection to the database yet. This method
-		 * allows C style strings as values for all parameters. Another construtor
+		 * Initializes a new connection using the parameters \a backend, \a host and
+		 * \a port, but doesn't open the connection to the database yet. This method
+		 * allows C style strings as values for all parameters. Another constructor
 		 * for C++ style strings is also available. It returns a new connection
 		 * instance, which can be used to query options implemented by the driver
 		 * or to create a statement. In case of an error, it throws an OpenDBX
 		 * exception with error message, code and severity.
 		 *
-		 * The parameter "backend" is the name of the driver the OpenDBX library
+		 * The parameter \a backend is the name of the driver the OpenDBX library
 		 * should use to connect to a database. The name must be one of the
 		 * implemented and available drivers on the system and is case sensitive.
 		 * All driver names are in lower case, e.g. "mysql".
 		 *
-		 * Depending on the database driver, "host" can have different meanings.
+		 * Depending on the database driver, \a host can have different meanings.
 		 * Normally, it's the name or IP address of the server hosting the
 		 * database server application. In case of serverless database
 		 * implementations like SQLite it's the directory path where the database
@@ -822,7 +879,7 @@ namespace OpenDBX
 		 * on Windows systems. Also the path must end with the path separator
 		 * like "/path/to/file/".
 		 *
-		 * Furthermore "port" can be the number or name the database server
+		 * Furthermore \a port can be the number or name the database server
 		 * application is listening to. If a name instead of the number is
 		 * allowed depends on the database client library but the number as
 		 * string does always work. If an empty string is given, the default
@@ -850,12 +907,12 @@ namespace OpenDBX
 		 * by the driver or to create a statement. In case of an error, it throws
 		 * an OpenDBX exception with error message, code and severity.
 		 *
-		 * The parameter "backend" is the name of the driver the OpenDBX library
+		 * The parameter \a backend is the name of the driver the OpenDBX library
 		 * should use to connect to a database. The name must be one of the
 		 * implemented and available drivers on the system and is case sensitive.
 		 * All driver names are in lower case, e.g. "mysql".
 		 *
-		 * Depending on the database driver, "host" can have different mearings.
+		 * Depending on the database driver, \a host can have different mearings.
 		 * Normally, it's the name or IP address of the server hosting the
 		 * database server application. In case of serverless database
 		 * implementations like SQLite it's the directory path where the database
@@ -864,7 +921,7 @@ namespace OpenDBX
 		 * on Windows systems. Also the path must end with the path separator
 		 * like "/path/to/file/".
 		 *
-		 * Furthermore "port" can be the number or name the database server
+		 * Furthermore \a port can be the number or name the database server
 		 * application is listening to. If a name instead of the number is
 		 * allowed depends on the database client library but the number as
 		 * string does always work. If an empty string is given, the default
@@ -894,7 +951,7 @@ namespace OpenDBX
 		/**
 		 * Copy constructor.
 		 *
-		 * Enables the transfer of the internal state of an object of the same
+		 * Enables the transfer of the internal state of an object \a ref of the same
 		 * type to this object. Both objects share the same database connection
 		 * and the reference counter afterwards. The reference counter is
 		 * incremented each time an object is copied and will be decremented if
@@ -907,7 +964,7 @@ namespace OpenDBX
 		/**
 		 * Assigns a connection instance to another one.
 		 *
-		 * Assigns the internal state of an object of the same type to this
+		 * Assigns the internal state of an object \a ref of the same type to this
 		 * object. Both objects share the same database connection and the
 		 * reference counter afterwards. The reference counter is incremented
 		 * each time an object is copied and will be decremented if it is
@@ -941,7 +998,7 @@ namespace OpenDBX
 		 * its tables provided the user has permissions to read and/or modify
 		 * the content.
 		 *
-		 * The "method" parameter can be used to select different methods of
+		 * The \a method parameter can be used to select different methods of
 		 * authentication. At the moment, only simple authentication
 		 * (ODBX_BIND_SIMPLE) with user name and password is available.
 		 *
@@ -977,7 +1034,7 @@ namespace OpenDBX
 		 * its tables provided the user has permissions to read and/or modify
 		 * the content.
 		 *
-		 * The "method" parameter can be used to select different methods of
+		 * The \a method parameter can be used to select different methods of
 		 * authentication. At the moment, only simple authentication
 		 * (ODBX_BIND_SIMPLE) with user name and password is available.
 		 *
@@ -1087,7 +1144,7 @@ namespace OpenDBX
 		 *   modes for compliance to other SQL implementations or completely
 		 *   different query languages.
 		 *
-		 * The parameter "value" must be a pointer to an integer variable where
+		 * The parameter \a value must be a pointer to an integer variable where
 		 * the backend module will store the result for the supplied option. If
 		 * it's not stated otherwise, the value assigned to the this parameter
 		 * will be of boolean nature and therefore is ODBX_ENABLE for a supported
@@ -1145,7 +1202,7 @@ namespace OpenDBX
 		 *   a zero terminated string.
 		 *
 		 * If not stated otherwise, the type of the variable passed to the second
-		 * parameter named "value" must be an integer pointer. Its values
+		 * parameter named \a value must be an integer pointer. Its values
 		 * must be in the range specified by the option being changed.
 		 *
 		 * @param option Constant of the option
@@ -1169,14 +1226,14 @@ namespace OpenDBX
 		 * be escaped as C style string. This string itself won't be modified
 		 * by this method.
 		 *
-		 * The escaped string will be written to the second parameter named
-		 * "to", which have to be also an C++ style string. After transforming
+		 * The escaped string will be written to the third parameter named
+		 * \a to, which have to be also an C++ style string. After transforming
 		 * the input to an escaped string, the result may be more then twice
 		 * the size of the original input. The additional escape sequences
 		 * aren't stored in the database column so only the original string will
 		 * be written to the disk.
 		 *
-		 * A C++ reference of the second parameter containing the escaped string
+		 * A C++ reference of the third parameter containing the escaped string
 		 * afterwards is also returned by this method to providing the possibility
 		 * to write more elegant code.
 		 *
@@ -1204,14 +1261,14 @@ namespace OpenDBX
 		 * be escaped as C++ style string. This string itself won't be modified
 		 * by this method.
 		 *
-		 * The escaped string will be written to the second parameter named
-		 * "to", which have to be also an C++ style string. After transforming
+		 * The escaped string will be written to the third parameter named
+		 * \a to, which have to be also an C++ style string. After transforming
 		 * the input to an escaped string, the result may be more then twice
 		 * the size of the original input. The additional escape sequences
 		 * aren't stored in the database column so only the original string will
 		 * be written to the disk.
 		 *
-		 * A C++ reference of the second parameter containing the escaped string
+		 * A C++ reference of the third parameter containing the escaped string
 		 * afterwards is also returned by this method to providing the possibility
 		 * to write more elegant code.
 		 *
@@ -1236,13 +1293,13 @@ namespace OpenDBX
 		 * processing especially if the statement is executed multiple times
 		 * with different content for the parameters.
 		 *
-		 * The parameter named "sql" must contain the SQL text string that should be
+		 * The parameter named \a sql must contain the SQL text string that should be
 		 * sent to the database server for execution. It have to be a C style
 		 * buffer in this case. For a reference of valid SQL statements, please
 		 * have a look at the documentation of your database server.
 		 *
 		 * The length of the statement excluding the trailing "0" byte should
-		 * be given via the second parameter. If the length of the statement is
+		 * be given via the second parameter \a size. If the length of the statement is
 		 * unknown, you can also supply zero (0) as size value which is also the
 		 * default value if you hand over only one parameter. In this case, the
 		 * length of the string is calculated internally by this function before
@@ -1285,12 +1342,12 @@ namespace OpenDBX
 		 * processing especially if the statement is executed multiple times
 		 * with different content for the parameters.
 		 *
-		 * The parameter named "sql" must contain the SQL text string that should be
+		 * The parameter named \a sql must contain the SQL text string that should be
 		 * sent to the database server for execution. It have to be a C++ style
 		 * string in this case. For a reference of valid SQL statements, please
 		 * have a look at the documentation of your database server.
 		 *
-		 * Via the last parameter it can be selected how the statement should
+		 * Via the last parameter \a type it can be selected how the statement should
 		 * be treated internally by the OpenDBX and the native database library.
 		 * Currently, only simple processing is available which sends complete
 		 * SQL statements including its parameters as string to the database
