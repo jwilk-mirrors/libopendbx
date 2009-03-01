@@ -93,8 +93,12 @@ MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 # Checks for additional programs
 AC_CHECK_PROG([db2man], [db2x_manxml], [yes], [no])
+AC_CHECK_PROG([doxygen], [doxygen], [yes], [no])
+
 if test "x${db2man}" != xyes; then AC_MSG_RESULT([Warning: docbook man page converter not found - skip generating man pages]); fi
-AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes])
+if test "x${doxygen}" != xyes; then AC_MSG_RESULT([Warning: doxygen not found - skip generating man pages]); fi
+
+AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes -a "x${doxygen}" = xyes])
 
 
 # Build options
