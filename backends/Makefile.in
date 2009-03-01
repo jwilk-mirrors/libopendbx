@@ -178,6 +178,7 @@ datadir = @datadir@
 datarootdir = @datarootdir@
 db2man = @db2man@
 docdir = @docdir@
+doxygen = @doxygen@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@

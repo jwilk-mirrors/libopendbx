@@ -1,5 +1,6 @@
-2009-02-20 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-03-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Feature: Use Doxygen for generating C++ API
 	* Change: Fully documented C++ functions
 	* Change: Specified thrown exceptions for all C++ functions
 	* Change: Used interfaces for all C++ implementation classes
