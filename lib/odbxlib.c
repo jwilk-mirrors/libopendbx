@@ -195,7 +195,7 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 
 	// SetDllDirectory( LIBPATH )
 
-	len = plen = snprintf( lib + len, ODBX_PATHSIZE, PACKAGE );
+	len = plen = snprintf( lib, ODBX_PATHSIZE, PACKAGE );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, "\\" );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBPREFIX );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, backend );
