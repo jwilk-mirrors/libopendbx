@@ -19,7 +19,7 @@
 
 
 Name:    opendbx
-Version:    1.4.0
+Version:    1.4.1alpha2
 Release:    1%{?dist}
 Summary:    Unified database layer with a clean and lightweight interface
 Summary(de.UTF-8):    Bibliothek zum Zugriff auf Datenbanken über eine einheitliche Schnittstelle
@@ -366,6 +366,7 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{_libdir}/libopendbx.so
 %{_libdir}/libopendbxplus.so
 %{_libdir}/pkgconfig/opendbx.pc
+%{_libdir}/pkgconfig/opendbxplus.pc
 %{_mandir}/man3/*
 
 
@@ -433,6 +434,9 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 
 
 %changelog
+* Sun Apr 19 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.1-1
+- Added opendbxplus.pc
+
 * Sun Jun 15 2008 Norbert Sendetzky <norbert@linuxnetworks.de> 1.3.11-1
 - Added items for odbc backend and utils
 
