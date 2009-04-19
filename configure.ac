@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.4.0], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.4.1alpha2], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -157,13 +157,18 @@ do
 				[AC_CHECK_LIB(
 					[mysqlclient], [mysql_init],
 					[AC_DEFINE([HAVE_LIBMYSQLCLIENT], 1, [Have -lmysqlclient]) LIBMYSQL="mysqlclient"],
-					[AC_MSG_ERROR([mysql library (libmysqlclient) not found])]
+					[AC_CHECK_LIB(
+						[mysql], [mysql_init],
+						[AC_DEFINE([HAVE_LIBMYSQL], 1, [Have -lmysql]) LIBMYSQL="mysql"],
+						[AC_MSG_ERROR([mysql client library (libmysqlclient_r, libmysqlclient or libmysql) not found])]
+					)]
 				)]
 			)
 			AC_CHECK_LIB(
 				[$LIBMYSQL], [mysql_next_result],
 				[AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Define to 1 if you have mysql_next_result])]
 			)
+			AC_CHECK_LIB([z], [compress], [LIBMYSQL="${LIBMYSQL} -lz"])
 		;;
 		odbc)
 			AC_CHECK_HEADERS([sql.h], , [AC_MSG_ERROR([odbc header (sql.h) not found])], [
@@ -175,16 +180,32 @@ do
 			AC_CHECK_LIB(
 				[odbc], [SQLConnect],
 				[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc]) LIBODBC="odbc"],
-				AC_CHECK_LIB(
+				[AC_CHECK_LIB(
 					[iodbc], [SQLConnect],
 					[AC_DEFINE([HAVE_LIBODBC], 1, [Have -liodbc]) LIBODBC="iodbc"],
-					[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc32]) LIBODBC="odbc32"]
-#					AC_CHECK_LIB(
-#						[odbc32], [SQLConnect],
-#						[AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc32]) LIBODBC="odbc32"],
-#						[AC_MSG_ERROR([odbc library (libodbc, libiodbc or libodbc32) not found])]
-#					)
-				)
+					[odbx_saved_libs=${LIBS}; LIBS="-lodbc32"
+					AC_LINK_IFELSE(
+						[
+#ifdef HAVE_WINDEF_H
+#include <windef.h>
+#endif
+#include <sql.h>
+#include <stddef.h>
+int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
+						],
+						[
+							AC_MSG_RESULT([checking for SQLConnect in -lodbc32... yes])
+							AC_DEFINE([HAVE_LIBODBC], 1, [Have -lodbc32])
+							LIBODBC="odbc32"
+						],
+						[
+							AC_MSG_RESULT([checking for SQLConnect in -lodbc32... no])
+							AC_MSG_ERROR([odbc library (libodbc, libiodbc or libodbc32) not found])
+						]
+					)
+					LIBS=${odbx_saved_libs}
+					]
+				)]
 			)
 		;;
 		oracle)
@@ -192,12 +213,16 @@ do
 			AC_SUBST([LIBORACLE])
 			AC_CHECK_LIB(
 				[clntsh], [OCIInitialize],
-				AC_DEFINE([HAVE_LIBCLNTSH], 1, [Have -lclntsh]) LIBORACLE="clntsh",
-				[AC_MSG_ERROR([oracle library (libclntsh) not found])]
+				[AC_DEFINE([HAVE_LIBCLNTSH], 1, [Have -lclntsh]) LIBORACLE="clntsh"],
+				[AC_CHECK_LIB(
+					[oci], [OCIInitialize],
+					AC_DEFINE([HAVE_LIBOCI], 1, [Have liboci]) LIBORACLE="oci",
+					[AC_MSG_ERROR([oracle library (clntsh or oci) not found])]
+				)]
 			)
 			AC_CHECK_LIB(
-				[clntsh], [OCILobWrite2],
-				AC_DEFINE([HAVE_OCILOBWRITE2], 1, [Define to 1 if you have OCILobWrite2])
+				[$LIBORACLE], [OCILobWrite2],
+				[AC_DEFINE([HAVE_OCILOBWRITE2], 1, [Define to 1 if you have OCILobWrite2])]
 			)
 		;;
 		pgsql)
@@ -267,6 +292,7 @@ AC_CONFIG_FILES([
 	backends/sqlite3/Makefile
 	backends/sybase/Makefile
 	doc/Makefile
+	doc/Doxyfile
 	lib/Makefile
 	po/Makefile.in
 	test/Makefile
@@ -275,5 +301,6 @@ AC_CONFIG_FILES([
 	utils/po/Makefile.in
 	opendbx.spec
 	opendbx.pc
+	opendbxplus.pc
 ])
 AC_OUTPUT
