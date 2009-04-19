@@ -1,3 +1,14 @@
+2009-04-19 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Feature: Added pkgconfig file for OpenDBX C++ library
+	* Change: Moved C++ doc generation to "doc/" subdirectory
+	* Bugfix: Fixed configure to build MySQL backend on Windows plattforms
+	* Bugfix: Check for -lz which might be necessary for MySQL backend
+	* Bugfix: Fixed configure to build Oracle backend on Windows plattforms
+	* Bugfix: Correctly check for ODBC library on Windows plattforms
+	* Bugfix: Used unitialized variable in Win32 DLL loader (thanks to Markus Fritsche)
+	* Bugfix: Added OpenDBX C++ libary to spec file
+
 2009-03-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Use Doxygen for generating C++ API
