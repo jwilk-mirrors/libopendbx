@@ -32,7 +32,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = doc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Doxyfile.in $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
@@ -43,7 +44,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = Doxyfile
 SOURCES =
 DIST_SOURCES =
 man3dir = $(mandir)/man3
@@ -199,9 +200,10 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = opendbx.en.xml
+EXTRA_DIST = opendbx.en.xml Doxyfile
 @ENABLEMAN_TRUE@man_MANS = \
 @ENABLEMAN_TRUE@	odbx_bind.3 \
 @ENABLEMAN_TRUE@	odbx_capabilities.3 \
@@ -226,7 +228,13 @@ EXTRA_DIST = opendbx.en.xml
 @ENABLEMAN_TRUE@	odbx_lo_open.3 \
 @ENABLEMAN_TRUE@	odbx_lo_close.3 \
 @ENABLEMAN_TRUE@	odbx_lo_read.3 \
-@ENABLEMAN_TRUE@	odbx_lo_write.3
+@ENABLEMAN_TRUE@	odbx_lo_write.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX_Conn.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX_Exception.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX_Lob.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX_Result.3 \
+@ENABLEMAN_TRUE@	man/man3/OpenDBX_Stmt.3
 
 all: all-am
 
@@ -260,6 +268,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+Doxyfile: $(top_builddir)/config.status $(srcdir)/Doxyfile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -449,8 +459,12 @@ uninstall-man: uninstall-man3
 @ENABLEMAN_TRUE@odbx_bind.3 	odbx_capabilities.3 odbx_column_count.3 odbx_column_name.3 odbx_column_type.3 odbx_error.3 odbx_error_type.3 odbx_escape.3 odbx_field_length.3 odbx_field_value.3 odbx_finish.3 odbx_get_option.3 odbx_init.3 odbx_query.3 odbx_result.3 odbx_result_finish.3 odbx_row_fetch.3 odbx_rows_affected.3 odbx_set_option.3 odbx_unbind.3 odbx_lo_open.3 odbx_lo_close.3 odbx_lo_read.3 odbx_lo_write.3: opendbx.en.xml
 @ENABLEMAN_TRUE@	db2x_xsltproc -s man opendbx.en.xml | db2x_manxml --solinks
 
+@ENABLEMAN_TRUE@man/man3/OpenDBX.3 man/man3/OpenDBX_Conn.3 man/man3/OpenDBX_Exception.3 man/man3/OpenDBX_Lob.3 man/man3/OpenDBX_Result.3 man/man3/OpenDBX_Stmt.3: ../lib/opendbx/api
+@ENABLEMAN_TRUE@	doxygen Doxyfile > /dev/null
+
 @ENABLEMAN_TRUE@clean:
-@ENABLEMAN_TRUE@	for file in `ls odbx_*.3`; do rm -f $$file; done
+@ENABLEMAN_TRUE@	for file in `ls odbx_*.3 2>/dev/null`; do rm -f $$file; done
+@ENABLEMAN_TRUE@	rm -rf html man xml xsl
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
