@@ -46,7 +46,7 @@ extern "C++" {
  * Using the API starts with establishing a connection to the database server by
  * creating an instance of the Conn class with the parameters backend, host and
  * port. Conn::getCapability() tests the implemented capabilites of the underlying
- * database library while Conn::getOption() and Conn::setOption() cas be used to
+ * database library while Conn::getOption() and Conn::setOption() has be used to
  * test for and change a number of options. The options must be changed before
  * authenticating the connection with the Conn::bind() method to have any effect.
  * It's also possible to rebind a connection using different credentials after
