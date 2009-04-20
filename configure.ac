@@ -273,6 +273,10 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 					)
 				)
 			)
+			AC_CHECK_LIB(
+				[sybcs], [cs_config],
+				[AC_DEFINE([HAVE_LIBSYBCS], 1, [Have -lsybcs]) LIBSYBASE="${LIBSYBASE} -lsybcs"]
+			)
 		;;
 	esac
 done
