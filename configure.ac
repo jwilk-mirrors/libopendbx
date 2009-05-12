@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.4.1alpha2], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.4.1rc3], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -186,9 +186,7 @@ do
 					[odbx_saved_libs=${LIBS}; LIBS="-lodbc32"
 					AC_LINK_IFELSE(
 						[
-#ifdef HAVE_WINDEF_H
 #include <windef.h>
-#endif
 #include <sql.h>
 #include <stddef.h>
 int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
