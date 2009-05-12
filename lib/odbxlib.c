@@ -184,11 +184,32 @@ int _odbx_lib_close( struct odbx_t* handle )
 
 
 
-int _odbx_lib_open( struct odbx_t* handle, const char* backend )
+static int _odbx_lib_register( struct odbx_t* handle, const char* library )
 {
 	typedef void (WINAPI*regfunc)(struct odbx_ops**);
 
 	regfunc odbxreg;
+
+
+	if( ( handle->backend = (void*) LoadLibrary( library ) ) != NULL )
+	{
+		if( ( odbxreg = (regfunc) GetProcAddress( (HMODULE) handle->backend, "odbxdrv_register" ) ) != NULL )
+		{
+			odbxreg( &(handle->ops) );
+			return ODBX_ERR_SUCCESS;
+		}
+
+		FreeLibrary( (HMODULE) handle->backend );
+		return -ODBX_ERR_NOOP;
+	}
+
+	return -ODBX_ERR_NOTEXIST;
+}
+
+
+
+int _odbx_lib_open( struct odbx_t* handle, const char* backend )
+{
 	char lib[ODBX_PATHSIZE+1];
 	size_t len, plen;
 
@@ -205,25 +226,18 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 	if( len > ODBX_PATHSIZE ) { return -ODBX_ERR_SIZE; }
 	lib[len] = '\0';
 
-	if( ( handle->backend = (void*) LoadLibrary( backend ) ) == NULL )
+	if( _odbx_lib_register( handle, backend ) != ODBX_ERR_SUCCESS )
 	{
-		if( ( handle->backend = (void*) LoadLibrary( lib + plen + 1 ) ) == NULL )
+		if( _odbx_lib_register( handle, lib + plen + 1 ) != ODBX_ERR_SUCCESS )
 		{
-			if( ( handle->backend = (void*) LoadLibrary( lib ) ) == NULL )
+			if( _odbx_lib_register( handle, lib ) != ODBX_ERR_SUCCESS )
 			{
-				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen + 1, lib );
-				// DWord err = GetLastError()
+				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed\n" ) ), backend, lib + plen + 1, lib );
 				return -ODBX_ERR_NOTEXIST;
 			}
 		}
 	}
 
-	if( ( odbxreg = (regfunc) GetProcAddress( (HMODULE) handle->backend, "odbxdrv_register" ) ) == NULL )
-	{
-		return -ODBX_ERR_NOOP;
-	}
-
-	odbxreg( &(handle->ops) );
 	return ODBX_ERR_SUCCESS;
 }
 
