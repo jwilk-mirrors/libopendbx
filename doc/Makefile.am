@@ -1,4 +1,4 @@
-EXTRA_DIST = opendbx.en.xml Doxyfile
+EXTRA_DIST = opendbx.en.xml
 
 
 if ENABLEMAN
@@ -11,7 +11,7 @@ man/man3/OpenDBX.3 man/man3/OpenDBX_Conn.3 man/man3/OpenDBX_Exception.3 man/man3
 
 clean:
 	for file in `ls odbx_*.3 2>/dev/null`; do rm -f $$file; done
-	rm -rf html man xml xsl
+	rm -rf html man xml
 
 man_MANS = \
 	odbx_bind.3 \
