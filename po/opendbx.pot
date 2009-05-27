@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2008-06-08 13:52+0200\n"
+"POT-Creation-Date: 2009-05-13 00:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,9 +72,14 @@ msgstr ""
 msgid "Invalid handle"
 msgstr ""
 
-#: lib/odbxlib.c:148 lib/odbxlib.c:214
+#: lib/odbxlib.c:148
 #, c-format
 msgid "Loading backend library %s, %s or %s failed"
+msgstr ""
+
+#: lib/odbxlib.c:235
+#, c-format
+msgid "Loading backend library %s, %s or %s failed\n"
 msgstr ""
 
 #: backends/mssql/mssql_basic.c:52

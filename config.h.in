@@ -88,6 +88,9 @@
 /* Have -lsqlite3 */
 #undef HAVE_LIBSQLITE3
 
+/* Have -lsybcs */
+#undef HAVE_LIBSYBCS
+
 /* Have -lsybct */
 #undef HAVE_LIBSYBCT
 
@@ -216,6 +219,10 @@
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
 /* Name of package */
 #undef PACKAGE
 
@@ -259,7 +266,7 @@
 #undef WIN32
 
 /* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   <pthread.h>, or <semaphore.h> is not used. If the typedef was allowed, the
    #define below would cause a syntax error. */
 #undef _UINT64_T
 
