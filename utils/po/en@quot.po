@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opendbx 1.4.1\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2009-06-02 12:16+0200\n"
-"PO-Revision-Date: 2009-06-02 12:16+0200\n"
+"POT-Creation-Date: 2009-06-25 23:53+0200\n"
+"PO-Revision-Date: 2009-06-25 23:53+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -58,7 +58,7 @@ msgstr "Available commands:"
 msgid "toggle printing column names for result sets"
 msgstr "toggle printing column names for result sets"
 
-#: utils/commands.cpp:56 utils/config.cpp:118 utils/odbx-sql.cpp:194
+#: utils/commands.cpp:56 utils/odbx-sql.cpp:194
 msgid "print this help"
 msgstr "print this help"
 
@@ -70,66 +70,6 @@ msgstr "exit program"
 msgid "Good bye"
 msgstr "Good bye"
 
-#: utils/config.cpp:66
-msgid "Configuration file parameter is mandatory"
-msgstr "Configuration file parameter is mandatory"
-
-#: utils/config.cpp:71
-msgid "Unable to initialize configuration file parser"
-msgstr "Unable to initialize configuration file parser"
-
-#: utils/config.cpp:114
-msgid "Read and execute semicolon-terminated SQL statements from stdin"
-msgstr "Read and execute semicolon-terminated SQL statements from stdin"
-
-#: utils/config.cpp:116
-msgid "Usage: "
-msgstr "Usage: "
-
-#: utils/config.cpp:119 utils/odbx-sql.cpp:195
-msgid "name of the backend or path to the backend library"
-msgstr "name of the backend or path to the backend library"
-
-#: utils/config.cpp:120 utils/odbx-sql.cpp:196
-msgid "read configuration from file"
-msgstr "read configuration from file"
-
-#: utils/config.cpp:121 utils/odbx-sql.cpp:197
-msgid "database name or database file name"
-msgstr "database name or database file name"
-
-#: utils/config.cpp:122
-msgid "start/end delimiter for fields in output"
-msgstr "start/end delimiter for fields in output"
-
-#: utils/config.cpp:123 utils/odbx-sql.cpp:199
-msgid "host name, IP address or path to the database server"
-msgstr "host name, IP address or path to the database server"
-
-#: utils/config.cpp:124 utils/odbx-sql.cpp:200
-msgid "interactive mode"
-msgstr "interactive mode"
-
-#: utils/config.cpp:125 utils/odbx-sql.cpp:201
-msgid "SQL keyword file for command completion"
-msgstr "SQL keyword file for command completion"
-
-#: utils/config.cpp:126 utils/odbx-sql.cpp:202
-msgid "port name or number of the database server"
-msgstr "port name or number of the database server"
-
-#: utils/config.cpp:127 utils/odbx-sql.cpp:203
-msgid "separator between fields in output"
-msgstr "separator between fields in output"
-
-#: utils/config.cpp:128 utils/odbx-sql.cpp:204
-msgid "user name for authentication"
-msgstr "user name for authentication"
-
-#: utils/config.cpp:129 utils/odbx-sql.cpp:205
-msgid "with prompt asking for the passphrase"
-msgstr "with prompt asking for the passphrase"
-
 #: utils/odbx-sql.cpp:128
 msgid "Interactive SQL shell, use .help to list available commands"
 msgstr "Interactive SQL shell, use .help to list available commands"
@@ -138,9 +78,49 @@ msgstr "Interactive SQL shell, use .help to list available commands"
 msgid "Warning: "
 msgstr "Warning: "
 
+#: utils/odbx-sql.cpp:195
+msgid "name of the backend or path to the backend library"
+msgstr "name of the backend or path to the backend library"
+
+#: utils/odbx-sql.cpp:196
+msgid "read configuration from file"
+msgstr "read configuration from file"
+
+#: utils/odbx-sql.cpp:197
+msgid "database name or database file name"
+msgstr "database name or database file name"
+
 #: utils/odbx-sql.cpp:198
 msgid "start/end field delimiter in output"
 msgstr "start/end field delimiter in output"
+
+#: utils/odbx-sql.cpp:199
+msgid "host name, IP address or path to the database server"
+msgstr "host name, IP address or path to the database server"
+
+#: utils/odbx-sql.cpp:200
+msgid "interactive mode"
+msgstr "interactive mode"
+
+#: utils/odbx-sql.cpp:201
+msgid "SQL keyword file for command completion"
+msgstr "SQL keyword file for command completion"
+
+#: utils/odbx-sql.cpp:202
+msgid "port name or number of the database server"
+msgstr "port name or number of the database server"
+
+#: utils/odbx-sql.cpp:203
+msgid "separator between fields in output"
+msgstr "separator between fields in output"
+
+#: utils/odbx-sql.cpp:204
+msgid "user name for authentication"
+msgstr "user name for authentication"
+
+#: utils/odbx-sql.cpp:205
+msgid "with prompt asking for the passphrase"
+msgstr "with prompt asking for the passphrase"
 
 #: utils/odbx-sql.cpp:218
 msgid "Password: "
