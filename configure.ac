@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.4.1rc3], [http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx], [1.4.1], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
@@ -136,7 +136,11 @@ do
 			AC_CHECK_LIB(
 				[fbclient], [isc_attach_database],
 				[AC_DEFINE([HAVE_LIBFBCLIENT], 1, [Have -lfbclient]) LIBFIREBIRD="fbclient"],
-				[AC_MSG_ERROR([firebird library (libfbclient) not found])]
+				AC_CHECK_LIB(
+					[gds32], [isc_attach_database],
+					[AC_DEFINE([HAVE_LIBGDS32], 1, [Have -lgds32]) LIBFIREBIRD="gds32"],
+					[AC_MSG_ERROR([firebird library (fbclient or gds32) not found])]
+				)
 			)
 		;;
 		mssql)

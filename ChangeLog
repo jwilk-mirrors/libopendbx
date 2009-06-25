@@ -1,4 +1,4 @@
-2009-05-13 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-06-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Added pkgconfig file for OpenDBX C++ library
 	* Change: Moved C++ doc generation to "doc/" subdirectory
@@ -10,6 +10,9 @@
 	* Bugfix: Correctly check for ODBC library on Windows plattforms
 	* Bugfix: Used unitialized variable in Win32 DLL loader (thanks to Markus Fritsche)
 	* Bugfix: Rewritten Win32 DLL loader to prevent problem with SQLite (thanks to Mariano Martinez Peck)
+	* Bugfix: Fixed warning in firebird backend when using newer Firebird libraries
+	* Bugfix: Check for Interbase gds32 library if fbclient isn't found
+	* Bugfix: Fixed compilation of odbxtest on MacOSX (thanks to Michael Atkisson)
 	* Bugfix: Added OpenDBX C++ libary to spec file
 
 2009-03-02 Norbert Sendetzky <norbert@linuxnetworks.de>

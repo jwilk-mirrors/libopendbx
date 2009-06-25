@@ -52,6 +52,9 @@
 /* Have -lfbclient */
 #undef HAVE_LIBFBCLIENT
 
+/* Have -lgds32 */
+#undef HAVE_LIBGDS32
+
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
@@ -266,7 +269,7 @@
 #undef WIN32
 
 /* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef was allowed, the
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 #undef _UINT64_T
 
