@@ -37,8 +37,10 @@ case "$host" in
 		LIBSUFFIX="-1.dll"
 	;;
 	*-*-mingw* | *-*-pw32*)
-		AC_DEFINE([WIN32], 1, [Using Win32 API functions])
 		LIBSUFFIX="-1.dll"
+		AC_DEFINE([WIN32], 1, [Using Win32 API functions])
+		AC_DEFINE([MYSQL_MINGW_BUG], [-D__CYGWIN__], [Enabling MySQL MinGW workaroung])
+		AC_SUBST([MYSQL_MINGW_BUG])
 	;;
 esac
 
@@ -102,6 +104,9 @@ AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes -a "x${doxygen}" = xyes])
 
 
 # Build options
+AC_ARG_ENABLE([versioned-symbols], AC_HELP_STRING([--enable-versioned-symbols], [Use versioned symbols]), [vsymldflags="${enableval}"], [vsymldflags=no])
+AM_CONDITIONAL([VSYMLDFLAGS], [test "x${vsymldflags}" = xyes])
+
 AC_ARG_ENABLE([singlelib], [AS_HELP_STRING([--enable-singlelib], [build single library including backends])], [singlelib="${enableval}"], [singlelib=no])
 AM_CONDITIONAL([SINGLELIB], [test "x${singlelib}" = xyes])
 

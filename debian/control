@@ -1,7 +1,7 @@
 Source: libopendbx
 Priority: optional
 Maintainer: Norbert Sendetzky <norbert@linuxnetworks.de>
-Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev | firebird2.0-dev, freetds-dev, unixodbc-dev | libiodbc2-dev, libconfuse-dev
+Build-Depends: autoconf, automake, autotools-dev, debhelper (>= 4.0.0), libtool, libmysqlclient-dev, libpq-dev, libsqlite0-dev, libsqlite3-dev, firebird2-dev | firebird2.0-dev, freetds-dev, unixodbc-dev | libiodbc2-dev
 Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.7.3.0
 Section: libs

@@ -33,9 +33,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@SINGLELIB_TRUE@am__append_1 = -DODBX_SINGLELIB
-@SINGLELIB_TRUE@am__append_2 = @backendlibs@
-@SINGLELIB_FALSE@am__append_3 = -DLIBPATH=\"$(pkglibdir)\" -DLIBPREFIX=\"@LIBPREFIX@\" -DLIBSUFFIX=\"@LIBSUFFIX@\"
+@VSYMLDFLAGS_TRUE@am__append_1 = -Wl,--version-script,libopendbx.ver -Wl,-O1
+@VSYMLDFLAGS_TRUE@am__append_2 = -Wl,--version-script,libopendbxplus.ver -Wl,-O1
+@SINGLELIB_TRUE@am__append_3 = -DODBX_SINGLELIB
+@SINGLELIB_TRUE@am__append_4 = @backendlibs@
+@SINGLELIB_FALSE@am__append_5 = -DLIBPATH=\"$(pkglibdir)\" -DLIBPREFIX=\"@LIBPREFIX@\" -DLIBSUFFIX=\"@LIBSUFFIX@\"
 subdir = lib
 DIST_COMMON = $(include_HEADERS) $(nobase_include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -184,6 +186,7 @@ MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+MYSQL_MINGW_BUG = @MYSQL_MINGW_BUG@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -271,12 +274,14 @@ nobase_include_HEADERS = opendbx/api.h opendbx/api
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
 libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ \
-	-DLOCALEDIR=\"$(localedir)\" $(am__append_1) $(am__append_3)
-libopendbx_la_LDFLAGS = -no-undefined -version-info @APIVERSION@
-libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_2)
+	-DLOCALEDIR=\"$(localedir)\" $(am__append_3) $(am__append_5)
+libopendbx_la_LDFLAGS = -no-undefined -export-dynamic -version-info \
+	@APIVERSION@ $(am__append_1)
+libopendbx_la_LIBADD = $(MAINLIBS) $(LTLIBINTL) $(am__append_4)
 libopendbxplus_la_SOURCES = odbx_iface.hpp odbx_impl.hpp odbx_impl.cpp odbx.cpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
-libopendbxplus_la_LDFLAGS = -no-undefined -version-info @APIPLUSVERSION@
+libopendbxplus_la_LDFLAGS = -no-undefined -export-dynamic \
+	-version-info @APIPLUSVERSION@ $(am__append_2)
 libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
 all: all-am
 
