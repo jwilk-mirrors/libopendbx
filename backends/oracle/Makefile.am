@@ -11,4 +11,4 @@ endif
 
 liboraclebackend_la_SOURCES = oraclebackend.h oraclebackend.c oracle_basic.h oracle_basic.c oracle_lo.h oracle_lo.c
 liboraclebackend_la_CPPFLAGS += -DAPINUMBER=@APINUMBER@ $(AM_CPPFLAGS)
-liboraclebackend_la_LIBADD = -lclntsh
+liboraclebackend_la_LIBADD = -l@LIBORACLE@

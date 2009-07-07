@@ -347,10 +347,10 @@ static const char* mysql_odbx_error( odbx_t* handle )
 
 static int mysql_odbx_error_type( odbx_t* handle )
 {
-	unsigned int errno = mysql_errno( (MYSQL*) handle->generic );
+	unsigned int err = mysql_errno( (MYSQL*) handle->generic );
 
-	if( !errno ) { return 0; }
-	if( errno >= 1000 && errno < 2000 ) { return 1; }
+	if( !err ) { return 0; }
+	if( err >= 1000 && err < 2000 ) { return 1; }
 
 	return -1;
 }

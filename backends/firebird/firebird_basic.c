@@ -290,20 +290,23 @@ static const char* firebird_odbx_error( odbx_t* handle )
 	int len = 0;
 	char msg[512];
 	struct fbconn* fbc = (struct fbconn*) handle->aux;
-	long* perr = fbc->status;
 
 
 	if( fbc == NULL ) { return NULL; }
 
-	if( isc_interprete( msg, &perr ) )
-	{
-		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s", msg ) ) < 0 ) { return NULL; }
+#ifdef HAVE_LIBFBCLIENT
+	const long* perr = fbc->status;
 
-		while( isc_interprete( msg, &perr ) )
-		{
-			if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, ", %s", msg ) ) < 0 ) { return NULL; }
-		}
+	while( fb_interpret( msg, 512, &perr ) ) {
+		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s. ", msg ) ) < 0 ) { return NULL; }
 	}
+#else
+	long* perr = fbc->status;
+
+	while( isc_interprete( msg, &perr ) ) {
+		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s. ", msg ) ) < 0 ) { return NULL; }
+	}
+#endif
 
 	return (const char*) fbc->errmsg;
 }
