@@ -17,13 +17,13 @@
 #if defined( ODBX_SINGLELIB )
 
 
-#if defined( HAVE_LIBFBCLIENT )
+#if defined( HAVE_LIBFBCLIENT ) || defined( HAVE_LIBGDS32 )
 extern struct odbx_ops firebird_odbx_ops;
 #endif
 #if defined( HAVE_LIBSYBDB )
 extern struct odbx_ops mssql_odbx_ops;
 #endif
-#if defined( HAVE_LIBMYSQLCLIENT_R ) || defined( HAVE_LIBMYSQLCLIENT )
+#if defined( HAVE_LIBMYSQLCLIENT_R ) || defined( HAVE_LIBMYSQLCLIENT ) || defined( HAVE_LIBMYSQL )
 extern struct odbx_ops mysql_odbx_ops;
 #endif
 #if defined( HAVE_LIBODBC )
@@ -54,7 +54,7 @@ struct odbx_backend_syms
 
 
 struct odbx_backend_syms odbx_lib_ops[] = {
-#if defined( HAVE_LIBMYSQLCLIENT_R ) || defined( HAVE_LIBMYSQLCLIENT )
+#if defined( HAVE_LIBMYSQLCLIENT_R ) || defined( HAVE_LIBMYSQLCLIENT ) || defined( HAVE_LIBMYSQL )
 	{ "mysql", &mysql_odbx_ops },
 #endif
 #if defined( HAVE_LIBPQ )
@@ -63,7 +63,7 @@ struct odbx_backend_syms odbx_lib_ops[] = {
 #if defined( HAVE_LIBSQLITE3 )
 	{ "sqlite3", &sqlite3_odbx_ops },
 #endif
-#if defined( HAVE_LIBFBCLIENT )
+#if defined( HAVE_LIBFBCLIENT ) || defined( HAVE_LIBGDS32 )
 	{ "firebird", &firebird_odbx_ops },
 #endif
 #if defined( HAVE_LIBODBC )
