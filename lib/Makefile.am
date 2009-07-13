@@ -1,3 +1,6 @@
+EXTRA_DIST = libopendbx.ver libopendbxplus.ver
+
+
 include_HEADERS = odbx.h
 nobase_include_HEADERS = opendbx/api.h opendbx/api
 
