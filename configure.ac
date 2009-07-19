@@ -259,9 +259,13 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 			AC_CHECK_HEADERS([sqlite3.h], , [AC_MSG_ERROR([sqlite3 header (sqlite3.h) not found])])
 			AC_SUBST([LIBSQLITE3])
 			AC_CHECK_LIB(
-				[sqlite3], [sqlite3_prepare],
+				[sqlite3], [sqlite3_step],
 				[AC_DEFINE([HAVE_LIBSQLITE3], 1, [Have -lsqlite3]) LIBSQLITE3="sqlite3"],
 				[AC_MSG_ERROR([sqlite3 library (libsqlite3) not found])]
+			)
+			AC_CHECK_LIB(
+				[$LIBSQLITE3], [sqlite3_prepare_v2],
+				[AC_DEFINE([HAVE_SQLITE3_PREPARE_V2], 1, [Define to 1 if you have sqlite3_prepare_v2])]
 			)
 		;;
 		sybase)
