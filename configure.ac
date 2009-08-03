@@ -39,8 +39,9 @@ case "$host" in
 	*-*-mingw* | *-*-pw32*)
 		LIBSUFFIX="-1.dll"
 		AC_DEFINE([WIN32], 1, [Using Win32 API functions])
-		AC_DEFINE([MYSQL_MINGW_BUG], [-D__CYGWIN__], [Enabling MySQL MinGW workaroung])
+		AC_DEFINE([MYSQL_MINGW_BUG], 1, [Enable MySQL MinGW workaround])
 		AC_SUBST([MYSQL_MINGW_BUG])
+		MYSQL_MINGW_BUG="-D__CYGWIN__"
 	;;
 esac
 
@@ -158,7 +159,11 @@ do
 			)
 		;;
 		mysql)
-			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header (mysql.h) not found])])
+			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header (mysql.h) not found])], [
+#ifdef MYSQL_MINGW_BUG
+#define __CYGWIN__
+#endif
+			])
 			AC_SUBST([LIBMYSQL])
 			AC_CHECK_LIB(
 				[mysqlclient_r], [mysql_init],
