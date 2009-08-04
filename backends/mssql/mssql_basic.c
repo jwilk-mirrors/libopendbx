@@ -131,7 +131,7 @@ static int mssql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 
 	if( ( handle->generic = (void*) dbopen( tc->login, tc->host ) ) == NULL )
 	{
-		memcpy( tc->errmsg, dgettext( "opendbx", mssql_odbx_errmsg[0] ), strlen( dgettext( "opendbx", mssql_odbx_errmsg[0] ) ) + 1 );
+		memcpy( tc->errmsg, dgettext( "opendbx1", mssql_odbx_errmsg[0] ), strlen( dgettext( "opendbx", mssql_odbx_errmsg[0] ) ) + 1 );
 		return -ODBX_ERR_BACKEND;
 	}
 

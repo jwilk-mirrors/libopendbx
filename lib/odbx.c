@@ -47,7 +47,7 @@ int odbx_init( odbx_t** handle, const char* backend, const char* host, const cha
 	int err;
 
 #ifdef ENABLE_NLS
-	if( bindtextdomain( "opendbx", LOCALEDIR ) == NULL )
+	if( bindtextdomain( "opendbx1", LOCALEDIR ) == NULL )
 	{
 		return -ODBX_ERR_NOMEM;
 	}
@@ -238,15 +238,15 @@ const char* odbx_error( odbx_t* handle, int error )
 			return handle->ops->basic->error( handle );
 		}
 
-		return dgettext( "opendbx", odbx_errmsg[ODBX_ERR_HANDLE] );
+		return dgettext( "opendbx1", odbx_errmsg[ODBX_ERR_HANDLE] );
 	}
 
 	if( error <= ODBX_ERR_SUCCESS && error > -ODBX_MAX_ERRNO )
 	{
-		return dgettext( "opendbx", odbx_errmsg[-error] );
+		return dgettext( "opendbx1", odbx_errmsg[-error] );
 	}
 
-	return dgettext( "opendbx", odbx_errmsg[ODBX_ERR_PARAM] );
+	return dgettext( "opendbx1", odbx_errmsg[ODBX_ERR_PARAM] );
 }
 
 

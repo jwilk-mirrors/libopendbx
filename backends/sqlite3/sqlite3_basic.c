@@ -235,16 +235,16 @@ static const char* sqlite3_odbx_error( odbx_t* handle )
 
 	if( handle->aux == NULL )
 	{
-		return dgettext( "opendbx", sqlite3_odbx_errmsg[1] );
+		return dgettext( "opendbx1", sqlite3_odbx_errmsg[1] );
 	}
 
 	switch( ((struct sconn*) handle->aux)->err )
 	{
 		case SQLITE_CANTOPEN:
-			return dgettext( "opendbx", sqlite3_odbx_errmsg[2] );
+			return dgettext( "opendbx1", sqlite3_odbx_errmsg[2] );
 	}
 
-	return dgettext( "opendbx", sqlite3_odbx_errmsg[0] );
+	return dgettext( "opendbx1", sqlite3_odbx_errmsg[0] );
 }
 
 

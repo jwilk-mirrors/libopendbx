@@ -127,7 +127,7 @@ static int sqlite_odbx_bind( odbx_t* handle, const char* database, const char* w
 	if( ( handle->generic = (void*) sqlite_open( aux->path, 0, NULL ) ) == NULL )
 	{
 		aux->errno = SQLITE_CANTOPEN;
-		aux->errmsg = (char*) dgettext( "opendbx", sqlite_odbx_errmsg[0] );
+		aux->errmsg = (char*) dgettext( "opendbx1", sqlite_odbx_errmsg[0] );
 		return -ODBX_ERR_BACKEND;
 	}
 

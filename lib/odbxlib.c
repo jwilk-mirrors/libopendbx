@@ -145,7 +145,7 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 		{
 			if( ( handle->backend = dlopen( lib, RTLD_LAZY ) ) == NULL )
 			{
-				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen + 1, lib );
+				fprintf( stderr, dgettext( "opendbx1", gettext_noop( "Loading backend library %s, %s or %s failed" ) ), backend, lib + plen + 1, lib );
 				fprintf( stderr, "\n%s\n", dlerror() );
 				return -ODBX_ERR_NOTEXIST;
 			}
@@ -232,7 +232,7 @@ int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 		{
 			if( _odbx_lib_register( handle, lib ) != ODBX_ERR_SUCCESS )
 			{
-				fprintf( stderr, dgettext( "opendbx", gettext_noop( "Loading backend library %s, %s or %s failed\n" ) ), backend, lib + plen + 1, lib );
+				fprintf( stderr, dgettext( "opendbx1", gettext_noop( "Loading backend library %s, %s or %s failed\n" ) ), backend, lib + plen + 1, lib );
 				return -ODBX_ERR_NOTEXIST;
 			}
 		}

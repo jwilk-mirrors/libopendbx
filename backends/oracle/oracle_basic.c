@@ -328,7 +328,7 @@ static const char* oracle_odbx_error( odbx_t* handle )
 
 	if( conn == NULL )
 	{
-		return dgettext( "opendbx", oracle_odbx_errmsg[0]  );
+		return dgettext( "opendbx1", oracle_odbx_errmsg[0]  );
 	}
 
 	switch( conn->errcode )
