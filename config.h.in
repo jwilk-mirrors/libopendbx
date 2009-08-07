@@ -156,6 +156,9 @@
 /* Define to 1 if you have the <sqlite3.h> header file. */
 #undef HAVE_SQLITE3_H
 
+/* Define to 1 if you have sqlite3_prepare_v2 */
+#undef HAVE_SQLITE3_PREPARE_V2
+
 /* Define to 1 if you have the <sqlite.h> header file. */
 #undef HAVE_SQLITE_H
 
@@ -225,6 +228,9 @@
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
+
+/* Enable MySQL MinGW workaround */
+#undef MYSQL_MINGW_BUG
 
 /* Name of package */
 #undef PACKAGE

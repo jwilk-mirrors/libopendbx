@@ -1,6 +1,10 @@
-2009-07-07 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-08-07 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Feature: Added MySQL MinGW workaround for easy compilation of MySQL backend on Windows plattforms
 	* Bugfix: Removed old config.{cpp,hpp} files from generating gettext files
+	* Bugfix: Use sqlite3_prepare_v2() for improved error management in sqlite3 backend
+	* Bugfix: Fixed singlelib builds for mysql and interbase on Win32
+	* Bugfix: Fixed warning in firebird_odbx_error()
 
 2009-06-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 

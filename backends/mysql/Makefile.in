@@ -38,11 +38,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -157,6 +154,7 @@ MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+MYSQL_MINGW_BUG = @MYSQL_MINGW_BUG@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -241,10 +239,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I../../lib
 @SINGLELIB_TRUE@noinst_LTLIBRARIES = libmysqlbackend.la
-@SINGLELIB_FALSE@libmysqlbackend_la_CPPFLAGS =  \
+@SINGLELIB_FALSE@libmysqlbackend_la_CPPFLAGS = @MYSQL_MINGW_BUG@ \
 @SINGLELIB_FALSE@	-DAPINUMBER=@APINUMBER@ $(AM_CPPFLAGS)
 @SINGLELIB_TRUE@libmysqlbackend_la_CPPFLAGS = -DODBX_SINGLELIB \
-@SINGLELIB_TRUE@	-DAPINUMBER=@APINUMBER@ $(AM_CPPFLAGS)
+@SINGLELIB_TRUE@	@MYSQL_MINGW_BUG@ -DAPINUMBER=@APINUMBER@ \
+@SINGLELIB_TRUE@	$(AM_CPPFLAGS)
 @SINGLELIB_FALSE@pkglib_LTLIBRARIES = libmysqlbackend.la
 @SINGLELIB_FALSE@libmysqlbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 libmysqlbackend_la_SOURCES = mysqlbackend.h mysqlbackend.c mysql_basic.h mysql_basic.c
