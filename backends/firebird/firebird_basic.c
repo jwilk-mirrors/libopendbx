@@ -295,13 +295,13 @@ static const char* firebird_odbx_error( odbx_t* handle )
 	if( fbc == NULL ) { return NULL; }
 
 #ifdef HAVE_LIBFBCLIENT
-	const long* perr = fbc->status;
+	const ISC_STATUS* perr = fbc->status;
 
 	while( fb_interpret( msg, 512, &perr ) ) {
 		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s. ", msg ) ) < 0 ) { return NULL; }
 	}
 #else
-	long* perr = fbc->status;
+	ISC_STATUS* perr = fbc->status;
 
 	while( isc_interprete( msg, &perr ) ) {
 		if( ( len += snprintf( fbc->errmsg + len, FIREBIRD_ERRLEN - len, "%s. ", msg ) ) < 0 ) { return NULL; }
