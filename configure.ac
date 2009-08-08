@@ -105,11 +105,18 @@ AM_CONDITIONAL([ENABLEMAN], [test "x${db2man}" = xyes -a "x${doxygen}" = xyes])
 
 
 # Build options
-AC_ARG_ENABLE([versioned-symbols], AC_HELP_STRING([--enable-versioned-symbols], [Use versioned symbols]), [vsymldflags="${enableval}"], [vsymldflags=no])
+AC_ARG_ENABLE([versioned-symbols], AC_HELP_STRING([--enable-versioned-symbols], [use versioned symbols]), [vsymldflags="${enableval}"], [vsymldflags=no])
 AM_CONDITIONAL([VSYMLDFLAGS], [test "x${vsymldflags}" = xyes])
 
 AC_ARG_ENABLE([singlelib], [AS_HELP_STRING([--enable-singlelib], [build single library including backends])], [singlelib="${enableval}"], [singlelib=no])
 AM_CONDITIONAL([SINGLELIB], [test "x${singlelib}" = xyes])
+
+AC_ARG_ENABLE([debug-log], [AS_HELP_STRING([--enable-debug-log], [enable debug logging])], [debuglog="${enableval}"], [debuglog=no])
+
+if test "x${debuglog}" = xyes; then
+	AC_DEFINE([ENABLE_DEBUGLOG], [1], [Enable debug logging])
+	AC_CHECK_FUNCS([localtime strftime time vfprintf])
+fi
 
 AC_ARG_ENABLE([test], [AS_HELP_STRING([--disable-test], [don't build OpenDBX test applications])], [test="${enableval}"], [test=yes])
 AM_CONDITIONAL([ENABLETEST], [test "x${test}" = xyes])

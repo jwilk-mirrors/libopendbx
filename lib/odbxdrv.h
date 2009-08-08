@@ -43,12 +43,26 @@
  *  Commonly used handle and result structures
  */
 
+#ifdef ENABLE_DEBUGLOG
+struct odbx_log
+{
+	void* resource;
+	int level;
+	int (*open) ( struct odbx_log* log );
+	int (*write) ( struct odbx_log* log, int level, const char* message, ... );
+	int (*close) ( struct odbx_log* log );
+};
+#endif
+
 struct odbx_t
 {
 	struct odbx_ops* ops;
 	void* backend;
 	void* generic;
 	void* aux;
+#ifdef ENABLE_DEBUGLOG
+	struct odbx_log log;
+#endif
 };
 
 struct odbx_result_t

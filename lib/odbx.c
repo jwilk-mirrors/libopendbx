@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2004-2008 Norbert Sendetzky and others
+ *  Copyright (C) 2004-2009 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "odbxlog.h"
 
 
 
@@ -67,38 +69,51 @@ int odbx_init( odbx_t** handle, const char* backend, const char* host, const cha
 	(*handle)->backend = NULL;
 	(*handle)->generic = NULL;
 	(*handle)->aux = NULL;
+#ifdef ENABLE_DEBUGLOG
+	(*handle)->log.resource = NULL;
+	(*handle)->log.level = 99;
+	(*handle)->log.open = _odbx_log_open;
+	(*handle)->log.write = _odbx_log_write;
+	(*handle)->log.close = _odbx_log_close;
 
-	if( ( err = _odbx_lib_open( *handle, backend ) ) < 0 )
+	if( ( err = (*handle)->log.open( &((*handle)->log) ) ) != ODBX_ERR_SUCCESS )
 	{
-		free( *handle );
 		return err;
 	}
+#endif
 
-	if( (*handle)->ops && (*handle)->ops->basic && (*handle)->ops->basic->init )
+	if( ( err = _odbx_lib_open( *handle, backend ) ) == ODBX_ERR_SUCCESS )
 	{
-		if( ( err = (*handle)->ops->basic->init( *handle, host, port ) ) < 0 )
-		{
-			_odbx_lib_close( *handle );
+		err = -ODBX_ERR_NOOP;
 
-			free( *handle );
-			*handle = NULL;
+		if( (*handle)->ops && (*handle)->ops->basic && (*handle)->ops->basic->init )
+		{
+			if( ( err = (*handle)->ops->basic->init( *handle, host, port ) ) == ODBX_ERR_SUCCESS )
+			{
+				DEBUGLOG( (*handle)->log.write( &((*handle)->log), 1, "odbx_init(): success" ) );
+				return ODBX_ERR_SUCCESS;
+			}
 		}
 
-		return err;
+		_odbx_lib_close( *handle );
 	}
 
-	_odbx_lib_close( *handle );
+#ifdef ENABLE_DEBUGLOG
+	(*handle)->log.close( &((*handle)->log) );
+#endif
 
 	free( *handle );
 	*handle = NULL;
 
-	return -ODBX_ERR_NOOP;
+	return err;
 }
 
 
 
 int odbx_bind( odbx_t* handle, const char* database, const char* who, const char* cred, int method )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "odbx_bind() called" ) );
+
 	if( database == NULL ) { return -ODBX_ERR_PARAM; }
 
 	if( handle != NULL && handle->ops != NULL && handle->ops->basic != NULL && handle->ops->basic->bind != NULL )
@@ -106,12 +121,13 @@ int odbx_bind( odbx_t* handle, const char* database, const char* who, const char
 		return handle->ops->basic->bind( handle, database, who, cred, method );
 	}
 
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "odbx_bind(): failed with error '%d'", -ODBX_ERR_HANDLE ) );
 	return -ODBX_ERR_HANDLE;
 }
 
 
 
-/* Depricated: odbx_bind_simple() */
+/* Deprecated: odbx_bind_simple() */
 
 int odbx_bind_simple( odbx_t* handle, const char* database, const char* username, const char* password )
 {
@@ -147,6 +163,10 @@ int odbx_finish( odbx_t* handle )
 		{
 			return err;
 		}
+
+#ifdef ENABLE_DEBUGLOG
+		handle->log.close( &(handle->log) );
+#endif
 
 		handle->ops = NULL;
 		free( handle );

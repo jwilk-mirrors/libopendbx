@@ -195,6 +195,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
@@ -270,7 +271,7 @@ EXTRA_DIST = libopendbx.ver libopendbxplus.ver
 include_HEADERS = odbx.h
 nobase_include_HEADERS = opendbx/api.h opendbx/api
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
-libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h
+libopendbx_la_SOURCES = odbxlib.c odbxlib.h odbx.c odbxdrv.h odbxlog.h
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ \
 	-DLOCALEDIR=\"$(localedir)\" $(am__append_3) $(am__append_5)
 libopendbx_la_LDFLAGS = -no-undefined -export-dynamic -version-info \
