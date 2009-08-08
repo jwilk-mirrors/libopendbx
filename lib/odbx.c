@@ -10,12 +10,11 @@
 
 #include "opendbx/api.h"
 #include "odbxdrv.h"
+#include "odbxlog.h"
 #include "odbxlib.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "odbxlog.h"
 
 
 
