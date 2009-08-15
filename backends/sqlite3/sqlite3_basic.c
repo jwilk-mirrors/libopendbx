@@ -77,8 +77,9 @@ static int sqlite3_odbx_init( odbx_t* handle, const char* host, const char* port
 
 	struct sconn* aux = handle->aux;
 
-	aux->pathlen = 0;
+	aux->res = NULL;
 	aux->path = NULL;
+	aux->pathlen = 0;
 	handle->generic = NULL;
 
 	if( host != NULL )
@@ -144,6 +145,19 @@ static int sqlite3_odbx_unbind( odbx_t* handle )
 	struct sconn* aux = (struct sconn*) handle->aux;
 
 	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
+
+	if( aux->res != NULL )
+	{
+		sqlite3_finalize( aux->res );
+		aux->res = NULL;
+	}
+
+	if( aux->stmt != NULL )
+	{
+		aux->length = 0;
+		free( aux->stmt );
+		aux->stmt = NULL;
+	}
 
 	if( ( aux->err = sqlite3_close( (sqlite3*) handle->generic ) ) != SQLITE_OK )
 	{
@@ -312,9 +326,7 @@ static int sqlite3_odbx_query( odbx_t* handle, const char* query, unsigned long 
 
 static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
-	sqlite3_stmt* res = NULL;
 	struct sconn* aux = (struct sconn*) handle->aux;
-
 
 	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
 	if( aux->length == 0 ) { return ODBX_RES_DONE; }    /* no more results */
@@ -324,17 +336,29 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 		sqlite3_busy_timeout( handle->generic, timeout->tv_sec * 1000 + timeout->tv_usec / 1000 );
 	}
 
-#ifdef HAVE_SQLITE3_PREPARE_V2
-	if( ( aux->err = sqlite3_prepare_v2( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
-#else
-	if( ( aux->err = sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
-#endif
+	if( aux->res == NULL )
 	{
-		aux->length = 0;
-		free( aux->stmt );
-		aux->stmt = NULL;
+#ifdef HAVE_SQLITE3_PREPARE_V2
+		if( ( aux->err = sqlite3_prepare_v2( (sqlite3*) handle->generic, aux->tail, aux->length, &aux->res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
+#else
+		if( ( aux->err = sqlite3_prepare( (sqlite3*) handle->generic, aux->tail, aux->length, &aux->res, (const char**) &(aux->tail) ) ) != SQLITE_OK )
+#endif
+		{
+			aux->length = 0;
+			free( aux->stmt );
+			aux->stmt = NULL;
 
-		return -ODBX_ERR_BACKEND;
+			return -ODBX_ERR_BACKEND;
+		}
+	}
+
+	switch( ( aux->err = sqlite3_step( aux->res ) ) )   // fetch first row and see if a busy timeout occurs
+	{
+		case SQLITE_BUSY:
+#ifdef SQLITE_IOERR_BLOCKED
+		case SQLITE_IOERR_BLOCKED:
+#endif
+			return ODBX_RES_TIMEOUT;
 	}
 
 	if( ( aux->length = strlen( aux->tail ) ) == 0 )
@@ -343,30 +367,29 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 		aux->stmt = NULL;
 	}
 
-
-	switch( ( aux->err = sqlite3_step( res ) ) )   // fetch first row and see if a busy timeout occurs
+	switch( aux->err )
 	{
 		case SQLITE_ROW:
 		case SQLITE_DONE:
 		case SQLITE_OK:
 			break;
-		case SQLITE_BUSY:
-#ifdef SQLITE_IOERR_BLOCKED
-		case SQLITE_IOERR_BLOCKED:
-#endif
-			return ODBX_RES_TIMEOUT;
 		default:
+			sqlite3_finalize( aux->res );
+			aux->res = NULL;
 			return ODBX_ERR_BACKEND;
 	}
 
 	if( ( *result = (odbx_result_t*) malloc( sizeof( struct odbx_result_t ) ) ) == NULL )
 	{
+		sqlite3_finalize( aux->res );
+		aux->res = NULL;
 		return -ODBX_ERR_NOMEM;
 	}
 
-	(*result)->generic = res;
+	(*result)->generic = aux->res;
+	aux->res = NULL;
 
-	if( sqlite3_column_count( res ) == 0 )
+	if( sqlite3_column_count( (*result)->generic ) == 0 )
 	{
 		return ODBX_RES_NOROWS;   /* empty or not SELECT like query */
 	}
@@ -380,15 +403,11 @@ static int sqlite3_odbx_result_finish( odbx_result_t* result )
 {
 	struct sconn* aux = (struct sconn*) result->handle->aux;
 
-
 	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
 
 	if( result->generic != NULL )
 	{
-		if( ( aux->err = sqlite3_finalize( (sqlite3_stmt*) result->generic ) ) != SQLITE_OK )
-		{
-			return -ODBX_ERR_BACKEND;
-		}
+		sqlite3_finalize( (sqlite3_stmt*) result->generic );
 		result->generic = NULL;
 	}
 

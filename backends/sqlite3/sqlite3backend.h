@@ -37,6 +37,7 @@
 
 struct sconn
 {
+	sqlite3_stmt* res;   // Necessary to restart after timeout
 	char* path;
 	int pathlen;
 	char* stmt;
