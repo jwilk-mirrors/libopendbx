@@ -123,7 +123,16 @@ namespace OpenDBX
 
 	void Result_Impl::finish() throw( std::exception )
 	{
-		while( this->getResult( NULL, 0 ) != ODBX_RES_DONE );
+		odbxres res;
+
+		do
+		{
+			if( ( res = this->getResult( NULL, 0 ) ) == ODBX_RES_TIMEOUT )
+			{
+				throw Exception( string( odbx_error( m_handle, ODBX_ERR_RESULT ) ), ODBX_ERR_RESULT, odbx_error_type( m_handle, ODBX_ERR_RESULT ) );
+			}
+		}
+		while ( res != ODBX_RES_DONE );
 	}
 
 
