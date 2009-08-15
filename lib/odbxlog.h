@@ -14,16 +14,19 @@
 #include <time.h>
 
 
-
-#ifndef ODBXLOG_H
-#define ODBXLOG_H
-
-
 #ifdef ENABLE_DEBUGLOG
 #define DEBUGLOG(x) x
 #else
 #define DEBUGLOG(x)
 #endif
+
+
+
+#ifdef ENABLE_DEBUGLOG
+
+
+#ifndef ODBXLOG_H
+#define ODBXLOG_H
 
 
 
@@ -92,6 +95,9 @@ static int _odbx_log_close( struct odbx_log* log )
 	return ODBX_ERR_SUCCESS;
 }
 
+
+
+#endif   // ODBXLOG_H
 
 
 #endif
