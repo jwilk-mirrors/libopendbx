@@ -348,9 +348,20 @@ int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
 
 						default:
 
-							tmp = (char*) odbx_field_value( result, i );
-							if( tmp != NULL ) { fprintf( stdout, "'%s'\n", tmp ); }
-							else { fprintf( stdout, "NULL\n" ); }
+							if( ( err = odbx_field_isnull( result, i ) ) < 0 ) {
+								fprintf( stderr, "Error in odbx_field_isnull(): %s\n", odbx_error( handle[qptr->num], err ) );
+								return err;
+							} else if( err == 1 ) {
+								fprintf( stdout, "NULL\n" );
+								break;
+							}
+
+							if( ( tmp = (char*) odbx_field_value( result, i ) ) == NULL ) {
+								fprintf( stderr, "Error in odbx_field_value()\n" );
+								return err;
+							} else {
+								fprintf( stdout, "'%s'\n", tmp );
+							}
 					}
 				}
 			}
