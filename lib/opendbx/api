@@ -646,6 +646,19 @@ namespace OpenDBX
 		odbxtype columnType( unsigned long pos ) throw( std::exception );
 
 		/**
+		 * Returns an indicator if the field in the current row at the specified postion contains a NULL value.
+		 *
+		 * The field is part of the current row which was retrieved by the
+		 * latest call to getRow() and is specified by the column index given by
+		 * \a pos.
+		 *
+		 * @param pos Position of column in result set
+		 * @return True if the field contains a NULL value, false if not
+		 * @throws OpenDBX::Exception If the underlying database library returns an error
+		 */
+		bool fieldIsNull( unsigned long pos ) throw( std::exception );
+
+		/**
 		 * Returns the size of the content in the current row at the specified postion.
 		 *
 		 * The field is part of the current row which was retrieved by the

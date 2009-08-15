@@ -39,6 +39,7 @@ struct odbx_basic_ops sqlite_odbx_basic_ops = {
 	.column_count = sqlite_odbx_column_count,
 	.column_name = sqlite_odbx_column_name,
 	.column_type = sqlite_odbx_column_type,
+	.field_isnull = sqlite_odbx_field_isnull,
 	.field_length = sqlite_odbx_field_length,
 	.field_value = sqlite_odbx_field_value,
 };
@@ -465,6 +466,33 @@ static int sqlite_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 
 
+static int sqlite_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	if( result->generic == NULL || result->handle == NULL || result->handle->aux == NULL || result->aux == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	struct sres* aux = (struct sres*) result->aux;
+	((struct sconn*) result->handle->aux)->errmsg = NULL;
+
+	if( pos >= aux->ncolumn )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	int num = aux->cur * aux->ncolumn + aux->ncolumn + pos;
+
+	if( ((const char**) result->generic)[num] == 0 )
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
 static unsigned long sqlite_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
 	if( result->handle != NULL && result->handle->aux != NULL && result->aux != NULL )
@@ -493,7 +521,7 @@ static const char* sqlite_odbx_field_value( odbx_result_t* result, unsigned long
 
 		if( result->generic && pos < aux->ncolumn )
 		{
-			int num = aux->ncolumn + aux->cur * aux->ncolumn + pos;
+			int num = aux->cur * aux->ncolumn + aux->ncolumn + pos;
 			return  ((const char**) result->generic)[num];
 		}
 	}

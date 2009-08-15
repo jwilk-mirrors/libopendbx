@@ -55,6 +55,8 @@ static const char* pgsql_odbx_column_name( odbx_result_t* result, unsigned long 
 
 static int pgsql_odbx_column_type( odbx_result_t* result, unsigned long pos );
 
+static int pgsql_odbx_field_isnull( odbx_result_t* result, unsigned long pos );
+
 static unsigned long pgsql_odbx_field_length( odbx_result_t* result, unsigned long pos );
 
 static const char* pgsql_odbx_field_value( odbx_result_t* result, unsigned long pos );

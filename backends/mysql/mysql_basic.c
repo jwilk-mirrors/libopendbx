@@ -38,6 +38,7 @@ struct odbx_basic_ops mysql_odbx_basic_ops = {
 	.column_count = mysql_odbx_column_count,
 	.column_name = mysql_odbx_column_name,
 	.column_type = mysql_odbx_column_type,
+	.field_isnull = mysql_odbx_field_isnull,
 	.field_length = mysql_odbx_field_length,
 	.field_value = mysql_odbx_field_value,
 };
@@ -616,6 +617,30 @@ static int mysql_odbx_column_type( odbx_result_t* result, unsigned long pos )
 	}
 
 	return -ODBX_ERR_PARAM;
+}
+
+
+
+static int mysql_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	struct myres* aux = (struct myres*) result->aux;
+
+	if( aux == NULL || aux->lengths == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= aux->columns )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	if( aux->row[pos] == NULL )
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 

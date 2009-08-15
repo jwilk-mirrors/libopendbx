@@ -103,6 +103,7 @@ struct odbx_basic_ops
 	unsigned long (*column_count) ( odbx_result_t* result );
 	const char* (*column_name) ( odbx_result_t* result, unsigned long pos );
 	int (*column_type) ( odbx_result_t* result, unsigned long pos );
+	int (*field_isnull) ( odbx_result_t* result, unsigned long pos );
 	unsigned long (*field_length) ( odbx_result_t* result, unsigned long pos );
 	const char* (*field_value) ( odbx_result_t* result, unsigned long pos );
 };

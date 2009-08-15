@@ -44,6 +44,7 @@ struct odbx_basic_ops pgsql_odbx_basic_ops = {
 	.column_count = pgsql_odbx_column_count,
 	.column_name = pgsql_odbx_column_name,
 	.column_type = pgsql_odbx_column_type,
+	.field_isnull = pgsql_odbx_field_isnull,
 	.field_length = pgsql_odbx_field_length,
 	.field_value = pgsql_odbx_field_value,
 };
@@ -511,6 +512,26 @@ static int pgsql_odbx_column_type( odbx_result_t* result, unsigned long pos )
 		default:
 			return ODBX_TYPE_UNKNOWN;
 	}
+}
+
+
+
+static int pgsql_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	if( result->aux != NULL )
+	{
+		switch( PQgetisnull( (const PGresult*) result->generic, ((struct pgres*) result->aux)->count, pos ) )
+		{
+			case 1:
+				return 1;
+			case 0:
+				return 0;
+			default:
+				return -ODBX_ERR_BACKEND;
+		}
+	}
+
+	return -ODBX_ERR_HANDLE;
 }
 
 

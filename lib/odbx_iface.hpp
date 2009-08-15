@@ -52,6 +52,7 @@ namespace OpenDBX
 		virtual const string columnName( unsigned long pos ) throw( std::exception ) = 0;
 		virtual odbxtype columnType( unsigned long pos ) throw( std::exception ) = 0;
 
+		virtual bool fieldIsNull( unsigned long pos ) throw( std::exception ) = 0;
 		virtual unsigned long fieldLength( unsigned long pos ) throw( std::exception ) = 0;
 		virtual const char* fieldValue( unsigned long pos ) throw( std::exception ) = 0;
 

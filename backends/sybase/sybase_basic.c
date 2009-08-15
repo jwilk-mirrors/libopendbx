@@ -37,6 +37,7 @@ struct odbx_basic_ops sybase_odbx_basic_ops = {
 	.column_count = sybase_odbx_column_count,
 	.column_name = sybase_odbx_column_name,
 	.column_type = sybase_odbx_column_type,
+	.field_isnull = sybase_odbx_field_isnull,
 	.field_length = sybase_odbx_field_length,
 	.field_value = sybase_odbx_field_value,
 };
@@ -683,6 +684,31 @@ static int sybase_odbx_column_type( odbx_result_t* result, unsigned long pos )
 	}
 
 	return -ODBX_ERR_PARAM;
+}
+
+
+
+static int sybase_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	struct sybres* val = (struct sybres*) result->generic;
+	struct sybares* aux = (struct sybares*) result->aux;
+
+	if( val == NULL || aux == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= aux->cols )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	if( val[pos].status == -1 )
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 

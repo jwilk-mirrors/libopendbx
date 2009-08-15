@@ -53,6 +53,8 @@ static const char* odbc_odbx_column_name( odbx_result_t* result, unsigned long p
 
 static int odbc_odbx_column_type( odbx_result_t* result, unsigned long pos );
 
+static int odbc_odbx_field_isnull( odbx_result_t* result, unsigned long pos );
+
 static unsigned long odbc_odbx_field_length( odbx_result_t* result, unsigned long pos );
 
 static const char* odbc_odbx_field_value( odbx_result_t* result, unsigned long pos );

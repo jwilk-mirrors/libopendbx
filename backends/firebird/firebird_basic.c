@@ -40,6 +40,7 @@ struct odbx_basic_ops firebird_odbx_basic_ops = {
 	.column_count = firebird_odbx_column_count,
 	.column_name = firebird_odbx_column_name,
 	.column_type = firebird_odbx_column_type,
+	.field_isnull = firebird_odbx_field_isnull,
 	.field_length = firebird_odbx_field_length,
 	.field_value = firebird_odbx_field_value,
 };
@@ -699,6 +700,31 @@ static int firebird_odbx_column_type( odbx_result_t* result, unsigned long pos )
 	}
 
 	return ODBX_TYPE_UNKNOWN;
+}
+
+
+
+static int firebird_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	XSQLDA* da = (XSQLDA*) result->generic;
+
+
+	if( da == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= da->sqln )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	if( *(da->sqlvar[pos].sqlind) == -1 )
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 

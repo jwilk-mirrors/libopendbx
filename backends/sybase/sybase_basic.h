@@ -53,6 +53,8 @@ static const char* sybase_odbx_column_name( odbx_result_t* result, unsigned long
 
 static int sybase_odbx_column_type( odbx_result_t* result, unsigned long pos );
 
+static int sybase_odbx_field_isnull( odbx_result_t* result, unsigned long pos );
+
 static unsigned long sybase_odbx_field_length( odbx_result_t* result, unsigned long pos );
 
 static const char* sybase_odbx_field_value( odbx_result_t* result, unsigned long pos );

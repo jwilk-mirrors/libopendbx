@@ -38,6 +38,7 @@ struct odbx_basic_ops sqlite3_odbx_basic_ops = {
 	.column_count = sqlite3_odbx_column_count,
 	.column_name = sqlite3_odbx_column_name,
 	.column_type = sqlite3_odbx_column_type,
+	.field_isnull = sqlite3_odbx_field_isnull,
 	.field_length = sqlite3_odbx_field_length,
 	.field_value = sqlite3_odbx_field_value,
 };
@@ -356,6 +357,7 @@ static int sqlite3_odbx_result( odbx_t* handle, odbx_result_t** result, struct t
 #endif
 			return ODBX_RES_TIMEOUT;
 		default:
+			sqlite3_finalize( res );
 			return ODBX_ERR_BACKEND;
 	}
 
@@ -465,6 +467,24 @@ static int sqlite3_odbx_column_type( odbx_result_t* result, unsigned long pos )
 			return ODBX_TYPE_CLOB;
 		default:
 			return ODBX_TYPE_UNKNOWN;
+	}
+}
+
+
+
+static int sqlite3_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	switch( sqlite3_column_type( (sqlite3_stmt*) result->generic, pos ) )
+	{
+		case SQLITE_NULL:
+			return 1;
+		case SQLITE_INTEGER:
+		case SQLITE_FLOAT:
+		case SQLITE_BLOB:
+		case SQLITE_TEXT:
+			return 0;
+		default:
+			return ODBX_ERR_BACKEND;
 	}
 }
 

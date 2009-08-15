@@ -247,6 +247,13 @@ namespace OpenDBX
 
 
 
+	bool Result::fieldIsNull( unsigned long pos ) throw( std::exception )
+	{
+		return m_impl->fieldIsNull( pos );
+	}
+
+
+
 	unsigned long Result::fieldLength( unsigned long pos ) throw( std::exception )
 	{
 		return m_impl->fieldLength( pos );

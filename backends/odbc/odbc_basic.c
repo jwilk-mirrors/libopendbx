@@ -38,6 +38,7 @@ struct odbx_basic_ops odbc_odbx_basic_ops = {
 	.column_count = odbc_odbx_column_count,
 	.column_name = odbc_odbx_column_name,
 	.column_type = odbc_odbx_column_type,
+	.field_isnull = odbc_odbx_field_isnull,
 	.field_length = odbc_odbx_field_length,
 	.field_value = odbc_odbx_field_value,
 };
@@ -705,14 +706,44 @@ static int odbc_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 
 
+static int odbc_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	struct odbcres* res = (struct odbcres*) result->generic;
+	struct odbcraux* raux = (struct odbcraux*) result->aux;
+
+	if( res == NULL || raux == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= raux->cols )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	if( res[pos].ind == SQL_NULL_DATA )
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
 static unsigned long odbc_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
 	struct odbcres* res = (struct odbcres*) result->generic;
 	struct odbcraux* raux = (struct odbcraux*) result->aux;
 
-	if( res != NULL && raux != NULL && pos <= raux->cols )
+	if( res != NULL && raux != NULL && pos < raux->cols )
 	{
-		return res[pos].ind;
+		// TODO: What about SQL_NO_TOTAL
+		// http://msdn.microsoft.com/en-us/library/ms713532(VS.85).aspx
+		if( res[pos].ind > 0 )
+		{
+			return (unsigned long) res[pos].ind;
+		}
 	}
 
 	return 0;
@@ -725,7 +756,7 @@ static const char* odbc_odbx_field_value( odbx_result_t* result, unsigned long p
 	struct odbcres* res = (struct odbcres*) result->generic;
 	struct odbcraux* raux = (struct odbcraux*) result->aux;
 
-	if( res != NULL && raux != NULL && pos <= raux->cols && res[pos].ind != SQL_NULL_DATA )
+	if( res != NULL && raux != NULL && pos < raux->cols && res[pos].ind != SQL_NULL_DATA )
 	{
 		return res[pos].buffer;
 	}

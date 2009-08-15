@@ -233,6 +233,27 @@ namespace OpenDBX
 
 
 
+	bool Result_Impl::fieldIsNull( unsigned long pos ) throw( std::exception )
+	{
+		if( pos < odbx_column_count( m_result ) )
+		{
+			int err = odbx_field_isnull( m_result, pos );
+
+			switch( err )
+			{
+				case 0:
+				case 1:
+					return (bool) err;
+				default:
+					throw Exception( string( odbx_error( m_result->handle, err ) ), err, odbx_error_type( m_result->handle, err ) );
+			}
+		}
+
+		throw Exception( string( odbx_error( NULL, -ODBX_ERR_PARAM ) ), -ODBX_ERR_PARAM, odbx_error_type( NULL, -ODBX_ERR_PARAM ) );
+	}
+
+
+
 	unsigned long Result_Impl::fieldLength( unsigned long pos ) throw( std::exception )
 	{
 		if( pos < odbx_column_count( m_result ) )

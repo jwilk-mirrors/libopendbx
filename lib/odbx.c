@@ -461,6 +461,19 @@ int odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 
 
+int odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	if( result != NULL && result->handle != NULL && result->handle->ops != NULL &&
+		result->handle->ops->basic != NULL && result->handle->ops->basic->field_isnull != NULL )
+	{
+		return result->handle->ops->basic->field_isnull( result, pos );
+	}
+
+	return -ODBX_ERR_HANDLE;
+}
+
+
+
 unsigned long odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
 	if( result != NULL && result->handle != NULL && result->handle->ops != NULL &&

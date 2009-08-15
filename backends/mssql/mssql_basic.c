@@ -38,6 +38,7 @@ struct odbx_basic_ops mssql_odbx_basic_ops = {
 	.column_count = mssql_odbx_column_count,
 	.column_name = mssql_odbx_column_name,
 	.column_type = mssql_odbx_column_type,
+	.field_isnull = mssql_odbx_field_isnull,
 	.field_length = mssql_odbx_field_length,
 	.field_value = mssql_odbx_field_value,
 };
@@ -606,6 +607,25 @@ static int mssql_odbx_column_type( odbx_result_t* result, unsigned long pos )
 		default:
 			return ODBX_TYPE_UNKNOWN;
 	}
+}
+
+
+
+static int mssql_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	struct tdsares* ares = (struct tdsares*) result->aux;
+
+	if( result->generic == NULL || ares == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= ares->cols )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	return (int) ((struct tdsgres*) result->generic)[pos].ind;
 }
 
 

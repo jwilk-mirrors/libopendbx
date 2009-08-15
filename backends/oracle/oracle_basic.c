@@ -43,6 +43,7 @@ struct odbx_basic_ops oracle_odbx_basic_ops = {
 	.column_count = oracle_odbx_column_count,
 	.column_name = oracle_odbx_column_name,
 	.column_type = oracle_odbx_column_type,
+	.field_isnull = oracle_odbx_field_isnull,
 	.field_length = oracle_odbx_field_length,
 	.field_value = oracle_odbx_field_value,
 };
@@ -753,6 +754,31 @@ static int oracle_odbx_column_type( odbx_result_t* result, unsigned long pos )
 	}
 
 	return -ODBX_ERR_PARAM;
+}
+
+
+
+static int oracle_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
+{
+	struct orargen* rgen = (struct orargen*) result->generic;
+	struct oraraux* raux = (struct oraraux*) result->aux;
+
+	if( rgen == NULL || raux == NULL )
+	{
+		return -ODBX_ERR_HANDLE;
+	}
+
+	if( pos >= raux->cols )
+	{
+		return -ODBX_ERR_PARAM;
+	}
+
+	if( rgen[pos].ind == -1 )
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 
