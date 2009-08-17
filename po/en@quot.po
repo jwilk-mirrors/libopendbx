@@ -27,10 +27,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opendbx 1.5.0\n"
+"Project-Id-Version: opendbx 1.5.0pre\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2009-08-04 21:36+0200\n"
-"PO-Revision-Date: 2009-08-04 21:36+0200\n"
+"POT-Creation-Date: 2009-08-17 09:24+0200\n"
+"PO-Revision-Date: 2009-08-17 09:24+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -38,80 +38,80 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/odbx.c:21
+#: lib/odbx.c:22
 msgid "Success"
 msgstr "Success"
 
-#: lib/odbx.c:22
+#: lib/odbx.c:23
 msgid "Backend error occured"
 msgstr "Backend error occured"
 
-#: lib/odbx.c:23
+#: lib/odbx.c:24
 msgid "Invalid capability"
 msgstr "Invalid capability"
 
-#: lib/odbx.c:24 backends/sqlite3/sqlite3_basic.c:53
+#: lib/odbx.c:25 backends/sqlite3/sqlite3_basic.c:54
 msgid "Invalid parameter"
 msgstr "Invalid parameter"
 
-#: lib/odbx.c:25
+#: lib/odbx.c:26
 msgid "Out of memory"
 msgstr "Out of memory"
 
-#: lib/odbx.c:26
+#: lib/odbx.c:27
 msgid "Incorrect size of allocated memory"
 msgstr "Incorrect size of allocated memory"
 
-#: lib/odbx.c:27
+#: lib/odbx.c:28
 msgid "Loading backend library failed"
 msgstr "Loading backend library failed"
 
-#: lib/odbx.c:28
+#: lib/odbx.c:29
 msgid "Operation is not available"
 msgstr "Operation is not available"
 
-#: lib/odbx.c:29
+#: lib/odbx.c:30
 msgid "Invalid option"
 msgstr "Invalid option"
 
-#: lib/odbx.c:30
+#: lib/odbx.c:31
 msgid "Option is read only"
 msgstr "Option is read only"
 
-#: lib/odbx.c:31
+#: lib/odbx.c:32
 msgid "Setting option failed"
 msgstr "Setting option failed"
 
-#: lib/odbx.c:32
+#: lib/odbx.c:33
 msgid "Waiting for result failed"
 msgstr "Waiting for result failed"
 
-#: lib/odbx.c:33
+#: lib/odbx.c:34
 msgid "Not supported"
 msgstr "Not supported"
 
-#: lib/odbx.c:34 backends/oracle/oracle_basic.c:53
+#: lib/odbx.c:35 backends/oracle/oracle_basic.c:54
 msgid "Invalid handle"
 msgstr "Invalid handle"
 
-#: lib/odbxlib.c:148
+#: lib/odbxlib.h:176
 #, c-format
 msgid "Loading backend library %s, %s or %s failed"
 msgstr "Loading backend library %s, %s or %s failed"
 
-#: lib/odbxlib.c:235
+#: lib/odbxlib.h:263
 #, c-format
 msgid "Loading backend library %s, %s or %s failed\n"
 msgstr "Loading backend library %s, %s or %s failed\n"
 
-#: backends/mssql/mssql_basic.c:52
+#: backends/mssql/mssql_basic.c:53
 msgid "Connecting to server failed"
 msgstr "Connecting to server failed"
 
-#: backends/sqlite/sqlite_basic.c:53 backends/sqlite3/sqlite3_basic.c:54
+#: backends/sqlite/sqlite_basic.c:54 backends/sqlite3/sqlite3_basic.c:55
 msgid "Opening database failed"
 msgstr "Opening database failed"
 
-#: backends/sqlite3/sqlite3_basic.c:52
+#: backends/sqlite3/sqlite3_basic.c:53
 msgid "Unknown error"
 msgstr "Unknown error"

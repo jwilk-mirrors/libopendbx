@@ -1,10 +1,10 @@
-2009-08-04 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-08-15 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Feature: Added odbx_field_isnull() and Result::fieldIsNull() functions to check for NULL values
 	* Feature: Fully compatible with Debian standard version 3.8.2.0
 	* Feature: Added ability to version symbols with ./configure --enable-versioned-symbols
-	* Feature: Added MySQL MinGW workaround for easy compilation of MySQL backend on Windows plattforms
-	* Bugfix: Removed old config.{cpp,hpp} files from generating gettext files
-	* Bugix: Fixed singlelib builds for mysql and interbase on Win32
+	* Feature: Added configurable logging possibility for debug output
+	* Change: Moved library handling functions to header file and declared them static
 
 2009-06-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
@@ -16,7 +16,7 @@
 	* Bugfix: Fixed configure to build Oracle backend on Windows plattforms
 	* Bugfix: Fixed configure to build Sybase backend on Windows plattforms
 	* Bugfix: Correctly check for ODBC library on Windows plattforms
-	* Bugfix: Used unitialized variable in Win32 DLL loader (thanks to Markus Fritsche)
+	* Bugfix: Used uninitialized variable in Win32 DLL loader (thanks to Markus Fritsche)
 	* Bugfix: Rewritten Win32 DLL loader to prevent problem with SQLite (thanks to Mariano Martinez Peck)
 	* Bugfix: Fixed warning in firebird backend when using newer Firebird libraries
 	* Bugfix: Check for Interbase gds32 library if fbclient isn't found

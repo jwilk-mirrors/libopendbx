@@ -1,7 +1,7 @@
 # List of source files which contain translatable strings.
 
 lib/odbx.c
-lib/odbxlib.c
+lib/odbxlib.h
 
 backends/mssql/mssql_basic.c
 backends/oracle/oracle_basic.c
