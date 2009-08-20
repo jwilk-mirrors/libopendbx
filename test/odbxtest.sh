@@ -105,7 +105,7 @@ do
 				$ODBXAPP \
 					-b "../backends/pgsql/.libs/libpgsqlbackend.so" \
 					-h "$PGSQL_HOST" \
-					-p "$PGSQL_PORT2" \
+					-p "$PGSQL_PORT" \
 					-d "$PGSQL_DATABASE" \
 					-u "$PGSQL_USERNAME" \
 					-w "$PGSQL_PASSWORD" \
