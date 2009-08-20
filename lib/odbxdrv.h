@@ -40,6 +40,18 @@
 
 
 /*
+ *  Logging debug information
+ */
+
+#ifdef ENABLE_DEBUGLOG
+#define DEBUGLOG(x) x
+#else
+#define DEBUGLOG(x)
+#endif
+
+
+
+/*
  *  Commonly used handle and result structures
  */
 

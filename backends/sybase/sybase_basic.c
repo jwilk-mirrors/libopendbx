@@ -51,6 +51,8 @@ struct odbx_basic_ops sybase_odbx_basic_ops = {
 
 static int sybase_odbx_init( odbx_t* handle, const char* host, const char* port )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_init() called" ); )
+
 	if( host == NULL ) { return -ODBX_ERR_PARAM; }
 
 	handle->aux = NULL;
@@ -117,6 +119,8 @@ static int sybase_odbx_init( odbx_t* handle, const char* host, const char* port 
 
 static int sybase_odbx_bind( odbx_t* handle, const char* database, const char* who, const char* cred, int method )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_bind() called" ); )
+
 	if( handle->aux == NULL ) { return -ODBX_ERR_PARAM; }
 	if( method != ODBX_BIND_SIMPLE ) { return -ODBX_ERR_NOTSUP; }
 
@@ -190,6 +194,8 @@ static int sybase_odbx_bind( odbx_t* handle, const char* database, const char* w
 
 static int sybase_odbx_unbind( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_unbind() called" ); )
+
 	if( handle->generic == NULL || handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -221,6 +227,8 @@ static int sybase_odbx_unbind( odbx_t* handle )
 
 static int sybase_odbx_finish( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_finish() called" ); )
+
 	return sybase_priv_cleanup( handle );
 }
 
@@ -228,6 +236,8 @@ static int sybase_odbx_finish( odbx_t* handle )
 
 static int sybase_odbx_get_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_get_option() called" ); )
+
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
@@ -269,6 +279,8 @@ static int sybase_odbx_get_option( odbx_t* handle, unsigned int option, void* va
 
 static int sybase_odbx_set_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_set_option() called" ); )
+
 	unsigned int tmp;
 	struct sybconn* aux = (struct sybconn*) handle->aux;
 
@@ -315,6 +327,8 @@ static int sybase_odbx_set_option( odbx_t* handle, unsigned int option, void* va
 
 static const char* sybase_odbx_error( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_error() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		return ((struct sybconn*) handle->aux)->errmsg;
@@ -327,6 +341,8 @@ static const char* sybase_odbx_error( odbx_t* handle )
 
 static int sybase_odbx_error_type( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_error_type() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		return ((struct sybconn*) handle->aux)->errtype;
@@ -339,6 +355,8 @@ static int sybase_odbx_error_type( odbx_t* handle )
 
 static int sybase_odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_query() called" ); )
+
 	if( ct_command( (CS_COMMAND*) handle->generic, CS_LANG_CMD, (CS_VOID*) query, (CS_INT) length, CS_UNUSED ) != CS_SUCCEED )
 	{
 		return -ODBX_ERR_BACKEND;
@@ -356,6 +374,8 @@ static int sybase_odbx_query( odbx_t* handle, const char* query, unsigned long l
 
 static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_result() called" ); )
+
 	CS_INT rtype;
 
 
@@ -488,6 +508,8 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 static int sybase_odbx_result_finish( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_result_finish() called" ); )
+
 	unsigned long i;
 	struct sybres* val = (struct sybres*) result->generic;
 	struct sybares* aux = (struct sybares*) result->aux;
@@ -525,6 +547,8 @@ static int sybase_odbx_result_finish( odbx_result_t* result )
 
 static int sybase_odbx_row_fetch( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_row_fetch() called" ); )
+
 	if( result->handle == NULL || result->handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -556,6 +580,8 @@ static int sybase_odbx_row_fetch( odbx_result_t* result )
 
 static uint64_t sybase_odbx_rows_affected( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_rows_affected() called" ); )
+
 	CS_INT rows;
 
 	if( result->handle != NULL && ct_res_info( (CS_COMMAND*) result->handle->generic, CS_ROW_COUNT, (CS_VOID*) &rows, sizeof( CS_INT ), NULL ) == CS_SUCCEED )
@@ -570,6 +596,8 @@ static uint64_t sybase_odbx_rows_affected( odbx_result_t* result )
 
 static unsigned long sybase_odbx_column_count( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_column_count() called" ); )
+
 	if( result->aux != NULL )
 	{
 		return ((struct sybares*) result->aux)->cols;
@@ -582,6 +610,8 @@ static unsigned long sybase_odbx_column_count( odbx_result_t* result )
 
 static const char* sybase_odbx_column_name( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_column_name() called" ); )
+
 	struct sybares* aux = (struct sybares*) result->aux;
 
 	if( aux != NULL && aux->fmt != NULL && pos < aux->cols )
@@ -596,6 +626,8 @@ static const char* sybase_odbx_column_name( odbx_result_t* result, unsigned long
 
 static int sybase_odbx_column_type( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_column_type() called" ); )
+
 	struct sybares* aux = (struct sybares*) result->aux;
 
 	if( aux != NULL && aux->fmt != NULL && pos < aux->cols )
@@ -690,6 +722,8 @@ static int sybase_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 static int sybase_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_field_isnull() called" ); )
+
 	struct sybres* val = (struct sybres*) result->generic;
 	struct sybares* aux = (struct sybares*) result->aux;
 
@@ -715,6 +749,8 @@ static int sybase_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 
 static unsigned long sybase_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_field_length() called" ); )
+
 	struct sybres* val = (struct sybres*) result->generic;
 	struct sybares* aux = (struct sybares*) result->aux;
 
@@ -730,6 +766,8 @@ static unsigned long sybase_odbx_field_length( odbx_result_t* result, unsigned l
 
 static const char* sybase_odbx_field_value( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sybase_odbx_field_value() called" ); )
+
 	struct sybres* val = (struct sybres*) result->generic;
 	struct sybares* aux = (struct sybares*) result->aux;
 

@@ -58,6 +58,8 @@ struct odbx_basic_ops pgsql_odbx_basic_ops = {
 
 static int pgsql_odbx_init( odbx_t* handle, const char* host, const char* port )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_init() called" ); )
+
 	size_t len = 0;
 	struct pgconn* conn;
 
@@ -83,6 +85,8 @@ static int pgsql_odbx_init( odbx_t* handle, const char* host, const char* port )
 
 static int pgsql_odbx_bind( odbx_t* handle, const char* database, const char* who, const char* cred, int method )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_bind() called" ); )
+
 	if( method != ODBX_BIND_SIMPLE ) { return -ODBX_ERR_NOTSUP; }
 
 	if( handle->aux == NULL )
@@ -131,6 +135,8 @@ static int pgsql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 
 static int pgsql_odbx_unbind( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_unbind() called" ); )
+
 	PQfinish( handle->generic );
 	handle->generic = NULL;
 
@@ -141,6 +147,8 @@ static int pgsql_odbx_unbind( odbx_t* handle )
 
 static int pgsql_odbx_finish( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_finish() called" ); )
+
 	if( handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -163,6 +171,8 @@ static int pgsql_odbx_finish( odbx_t* handle )
 
 static int pgsql_odbx_get_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_get_option() called" ); )
+
 	switch( option )
 	{
 		case ODBX_OPT_API_VERSION:
@@ -195,6 +205,8 @@ static int pgsql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 
 static int pgsql_odbx_set_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_set_option() called" ); )
+
 	if( handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -239,6 +251,8 @@ static int pgsql_odbx_set_option( odbx_t* handle, unsigned int option, void* val
 
 static const char* pgsql_odbx_error( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_error() called" ); )
+
 	if( handle->generic != NULL )
 	{
 		return PQerrorMessage( (const PGconn*) handle->generic );
@@ -251,6 +265,8 @@ static const char* pgsql_odbx_error( odbx_t* handle )
 
 static int pgsql_odbx_error_type( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_error_type() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		return ((struct pgconn*) handle->aux)->errtype;
@@ -263,6 +279,8 @@ static int pgsql_odbx_error_type( odbx_t* handle )
 
 static int pgsql_odbx_escape( odbx_t* handle, const char* from, unsigned long fromlen, char* to, unsigned long* tolen )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_escape() called" ); )
+
 	if( *tolen < fromlen * 2 + 1 )
 	{
 		return -ODBX_ERR_SIZE;
@@ -288,6 +306,8 @@ static int pgsql_odbx_escape( odbx_t* handle, const char* from, unsigned long fr
 
 static int pgsql_odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_query() called" ); )
+
 	struct pgconn* aux = (struct pgconn*) handle->aux;
 
 	if( PQsendQuery( (PGconn*) handle->generic, query ) == 0 )
@@ -309,6 +329,8 @@ static int pgsql_odbx_query( odbx_t* handle, const char* query, unsigned long le
 
 static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "pgsql_odbx_result() called" ); )
+
 	struct pgconn* conn = (struct pgconn* ) handle->aux;
 
 	if( handle->generic == NULL || handle->aux == NULL )
@@ -368,6 +390,8 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 	struct pgres* aux = (struct pgres*) (*result)->aux;
 
 	(*result)->generic = (void*) res;
+	(*result)->handle = handle;   // in case of an error when pgsql_odbx_result_finish() is called
+
 	aux->total = PQntuples( res );
 	aux->count = -1;
 	conn->errtype = 0;
@@ -404,6 +428,8 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 static int pgsql_odbx_result_finish( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_result_finish() called" ); )
+
 	if( result->generic != NULL )
 	{
 		PQclear( (PGresult*) result->generic );
@@ -425,6 +451,8 @@ static int pgsql_odbx_result_finish( odbx_result_t* result )
 
 static int pgsql_odbx_row_fetch( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_row_fetch() called" ); )
+
 	struct pgres* aux = result->aux;
 
 	if( aux == NULL )
@@ -445,6 +473,8 @@ static int pgsql_odbx_row_fetch( odbx_result_t* result )
 
 static uint64_t pgsql_odbx_rows_affected( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_rows_affected() called" ); )
+
 	return strtoull( PQcmdTuples( (PGresult*) result->generic ), NULL, 10 );
 }
 
@@ -452,6 +482,8 @@ static uint64_t pgsql_odbx_rows_affected( odbx_result_t* result )
 
 static unsigned long pgsql_odbx_column_count( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_column_count() called" ); )
+
 	return (unsigned long) PQnfields( (const PGresult*) result->generic );
 }
 
@@ -459,6 +491,8 @@ static unsigned long pgsql_odbx_column_count( odbx_result_t* result )
 
 static const char* pgsql_odbx_column_name( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_column_name() called" ); )
+
 	return (const char*) PQfname( (const PGresult*) result->generic, pos );
 }
 
@@ -466,6 +500,8 @@ static const char* pgsql_odbx_column_name( odbx_result_t* result, unsigned long 
 
 static int pgsql_odbx_column_type( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_column_type() called" ); )
+
 	switch( PQftype( (PGresult*) result->generic, pos ) )
 	{
 		case BOOLOID:
@@ -518,6 +554,8 @@ static int pgsql_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 static int pgsql_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_field_isnull() called" ); )
+
 	if( result->aux != NULL )
 	{
 		switch( PQgetisnull( (const PGresult*) result->generic, ((struct pgres*) result->aux)->count, pos ) )
@@ -538,6 +576,8 @@ static int pgsql_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 
 static unsigned long pgsql_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_field_length() called" ); )
+
 	if( result->aux != NULL )
 	{
 		return (unsigned long) PQgetlength( (const PGresult*) result->generic, ((struct pgres*) result->aux)->count, pos );
@@ -550,6 +590,8 @@ static unsigned long pgsql_odbx_field_length( odbx_result_t* result, unsigned lo
 
 static const char* pgsql_odbx_field_value( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "pgsql_odbx_field_value() called" ); )
+
 	struct pgres* aux = (struct pgres*) result->aux;
 
 	if( aux != NULL && PQgetisnull( (PGresult*) result->generic, aux->count, pos ) == 0 )

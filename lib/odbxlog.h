@@ -14,13 +14,6 @@
 #include <time.h>
 
 
-#ifdef ENABLE_DEBUGLOG
-#define DEBUGLOG(x) x
-#else
-#define DEBUGLOG(x)
-#endif
-
-
 
 #ifdef ENABLE_DEBUGLOG
 

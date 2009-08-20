@@ -70,6 +70,8 @@ static const char* sqlite_odbx_errmsg[] = {
 
 static int sqlite_odbx_init( odbx_t* handle, const char* host, const char* port )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_init() called" ); )
+
 	if( ( handle->aux = malloc( sizeof( struct sconn ) ) ) == NULL )
 	{
 		return -ODBX_ERR_NOMEM;
@@ -109,6 +111,8 @@ static int sqlite_odbx_init( odbx_t* handle, const char* host, const char* port 
 
 static int sqlite_odbx_bind( odbx_t* handle, const char* database, const char* who, const char* cred, int method )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_bind() called" ); )
+
 	struct sconn* aux = handle->aux;
 
 	if( aux == NULL ) { return -ODBX_ERR_PARAM; }
@@ -148,6 +152,8 @@ static int sqlite_odbx_bind( odbx_t* handle, const char* database, const char* w
 
 static int sqlite_odbx_unbind( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_unbind() called" ); )
+
 	struct sconn* aux = (struct sconn*) handle->aux;
 
 	if( handle->generic != NULL && aux != NULL )
@@ -167,6 +173,8 @@ static int sqlite_odbx_unbind( odbx_t* handle )
 
 static int sqlite_odbx_finish( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_finish() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		free( ((struct sconn*) handle->aux)->path );
@@ -183,6 +191,8 @@ static int sqlite_odbx_finish( odbx_t* handle )
 
 static int sqlite_odbx_get_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_get_option() called" ); )
+
 	if( handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -214,6 +224,8 @@ static int sqlite_odbx_get_option( odbx_t* handle, unsigned int option, void* va
 
 static int sqlite_odbx_set_option( odbx_t* handle, unsigned int option, void* value )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_set_option() called" ); )
+
 	if( handle->aux == NULL )
 	{
 		return -ODBX_ERR_PARAM;
@@ -243,6 +255,8 @@ static int sqlite_odbx_set_option( odbx_t* handle, unsigned int option, void* va
 
 static const char* sqlite_odbx_error( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_error() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		return ((struct sconn*) handle->aux)->errmsg;
@@ -255,6 +269,8 @@ static const char* sqlite_odbx_error( odbx_t* handle )
 
 static int sqlite_odbx_error_type( odbx_t* handle )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_error_type() called" ); )
+
 	if( handle->aux != NULL )
 	{
 		switch( ((struct sconn*) handle->aux)->errno )
@@ -281,6 +297,8 @@ static int sqlite_odbx_error_type( odbx_t* handle )
 
 static int sqlite_odbx_query( odbx_t* handle, const char* query, unsigned long length )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_query() called" ); )
+
 	struct sconn* aux = (struct sconn*) handle->aux;
 
 	if( aux == NULL || query == NULL )
@@ -303,6 +321,8 @@ static int sqlite_odbx_query( odbx_t* handle, const char* query, unsigned long l
 
 static int sqlite_odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout, unsigned long chunk )
 {
+	DEBUGLOG( handle->log.write( &(handle->log), 1, "sqlite_odbx_result() called" ); )
+
 	char** res;
 	long ms = 0;
 	int err, nrow, ncolumn;
@@ -372,6 +392,8 @@ static int sqlite_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 
 static int sqlite_odbx_result_finish( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_result_finish() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL )
 	{
 		((struct sconn*) result->handle->aux)->errmsg = NULL;
@@ -394,6 +416,8 @@ static int sqlite_odbx_result_finish( odbx_result_t* result )
 
 static int sqlite_odbx_row_fetch( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_row_fetch() called" ); )
+
 	struct sres* res = (struct sres*) result->aux;
 
 	if( result->aux != NULL && result->handle != NULL && result->handle->aux != NULL )
@@ -413,6 +437,8 @@ static int sqlite_odbx_row_fetch( odbx_result_t* result )
 
 static uint64_t sqlite_odbx_rows_affected( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_rows_affected() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL )
 	{
 		((struct sconn*) result->handle->aux)->errmsg = NULL;
@@ -426,6 +452,8 @@ static uint64_t sqlite_odbx_rows_affected( odbx_result_t* result )
 
 static unsigned long sqlite_odbx_column_count( odbx_result_t* result )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_column_count() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL && result->aux != NULL )
 	{
 		((struct sconn*) result->handle->aux)->errmsg = NULL;
@@ -439,6 +467,8 @@ static unsigned long sqlite_odbx_column_count( odbx_result_t* result )
 
 static const char* sqlite_odbx_column_name( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_column_name() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL && result->aux != NULL )
 	{
 		((struct sconn*) result->handle->aux)->errmsg = NULL;
@@ -455,6 +485,8 @@ static const char* sqlite_odbx_column_name( odbx_result_t* result, unsigned long
 
 static int sqlite_odbx_column_type( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_column_type() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL )
 	{
 		((struct sconn*) result->handle->aux)->errmsg = NULL;
@@ -468,6 +500,8 @@ static int sqlite_odbx_column_type( odbx_result_t* result, unsigned long pos )
 
 static int sqlite_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_field_isnull() called" ); )
+
 	if( result->generic == NULL || result->handle == NULL || result->handle->aux == NULL || result->aux == NULL )
 	{
 		return -ODBX_ERR_HANDLE;
@@ -495,6 +529,8 @@ static int sqlite_odbx_field_isnull( odbx_result_t* result, unsigned long pos )
 
 static unsigned long sqlite_odbx_field_length( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_field_length() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL && result->aux != NULL )
 	{
 		struct sres* aux = (struct sres*) result->aux;
@@ -514,6 +550,8 @@ static unsigned long sqlite_odbx_field_length( odbx_result_t* result, unsigned l
 
 static const char* sqlite_odbx_field_value( odbx_result_t* result, unsigned long pos )
 {
+	DEBUGLOG( result->handle->log.write( &(result->handle->log), 1, "sqlite_odbx_field_value() called" ); )
+
 	if( result->handle != NULL && result->handle->aux != NULL && result->aux != NULL )
 	{
 		struct sres* aux = (struct sres*) result->aux;
