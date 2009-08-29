@@ -70,7 +70,7 @@ AC_STRUCT_TM
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h windef.h])
+AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h windef.h winsock2.h])
 
 
 # Checks for library functions.
@@ -79,7 +79,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_STRFTIME
-AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([getopt memmove memset select setenv snprintf strdup strncasecmp strtol strtoul strtoull])
 
 
@@ -299,6 +298,10 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 			AC_CHECK_LIB(
 				[$LIBPGSQL], [PQescapeStringConn],
 				[AC_DEFINE([HAVE_PQ_ESCAPE_STRING_CONN], 1, [Define to 1 if you have PQescapeStringConn])]
+			)
+			AC_CHECK_LIB(
+				[ws2_32], [main],
+				[AC_DEFINE([HAVE_SELECT], 1, [Define to 1 if you have ws2_32.dll]) LIBPGSQL="$LIBPGSQL -lws2_32"]
 			)
 		;;
 		sqlite)

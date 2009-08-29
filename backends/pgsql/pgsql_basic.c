@@ -16,8 +16,10 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef HAVE_SYS_SELECT_H
+#if defined( HAVE_SYS_SELECT_H )
 #include <sys/select.h>
+#elif defined( HAVE_WINSOCK2_H )
+#include <winsock2.h>
 #endif
 
 
