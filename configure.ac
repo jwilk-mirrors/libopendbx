@@ -4,7 +4,8 @@
 AC_PREREQ(2.57)
 AC_INIT([opendbx], [1.5.0pre], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AM_GNU_GETTEXT([external])
@@ -44,7 +45,7 @@ esac
 
 
 # Libtool settings
-AC_LIBTOOL_WIN32_DLL
+LT_INIT([win32-dll])
 
 
 # Checks for programs.
@@ -55,8 +56,6 @@ AC_PROG_CXX
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
-AC_PROG_RANLIB
 
 
 # Checks for typedefs, structures, and compiler characteristics.
