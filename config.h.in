@@ -128,7 +128,7 @@
 /* Define to 1 if you have the <mysql.h> header file. */
 #undef HAVE_MYSQL_H
 
-/* Define to 1 if you have mysql_next_result */
+/* Have mysql_next_result */
 #undef HAVE_MYSQL_NEXT_RESULT
 
 /* Define to 1 if you have OCILobWrite2 */
@@ -240,9 +240,6 @@
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
-
-/* Enable MySQL MinGW workaround */
-#undef MYSQL_MINGW_BUG
 
 /* Name of package */
 #undef PACKAGE

@@ -21,6 +21,11 @@
 
 
 #include "odbxdrv.h"
+
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
 #include <mysql.h>
 
 

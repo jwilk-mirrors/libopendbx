@@ -1,4 +1,4 @@
-2009-08-15 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-08-18 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Added odbx_field_isnull() and Result::fieldIsNull() functions to check for NULL values
 	* Feature: Fully compatible with Debian standard version 3.8.2.0
