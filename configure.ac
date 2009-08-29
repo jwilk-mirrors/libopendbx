@@ -1,10 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.4.2], [http://bugs.linuxnetworks.de/])
+AC_PREREQ(2.64)
+AC_INIT([opendbx],[1.4.2],[http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AM_GNU_GETTEXT([external])
@@ -39,15 +40,12 @@ case "$host" in
 	*-*-mingw* | *-*-pw32*)
 		LIBSUFFIX="-1.dll"
 		AC_DEFINE([WIN32], 1, [Using Win32 API functions])
-		AC_DEFINE([MYSQL_MINGW_BUG], 1, [Enable MySQL MinGW workaround])
-		AC_SUBST([MYSQL_MINGW_BUG])
-		MYSQL_MINGW_BUG="-D__CYGWIN__"
 	;;
 esac
 
 
 # Libtool settings
-AC_LIBTOOL_WIN32_DLL
+LT_INIT([win32-dll])
 
 
 # Checks for programs.
@@ -58,8 +56,6 @@ AC_PROG_CXX
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
-AC_PROG_RANLIB
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -142,7 +138,25 @@ do
 				AC_CHECK_LIB(
 					[gds32], [isc_attach_database],
 					[AC_DEFINE([HAVE_LIBGDS32], 1, [Have -lgds32]) LIBFIREBIRD="gds32"],
-					[AC_MSG_ERROR([firebird library (fbclient or gds32) not found])]
+					[odbx_saved_libs=${LIBS}; LIBS="-lfbclient_ms"
+					AC_LINK_IFELSE(
+						[
+#include <stddef.h>
+#include <ibase.h>
+int main() { isc_attach_database( NULL, 0, "", NULL, 0, NULL ); return 0; }
+						],
+						[
+							AC_MSG_RESULT([checking for isc_attach_database in -lfbclient_ms... yes])
+							AC_DEFINE([HAVE_LIBFBCLIENT], 1, [Have -lfbclient_ms])
+							LIBFIREBIRD="fbclient_ms"
+						],
+						[
+							AC_MSG_RESULT([checking for isc_attach_database in -lfbclient_ms... no])
+							AC_MSG_ERROR([firebird/interbase library (libfbclient, libfbclient_ms or gds32) not found])
+						]
+					)
+					LIBS=${odbx_saved_libs}
+					]
 				)
 			)
 		;;
@@ -157,8 +171,8 @@ do
 		;;
 		mysql)
 			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header (mysql.h) not found])], [
-#ifdef MYSQL_MINGW_BUG
-#define __CYGWIN__
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
 #endif
 			])
 			AC_SUBST([LIBMYSQL])
@@ -168,17 +182,46 @@ do
 				[AC_CHECK_LIB(
 					[mysqlclient], [mysql_init],
 					[AC_DEFINE([HAVE_LIBMYSQLCLIENT], 1, [Have -lmysqlclient]) LIBMYSQL="mysqlclient"],
-					[AC_CHECK_LIB(
-						[mysql], [mysql_init],
-						[AC_DEFINE([HAVE_LIBMYSQL], 1, [Have -lmysql]) LIBMYSQL="mysql"],
-						[AC_MSG_ERROR([mysql client library (libmysqlclient_r, libmysqlclient or libmysql) not found])]
-					)]
+					[odbx_saved_libs=${LIBS}; LIBS="-lmysql"
+					AC_LINK_IFELSE(
+						[
+#include <windows.h>
+#include <mysql.h>
+int main() { mysql_init( NULL ); return 0; }
+						],
+						[
+							AC_MSG_RESULT([checking for mysql_init in -lmysql... yes])
+							AC_DEFINE([HAVE_LIBMYSQL], 1, [Have -lmysql])
+							LIBMYSQL="mysql"
+						],
+						[
+							AC_MSG_RESULT([checking for mysql_init in -lmysql... no])
+							AC_MSG_ERROR([mysql client library (libmysqlclient_r, libmysqlclient or libmysql) not found])
+						]
+					)
+					LIBS=${odbx_saved_libs}
+					]
 				)]
 			)
-			AC_CHECK_LIB(
-				[$LIBMYSQL], [mysql_next_result],
-				[AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Define to 1 if you have mysql_next_result])]
+			odbx_saved_libs=${LIBS}; LIBS="-l$LIBMYSQL"
+			AC_LINK_IFELSE(
+				[
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+#include <stddef.h>
+#include <mysql.h>
+int main() { mysql_next_result( NULL ); return 0; }
+				],
+				[
+					AC_MSG_RESULT([checking for mysql_next_result in -l$LIBMYSQL... yes])
+					AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Have mysql_next_result])
+				],
+				[
+					AC_MSG_RESULT([checking for mysql_next_result in -l$LIBMYSQL... no])
+				]
 			)
+			LIBS=${odbx_saved_libs}
 			AC_CHECK_LIB([z], [compress], [LIBMYSQL="${LIBMYSQL} -lz"])
 		;;
 		odbc)

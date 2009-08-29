@@ -1,3 +1,8 @@
+2009-08-29 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Bugfix: Fixed lost statements in sqlite3 backend if an error or a timeout occured
+	* Bugfix: Fixed building dynamic firebird and mysql backend libraries on Windows platforms
+
 2009-08-07 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Added MySQL MinGW workaround for easy compilation of MySQL backend on Windows plattforms
