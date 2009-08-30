@@ -4,6 +4,7 @@
 	* Bugfix: Fixed building dynamic firebird and mysql backend libraries on Windows platforms
 	* Bugfix: Fixed pgsql backend support for timeouts in odbx_result() on Windows platforms
 	* Bugfix: Fixed UTF-8 encoding of data in oracle backend on Windows platforms
+	* Bugfix: Fixed odbc package in spec file
 
 2009-08-07 Norbert Sendetzky <norbert@linuxnetworks.de>
 
