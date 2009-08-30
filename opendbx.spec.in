@@ -279,13 +279,13 @@ Requires:    %{name} = %{version}-%{release}
 Requires:    unixODBC
 BuildRequires:    unixODBC-devel
 
-%description firebird
+%description odbc
 ODBC backend for the OpenDBX database abstraction library
 
-%description firebird -l de.UTF-8
+%description odbc -l de.UTF-8
 ODBC Unterstützung für die OpenDBX Datenbankbibliothek
 
-%description firebird -l pl.UTF-8
+%description odbc -l pl.UTF-8
 Backend bazy danych ODBC dla biblioteki opendbx.
 
 %endif
@@ -434,6 +434,9 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 
 
 %changelog
+* Sun Aug 30 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.3-1
+- Fixed odbc package in spec file
+
 * Sun Apr 19 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.1-1
 - Added opendbxplus.pc
 
