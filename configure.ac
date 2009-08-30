@@ -275,6 +275,10 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 				[$LIBORACLE], [OCILobWrite2],
 				[AC_DEFINE([HAVE_OCILOBWRITE2], 1, [Define to 1 if you have OCILobWrite2])]
 			)
+			AC_CHECK_LIB(
+				[kernel32], [main],
+				[AC_DEFINE([HAVE_SETENVIRONMENTVARIABLE], 1, [Define to 1 if you have SetEnvironmentVariable]) LIBORACLE="$LIBORACLE -lkernel32"]
+			)
 		;;
 		pgsql)
 			AC_CHECK_HEADERS([libpq-fe.h], , [AC_MSG_ERROR([postgresql header (libpq-fe.h) not found])])

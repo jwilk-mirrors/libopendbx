@@ -150,6 +150,9 @@
 /* Define to 1 if you have the `setenv' function. */
 #undef HAVE_SETENV
 
+/* Define to 1 if you have SetEnvironmentVariable */
+#undef HAVE_SETENVIRONMENTVARIABLE
+
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
 

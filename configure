@@ -19863,6 +19863,43 @@ fi
 
 fi
 
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lkernel32" >&5
+$as_echo_n "checking for main in -lkernel32... " >&6; }
+if test "${ac_cv_lib_kernel32_main+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lkernel32  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_kernel32_main=yes
+else
+  ac_cv_lib_kernel32_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_kernel32_main" >&5
+$as_echo "$ac_cv_lib_kernel32_main" >&6; }
+if test "x$ac_cv_lib_kernel32_main" = x""yes; then :
+
+$as_echo "#define HAVE_SETENVIRONMENTVARIABLE 1" >>confdefs.h
+ LIBORACLE="$LIBORACLE -lkernel32"
+
+fi
+
 			as_ac_Lib=`$as_echo "ac_cv_lib_$LIBORACLE''_OCILobWrite2" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OCILobWrite2 in -l$LIBORACLE" >&5
 $as_echo_n "checking for OCILobWrite2 in -l$LIBORACLE... " >&6; }
