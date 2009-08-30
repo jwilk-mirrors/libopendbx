@@ -19,6 +19,9 @@
 #include <string.h>
 #include <strings.h>
 
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 
 /*
@@ -83,8 +86,10 @@ static int oracle_odbx_init( odbx_t* handle, const char* host, const char* port 
 	conn->sess = NULL;
 	conn->mode = OCI_COMMIT_ON_SUCCESS;
 
-#ifdef HAVE_SETENV
+#if defined( HAVE_SETENV )
 	setenv( "NLS_LANG", ".AL32UTF8", 0 );
+#elif defined( HAVE_SETENVIRONMENTVARIABLE )
+	SetEnvironmentVariable( "NLS_LANG", ".AL32UTF8" );
 #endif
 
 	if( ( conn->errcode = OCIEnvCreate( &env, OCI_THREADED, NULL, NULL, NULL, NULL, 0, NULL ) ) != OCI_SUCCESS )
