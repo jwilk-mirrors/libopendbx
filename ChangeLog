@@ -1,9 +1,12 @@
-2009-08-30 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-09-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Bugfix: Fixed lost statements in sqlite3 backend if an error or a timeout occured
 	* Bugfix: Fixed building dynamic firebird and mysql backend libraries on Windows platforms
 	* Bugfix: Fixed pgsql backend support for timeouts in odbx_result() on Windows platforms
 	* Bugfix: Fixed UTF-8 encoding of data in oracle backend on Windows platforms
+	* Bugfix: Added workaround for RHEL and CentOS in spec file
+	* Bugfix: Fixed spec file for building on x86_64 platform
+	* Bugfix: Fixed used library for libopendbxplus
 	* Bugfix: Fixed odbc package in spec file
 
 2009-08-07 Norbert Sendetzky <norbert@linuxnetworks.de>

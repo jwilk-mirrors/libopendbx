@@ -112,8 +112,8 @@ AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
 if test "x${utils}" = xyes; then
 	AC_CHECK_HEADERS([readline/readline.h], , [AC_MSG_ERROR([libreadline header (readline.h) not found])])
 	AC_CHECK_HEADERS([readline/history.h], , [AC_MSG_ERROR([libreadline header (history.h) not found])])
-	AC_CHECK_LIB([readline], [readline], [AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])], [AC_MSG_ERROR([readline library (libreadline) not found])])
 	AC_CHECK_LIB([ncurses], [initscr], [AC_DEFINE([HAVE_LIBNCURSES], 1, [Have -lncurses])], [AC_MSG_ERROR([ncurses library (libncurses) not found])])
+	AC_CHECK_LIB([readline -lncurses], [readline], [AC_DEFINE([HAVE_LIBREADLINE], 1, [Have -lreadline])], [AC_MSG_ERROR([readline library (libreadline) not found])])
 fi
 
 
