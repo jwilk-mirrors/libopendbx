@@ -18,7 +18,6 @@ libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbxplus_la_LDFLAGS = -no-undefined -export-dynamic -version-info @APIPLUSVERSION@
 libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
 
-
 if VSYMLDFLAGS
 libopendbx_la_LDFLAGS += -Wl,--version-script,libopendbx.ver -Wl,-O1
 libopendbxplus_la_LDFLAGS += -Wl,--version-script,libopendbxplus.ver -Wl,-O1
@@ -28,5 +27,5 @@ if SINGLELIB
 libopendbx_la_CPPFLAGS += -DODBX_SINGLELIB
 libopendbx_la_LIBADD += @backendlibs@
 else
-libopendbx_la_CPPFLAGS += -DLIBPATH=\"$(pkglibdir)\" -DLIBPREFIX=\"@LIBPREFIX@\" -DLIBSUFFIX=\"@LIBSUFFIX@\"
+libopendbx_la_CPPFLAGS += -DLIBPATH=\"$(libdir)/opendbx\" -DLIBPREFIX=\"@LIBPREFIX@\" -DLIBSUFFIX=\"@LIBSUFFIX@\"
 endif

@@ -4,21 +4,21 @@
 #  By default OpenDBX is build with this backends:
 #  - mysql
 #  - pgsql
+#  - odbc
 #  - sqlite3
 #  to disable use --without [module-name]
 #
 #  Optional supported backends are:
-#  - sqlite
 #  - firebird
 #  - mssql
-#  - sybase
+#  - sqlite
 #  - oracle
-#  - odbc
+#  - sybase
 #  to enable use --with [module-name]
 #
 
 
-Name:    opendbx
+Name:    libopendbx1
 Version:    1.5.0pre
 Release:    1%{?dist}
 Summary:    Unified database layer with a clean and lightweight interface
@@ -26,10 +26,10 @@ Summary(de.UTF-8):    Bibliothek zum Zugriff auf Datenbanken über eine einheitl
 Summary(pl.UTF-8):    Rozszerzana biblioteka dostępu do baz danych
 Group:    Development/Libraries
 License:    LGPL
-URL:    http://www.linuxnetworks.de/opendbx/
-Source0:    http://www.linuxnetworks.de/opendbx/download/%{name}-%{version}.tar.gz
+URL:    http://www.linuxnetworks.de/opendbx/download/
+Source0:    libopendbx-%{version}.tar.gz
 BuildRoot:    %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:    gettext
+BuildRequires:    gcc-c++, gettext
 
 %description
 OpenDBX provides a clean and lightweight API for interfacing native relational
@@ -55,8 +55,8 @@ Summary:    Utility application for manipulating database content
 Summary(de.UTF-8):    Hilfswerkzeuge für die Manipulation von Datenbankinhalten
 Group:    Applications/Databases
 Requires:    %{name} >= %{version}
-Requires:    readline
-BuildRequires:    readline-devel
+Requires:    readline, ncurses
+BuildRequires:    gcc-c++, readline, readline-devel, ncurses, ncurses-devel
 
 %description utils
 Utility application for manipulating database content either interactively by
@@ -74,7 +74,7 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki OpenDBX
 Group:    Development/Libraries
 Requires:    %{name} = %{version}-%{release}
 Requires:    pkgconfig
-BuildRequires:    /usr/bin/db2x_xsltproc /usr/bin/db2x_manxml
+BuildRequires: doxygen
 
 %description devel
 Header files for the OpenDBX database abstraction library
@@ -268,7 +268,7 @@ Backend bazy danych sybase dla biblioteki opendbx.
 %endif
 
 
-%if %{?_with_odbc:1}%{!?_with_odbc:0}
+%if %{!?_without_odbc:1}%{?_without_odbc:0}
 
 %package odbc
 Summary:    ODBC backend for OpenDBX
@@ -298,34 +298,27 @@ Backend bazy danych ODBC dla biblioteki opendbx.
 
 
 %build
+CPPFLAGS="%{!?_without_mysql:-I/usr/include/mysql} %{!?_without_pgsql:-I/usr/include/pgsql}"; export CPPFLAGS;
+LDFLAGS="%{!?_without_mysql:-L/usr/lib/mysql -L/usr/lib64/mysql}"; export LDFLAGS;
 %configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
+    --disable-rpath \
     --disable-static \
     --with-backends="\
-%{!?_without_mysql:mysql }\
-%{!?_without_pgsql:pgsql }\
-%{!?_without_sqlite3:sqlite3 }\
-%{?_with_sqlite:sqlite }\
 %{?_with_firebird:firebird }\
 %{?_with_mssql:mssql }\
+%{!?_without_mysql:mysql }\
+%{!?_without_odbc:odbc }\
 %{?_with_oracle:oracle }\
+%{!?_without_pgsql:pgsql }\
+%{?_with_sqlite:sqlite }\
+%{!?_without_sqlite3:sqlite3 }\
 %{?_with_sybase:sybase }\
-%{?_with_odbc:odbc }\
-" \
-%{!?_without_mysql:CPPFLAGS="-I/usr/include/mysql"} \
-%{!?_without_mysql:LDFLAGS="-L/usr/lib/mysql"} \
-CFLAGS="%{optflags}"
+" || cat config.log
 
 %{__make} %{?_smp_mflags}
 
 
 %install
-if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{__make} DESTDIR=%{buildroot} install
 rm %{buildroot}%{_libdir}/opendbx/lib*.*a
 rm %{buildroot}%{_libdir}/libopendbx.*a
@@ -355,19 +348,21 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %files utils -f %{name}-utils.lang
 %defattr(-,root,root,-)
 %{_bindir}/odbx-sql
-%{_mandir}/man1/*
+%{_datadir}/%{name}
 %{_datadir}/%{name}/keywords
+#%{_mandir}/man1/*
 
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/odbx.h
+%{_includedir}/opendbx
 %{_includedir}/opendbx/api*
 %{_libdir}/libopendbx.so
 %{_libdir}/libopendbxplus.so
 %{_libdir}/pkgconfig/opendbx.pc
 %{_libdir}/pkgconfig/opendbxplus.pc
-%{_mandir}/man3/*
+#%{_mandir}/man3/*
 
 
 %if %{!?_without_mysql:1}%{?_without_mysql:0}
@@ -434,8 +429,10 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 
 
 %changelog
-* Sun Aug 30 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.3-1
+* Wed Sep 02 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.3-1
+- Added workarounds for RHEL, CentOS and Mandriva regarding readline
 - Fixed odbc package in spec file
+- Fixed builds on x86_64 platforms
 
 * Sun Apr 19 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.1-1
 - Added opendbxplus.pc

@@ -18,7 +18,7 @@
 #
 
 
-Name:    @PACKAGE@
+Name:    @PACKAGE@1
 Version:    @VERSION@
 Release:    1%{?dist}
 Summary:    Unified database layer with a clean and lightweight interface
@@ -27,7 +27,7 @@ Summary(pl.UTF-8):    Rozszerzana biblioteka dostępu do baz danych
 Group:    Development/Libraries
 License:    LGPL
 URL:    http://www.linuxnetworks.de/opendbx/download/
-Source0:    %{name}-%{version}.tar.gz
+Source0:    @PACKAGE@-%{version}.tar.gz
 BuildRoot:    %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:    gcc-c++, gettext
 
@@ -319,7 +319,6 @@ LDFLAGS="%{!?_without_mysql:-L/usr/lib/mysql -L/usr/lib64/mysql}"; export LDFLAG
 
 
 %install
-if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{__make} DESTDIR=%{buildroot} install
 rm %{buildroot}%{_libdir}/opendbx/lib*.*a
 rm %{buildroot}%{_libdir}/libopendbx.*a
