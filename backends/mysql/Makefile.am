@@ -4,7 +4,8 @@ if SINGLELIB
 noinst_LTLIBRARIES = libmysqlbackend.la
 libmysqlbackend_la_CPPFLAGS = -DODBX_SINGLELIB
 else
-pkglib_LTLIBRARIES = libmysqlbackend.la
+opendbxlibdir = $(libdir)/opendbx
+opendbxlib_LTLIBRARIES = libmysqlbackend.la
 libmysqlbackend_la_CPPFLAGS =
 libmysqlbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif

@@ -4,7 +4,8 @@ if SINGLELIB
 noinst_LTLIBRARIES = libfirebirdbackend.la
 libfirebirdbackend_la_CPPFLAGS = -DODBX_SINGLELIB
 else
-pkglib_LTLIBRARIES = libfirebirdbackend.la
+opendbxlibdir = $(libdir)/opendbx
+opendbxlib_LTLIBRARIES = libfirebirdbackend.la
 libfirebirdbackend_la_CPPFLAGS =
 libfirebirdbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif

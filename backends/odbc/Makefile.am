@@ -4,7 +4,8 @@ if SINGLELIB
 noinst_LTLIBRARIES = libodbcbackend.la
 libodbcbackend_la_CPPFLAGS = -DODBX_SINGLELIB
 else
-pkglib_LTLIBRARIES = libodbcbackend.la
+opendbxlibdir = $(libdir)/opendbx
+opendbxlib_LTLIBRARIES = libodbcbackend.la
 libodbcbackend_la_CPPFLAGS =
 libodbcbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif

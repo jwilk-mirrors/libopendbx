@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([opendbx], [1.5.0pre], [http://bugs.linuxnetworks.de/])
+AC_INIT([libopendbx], [1.5.0pre], [http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
@@ -376,7 +376,7 @@ AC_CONFIG_FILES([
 	utils/Makefile
 	utils/doc/Makefile
 	utils/po/Makefile.in
-	opendbx.spec
+	libopendbx.spec
 	opendbx.pc
 	opendbxplus.pc
 ])

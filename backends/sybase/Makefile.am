@@ -4,7 +4,8 @@ if SINGLELIB
 noinst_LTLIBRARIES = libsybasebackend.la
 libsybasebackend_la_CPPFLAGS = -DODBX_SINGLELIB
 else
-pkglib_LTLIBRARIES = libsybasebackend.la
+opendbxlibdir = $(libdir)/opendbx
+opendbxlib_LTLIBRARIES = libsybasebackend.la
 libsybasebackend_la_CPPFLAGS =
 libsybasebackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif

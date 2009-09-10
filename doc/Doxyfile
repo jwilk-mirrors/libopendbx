@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = opendbx
+PROJECT_NAME           = libopendbx
 PROJECT_NUMBER         = 1.5.0pre
 OUTPUT_DIRECTORY       = ./
 CREATE_SUBDIRS         = NO

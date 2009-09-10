@@ -4,7 +4,8 @@ if SINGLELIB
 noinst_LTLIBRARIES = libpgsqlbackend.la
 libpgsqlbackend_la_CPPFLAGS = -DODBX_SINGLELIB
 else
-pkglib_LTLIBRARIES = libpgsqlbackend.la
+opendbxlibdir = $(libdir)/opendbx
+opendbxlib_LTLIBRARIES = libpgsqlbackend.la
 libpgsqlbackend_la_CPPFLAGS =
 libpgsqlbackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 endif

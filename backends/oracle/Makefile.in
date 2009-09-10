@@ -72,8 +72,8 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(pkglibdir)"
-LTLIBRARIES = $(noinst_LTLIBRARIES) $(pkglib_LTLIBRARIES)
+am__installdirs = "$(DESTDIR)$(opendbxlibdir)"
+LTLIBRARIES = $(noinst_LTLIBRARIES) $(opendbxlib_LTLIBRARIES)
 liboraclebackend_la_DEPENDENCIES =
 am_liboraclebackend_la_OBJECTS = liboraclebackend_la-oraclebackend.lo \
 	liboraclebackend_la-oracle_basic.lo \
@@ -82,7 +82,8 @@ liboraclebackend_la_OBJECTS = $(am_liboraclebackend_la_OBJECTS)
 liboraclebackend_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(liboraclebackend_la_LDFLAGS) $(LDFLAGS) -o $@
-@SINGLELIB_FALSE@am_liboraclebackend_la_rpath = -rpath $(pkglibdir)
+@SINGLELIB_FALSE@am_liboraclebackend_la_rpath = -rpath \
+@SINGLELIB_FALSE@	$(opendbxlibdir)
 @SINGLELIB_TRUE@am_liboraclebackend_la_rpath =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -265,7 +266,8 @@ AM_CPPFLAGS = -I../../lib
 @SINGLELIB_FALSE@	-DAPINUMBER=@APINUMBER@ $(AM_CPPFLAGS)
 @SINGLELIB_TRUE@liboraclebackend_la_CPPFLAGS = -DODBX_SINGLELIB \
 @SINGLELIB_TRUE@	-DAPINUMBER=@APINUMBER@ $(AM_CPPFLAGS)
-@SINGLELIB_FALSE@pkglib_LTLIBRARIES = liboraclebackend.la
+@SINGLELIB_FALSE@opendbxlibdir = $(libdir)/opendbx
+@SINGLELIB_FALSE@opendbxlib_LTLIBRARIES = liboraclebackend.la
 @SINGLELIB_FALSE@liboraclebackend_la_LDFLAGS = -no-undefined -module -version-info @APIVERSION@
 liboraclebackend_la_SOURCES = oraclebackend.h oraclebackend.c oracle_basic.h oracle_basic.c oracle_lo.h oracle_lo.c
 liboraclebackend_la_LIBADD = -l@LIBORACLE@
@@ -312,32 +314,32 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-install-pkglibLTLIBRARIES: $(pkglib_LTLIBRARIES)
+install-opendbxlibLTLIBRARIES: $(opendbxlib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkglibdir)" || $(MKDIR_P) "$(DESTDIR)$(pkglibdir)"
-	@list='$(pkglib_LTLIBRARIES)'; test -n "$(pkglibdir)" || list=; \
+	test -z "$(opendbxlibdir)" || $(MKDIR_P) "$(DESTDIR)$(opendbxlibdir)"
+	@list='$(opendbxlib_LTLIBRARIES)'; test -n "$(opendbxlibdir)" || list=; \
 	list2=; for p in $$list; do \
 	  if test -f $$p; then \
 	    list2="$$list2 $$p"; \
 	  else :; fi; \
 	done; \
 	test -z "$$list2" || { \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(pkglibdir)'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(pkglibdir)"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(opendbxlibdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(opendbxlibdir)"; \
 	}
 
-uninstall-pkglibLTLIBRARIES:
+uninstall-opendbxlibLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkglib_LTLIBRARIES)'; test -n "$(pkglibdir)" || list=; \
+	@list='$(opendbxlib_LTLIBRARIES)'; test -n "$(opendbxlibdir)" || list=; \
 	for p in $$list; do \
 	  $(am__strip_dir) \
-	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(pkglibdir)/$$f'"; \
-	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(pkglibdir)/$$f"; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(opendbxlibdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(opendbxlibdir)/$$f"; \
 	done
 
-clean-pkglibLTLIBRARIES:
-	-test -z "$(pkglib_LTLIBRARIES)" || rm -f $(pkglib_LTLIBRARIES)
-	@list='$(pkglib_LTLIBRARIES)'; for p in $$list; do \
+clean-opendbxlibLTLIBRARIES:
+	-test -z "$(opendbxlib_LTLIBRARIES)" || rm -f $(opendbxlib_LTLIBRARIES)
+	@list='$(opendbxlib_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
@@ -490,7 +492,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(pkglibdir)"; do \
+	for dir in "$(DESTDIR)$(opendbxlibdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -521,7 +523,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
-	clean-pkglibLTLIBRARIES mostlyclean-am
+	clean-opendbxlibLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -541,13 +543,13 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-opendbxlibLTLIBRARIES
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-pkglibLTLIBRARIES
+install-exec-am:
 
 install-html: install-html-am
 
@@ -587,24 +589,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-pkglibLTLIBRARIES
+uninstall-am: uninstall-opendbxlibLTLIBRARIES
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES clean-pkglibLTLIBRARIES \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-pkglibLTLIBRARIES install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-pkglibLTLIBRARIES
+	clean-libtool clean-noinstLTLIBRARIES \
+	clean-opendbxlibLTLIBRARIES ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man \
+	install-opendbxlibLTLIBRARIES install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-opendbxlibLTLIBRARIES
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

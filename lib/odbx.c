@@ -48,7 +48,7 @@ int odbx_init( odbx_t** handle, const char* backend, const char* host, const cha
 	int err;
 
 #ifdef ENABLE_NLS
-	if( bindtextdomain( "opendbx1", LOCALEDIR ) == NULL )
+	if( bindtextdomain( "libopendbx1", LOCALEDIR ) == NULL )
 	{
 		return -ODBX_ERR_NOMEM;
 	}
