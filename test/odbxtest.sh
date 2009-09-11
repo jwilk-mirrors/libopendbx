@@ -12,7 +12,7 @@ fi
 ODBXAPP="./odbxtest ./odbxplustest"
 
 # Import database parameter
-. odbxtest.site
+. ./odbxtest.site
 
 
 # compare results
