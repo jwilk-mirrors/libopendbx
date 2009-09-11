@@ -319,12 +319,13 @@ LDFLAGS="%{!?_without_mysql:-L/usr/lib/mysql -L/usr/lib64/mysql}"; export LDFLAG
 
 
 %install
+if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
+mkdir %{buildroot}
 %{__make} DESTDIR=%{buildroot} install
 rm %{buildroot}%{_libdir}/opendbx/lib*.*a
-rm %{buildroot}%{_libdir}/libopendbx.*a
-rm %{buildroot}%{_libdir}/libopendbxplus.*a
+rm %{buildroot}%{_libdir}/lib*.*a
 %find_lang %{name}
-%find_lang %{name}-utils
+%find_lang opendbx-utils
 
 
 %clean
@@ -342,14 +343,15 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{_libdir}/opendbx
 %{_libdir}/libopendbx.so.*
 %{_libdir}/libopendbxplus.so.*
+%{_sysconfdir}/ld.so.conf.d/%{name}.conf
 %doc AUTHORS COPYING ChangeLog NEWS README TODO
 
 
-%files utils -f %{name}-utils.lang
+%files utils -f opendbx-utils.lang
 %defattr(-,root,root,-)
 %{_bindir}/odbx-sql
-%{_datadir}/%{name}
-%{_datadir}/%{name}/keywords
+%{_datadir}/opendbx
+%{_datadir}/opendbx/keywords
 #%{_mandir}/man1/*
 
 
@@ -421,7 +423,7 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %endif
 
 
-%if %{?_with_odbc:1}%{!?_with_odbc:0}
+%if %{!?_without_odbc:1}%{?_without_odbc:0}
 %files odbc
 %defattr(-,root,root,-)
 %{_libdir}/opendbx/libodbcbackend.so*

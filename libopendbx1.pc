@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenDBX
+Description: Lightweight database abstraction layer
+Version: 1.5.0pre
+Libs: -L${libdir} -lopendbx
+Cflags: -I${includedir}
+

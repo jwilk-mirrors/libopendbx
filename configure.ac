@@ -377,7 +377,7 @@ AC_CONFIG_FILES([
 	utils/doc/Makefile
 	utils/po/Makefile.in
 	libopendbx.spec
-	opendbx.pc
-	opendbxplus.pc
+	libopendbx1.pc
+	libopendbxplus1.pc
 ])
 AC_OUTPUT

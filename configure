@@ -20524,7 +20524,7 @@ done
 
 
 # Generate Makefiles
-ac_config_files="$ac_config_files Makefile backends/Makefile backends/firebird/Makefile backends/mssql/Makefile backends/mysql/Makefile backends/odbc/Makefile backends/oracle/Makefile backends/pgsql/Makefile backends/sqlite/Makefile backends/sqlite3/Makefile backends/sybase/Makefile doc/Makefile doc/Doxyfile lib/Makefile po/Makefile.in test/Makefile utils/Makefile utils/doc/Makefile utils/po/Makefile.in libopendbx.spec opendbx.pc opendbxplus.pc"
+ac_config_files="$ac_config_files Makefile backends/Makefile backends/firebird/Makefile backends/mssql/Makefile backends/mysql/Makefile backends/odbc/Makefile backends/oracle/Makefile backends/pgsql/Makefile backends/sqlite/Makefile backends/sqlite3/Makefile backends/sybase/Makefile doc/Makefile doc/Doxyfile lib/Makefile po/Makefile.in test/Makefile utils/Makefile utils/doc/Makefile utils/po/Makefile.in libopendbx.spec libopendbx1.pc libopendbxplus1.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -21651,8 +21651,8 @@ do
     "utils/doc/Makefile") CONFIG_FILES="$CONFIG_FILES utils/doc/Makefile" ;;
     "utils/po/Makefile.in") CONFIG_FILES="$CONFIG_FILES utils/po/Makefile.in" ;;
     "libopendbx.spec") CONFIG_FILES="$CONFIG_FILES libopendbx.spec" ;;
-    "opendbx.pc") CONFIG_FILES="$CONFIG_FILES opendbx.pc" ;;
-    "opendbxplus.pc") CONFIG_FILES="$CONFIG_FILES opendbxplus.pc" ;;
+    "libopendbx1.pc") CONFIG_FILES="$CONFIG_FILES libopendbx1.pc" ;;
+    "libopendbxplus1.pc") CONFIG_FILES="$CONFIG_FILES libopendbxplus1.pc" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
