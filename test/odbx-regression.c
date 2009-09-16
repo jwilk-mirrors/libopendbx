@@ -50,9 +50,9 @@ void help( char* name )
 int main( int argc, char* argv[] )
 {
 	int i, j, k, err = 0;
+	odbx_t* handle[CONNMAX];
 	struct odbxstmt** stmts = NULL;
 	struct odbxstmt* queries = NULL;
-	odbx_t* handle[2] = { NULL, NULL };
 	char *backend, *host, *port, *db, *user, *pass;
 	int param, verbose = 0, encrypt = 0, runs = 1;
 
@@ -135,8 +135,10 @@ int main( int argc, char* argv[] )
 	{
 		if( verbose ) { fprintf( stdout, "\n%d. Run:\n", j+1 ); }
 
-		for( k = 0; k < 2; k++ )
+		for( k = 0; k < CONNMAX; k++ )
 		{
+			handle[k] = NULL;
+
 			if( verbose ) { fprintf( stdout, "  odbx_init()\n" ); }
 			if( ( err = odbx_init( &(handle[k]), backend, host, port ) ) < 0 )
 			{
@@ -229,7 +231,7 @@ int main( int argc, char* argv[] )
 			}
 		}
 
-		for( k = 0; k < 2; k++ )
+		for( k = 0; k < CONNMAX; k++ )
 		{
 			if( verbose ) { fprintf( stdout, "  odbx_unbind()\n" ); }
 			if( ( err = odbx_unbind( handle[k] ) ) < 0 )
@@ -240,7 +242,7 @@ int main( int argc, char* argv[] )
 
 ERROR:
 
-		for( k = 0; k < 2; k++ )
+		for( k = 0; k < CONNMAX; k++ )
 		{
 			if( verbose && handle[k] ) { fprintf( stdout, "  odbx_finish()\n" ); }
 			if( handle[k] && ( err = odbx_finish( handle[k] ) ) < 0 )
