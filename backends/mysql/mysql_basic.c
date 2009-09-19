@@ -44,6 +44,10 @@ struct odbx_basic_ops mysql_odbx_basic_ops = {
 
 
 
+static int mysql_counter = 0;
+
+
+
 /*
  *  ODBX basic operations
  *  MySQL style
@@ -76,6 +80,8 @@ static int mysql_odbx_init( odbx_t* handle, const char* host, const char* port )
 
 		return -ODBX_ERR_NOMEM;
 	}
+
+	mysql_counter++;
 
 	if( ( handle->aux = malloc( sizeof( struct myconn ) ) ) == NULL )
 	{
@@ -211,6 +217,12 @@ static int mysql_odbx_finish( odbx_t* handle )
 	{
 		free( handle->generic );
 		handle->generic = NULL;
+	}
+
+	if( --mysql_counter <= 0 )
+	{
+		mysql_thread_end();
+		mysql_server_end();
 	}
 
 	return ODBX_ERR_SUCCESS;
