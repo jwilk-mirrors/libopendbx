@@ -93,6 +93,9 @@ static int mysql_odbx_init( odbx_t* handle, const char* host, const char* port )
 	aux->flags = 0;
 	aux->tls = 0;
 
+	aux->flags |= CLIENT_REMEMBER_OPTIONS;   // remember options between mysql_real_connect() calls
+	aux->flags |= CLIENT_FOUND_ROWS;   // return the number of found rows, not the number of changed rows
+
 	if( host != NULL )
 	{
 		size_t hlen = strlen( host ) + 1;
@@ -132,14 +135,19 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_BACKEND;
 	}
 
+	char *host = NULL, *socket = NULL;
+
+	if( param->host != NULL && param->host[0] != '/' ) { host = param->host; }
+	else { socket = param->host; }
+
 	switch( param->tls )
 	{
 		case ODBX_TLS_TRY:
 
 			param->flags |= CLIENT_SSL;
 
-			if( mysql_real_connect( (MYSQL*) handle->generic, param->host,
-				who, cred, database, param->port, NULL, param->flags ) != NULL )
+			if( mysql_real_connect( (MYSQL*) handle->generic, host,
+				who, cred, database, param->port, socket, param->flags ) != NULL )
 			{
 				goto SUCCESS;
 			}
@@ -156,11 +164,6 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 
 			param->flags &= ~CLIENT_SSL;
 	}
-
-	char *host = NULL, *socket = NULL;
-
-	if( param->host != NULL && param->host[0] != '/' ) { host = param->host; }
-	else { socket = param->host; }
 
 	if( mysql_real_connect( (MYSQL*) handle->generic, host,
 		who, cred, database, param->port, socket, param->flags ) == NULL )
