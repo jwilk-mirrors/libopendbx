@@ -96,6 +96,9 @@ static int mysql_odbx_init( odbx_t* handle, const char* host, const char* port )
 	aux->flags = 0;
 	aux->tls = 0;
 
+	aux->flags |= CLIENT_REMEMBER_OPTIONS;   // remember options between mysql_real_connect() calls
+	aux->flags |= CLIENT_FOUND_ROWS;   // return the number of found rows, not the number of changed rows
+
 	if( host != NULL )
 	{
 		size_t hlen = strlen( host ) + 1;
@@ -137,11 +140,21 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_BACKEND;
 	}
 
+	char *host = NULL, *socket = NULL;
+
+	if( param->host != NULL && param->host[0] != '/' ) { host = param->host; }
+	else { socket = param->host; }
+
 	switch( param->tls )
 	{
 		case ODBX_TLS_TRY:
 
 			param->flags |= CLIENT_SSL;
+
+			DEBUGLOG(
+				handle->log.write( &(handle->log), 3,  "-> mysql_real_connect( %p, \"%s\", \"%s\", \"%s\", \"%s\", %d, \"%s\", %#x ) with TLS",
+				handle->generic, host, who, cred, database, param->port, socket, param->flags );
+			)
 
 			if( mysql_real_connect( (MYSQL*) handle->generic, param->host,
 				who, cred, database, param->port, NULL, param->flags ) != NULL )
@@ -162,10 +175,10 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 			param->flags &= ~CLIENT_SSL;
 	}
 
-	char *host = NULL, *socket = NULL;
-
-	if( param->host != NULL && param->host[0] != '/' ) { host = param->host; }
-	else { socket = param->host; }
+	DEBUGLOG(
+		handle->log.write( &(handle->log), 3,  "-> mysql_real_connect( %p, \"%s\", \"%s\", \"%s\", \"%s\", %d, \"%s\", %#x ) without TLS",
+		handle->generic, host, who, cred, database, param->port, socket, param->flags );
+	)
 
 	if( mysql_real_connect( (MYSQL*) handle->generic, host,
 		who, cred, database, param->port, socket, param->flags ) == NULL )
@@ -215,9 +228,6 @@ static int mysql_odbx_finish( odbx_t* handle )
 
 	if( handle->generic != NULL )
 	{
-		mysql_thread_end();
-		mysql_server_end();   /** @todo Might crash if more than one connection is used */
-
 		free( handle->generic );
 		handle->generic = NULL;
 	}
