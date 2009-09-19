@@ -80,6 +80,11 @@ static int sqlite3_odbx_init( odbx_t* handle, const char* host, const char* port
 	aux->res = NULL;
 	aux->path = NULL;
 	aux->pathlen = 0;
+	aux->stmt = NULL;
+	aux->tail = NULL;
+	aux->length = 0;
+	aux->err = SQLITE_OK;
+
 	handle->generic = NULL;
 
 	if( host != NULL )
