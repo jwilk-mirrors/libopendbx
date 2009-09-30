@@ -141,6 +141,7 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_BACKEND;
 	}
 
+	int err;
 	char *host = NULL, *socket = NULL;
 
 	if( param->host != NULL && param->host[0] != '/' ) { host = param->host; }
@@ -179,7 +180,12 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 
 SUCCESS:
 
-	return mysql_priv_setmode( handle, param->mode );
+	if( ( err = mysql_priv_setmode( handle, param->mode ) ) != ODBX_ERR_SUCCESS )
+	{
+		mysql_close( (MYSQL*) handle->generic );
+	}
+
+	return err;
 }
 
 
@@ -674,6 +680,9 @@ static int mysql_priv_setmode( odbx_t* handle, const char* mode )
 
 	if( mode != NULL )
 	{
+		// For MySQL < 4.1 when explicitly set
+		if( strlen( mode ) == 0 ) { return ODBX_ERR_SUCCESS; }
+
 		modelen = strlen( mode );
 		lmode = (char*) mode;
 	}
