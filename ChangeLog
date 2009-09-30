@@ -1,3 +1,13 @@
+2009-09-30 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Change: Changed mysql_real_connect options so odbx_rows_affected() is in line with other backends
+	* Change: Don't set sql_mode in mysql backend if mode is an empty string (for MySQL < 4.1)
+	* Bugfix: Fixed segmentation fault in mysql backend in threaded environments
+	* Bugfix: Fixed mysql_real_connect options to keep options on reconnect
+	* Bugfix: Fixed uninitialized variables in sqlite3 backend which may lead to a segfault
+	* Bugfix: Cleanup connection in mysql backend if setting mode failed during odbx_bind()
+	* Bugfix: Fixed several problems in RPM spec file
+
 2009-09-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Bugfix: Fixed lost statements in sqlite3 backend if an error or a timeout occured

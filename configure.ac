@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.64)
-AC_INIT([opendbx],[1.4.3],[http://bugs.linuxnetworks.de/])
+AC_INIT([opendbx],[1.4.4],[http://bugs.linuxnetworks.de/])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
