@@ -160,7 +160,7 @@ static int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 	len = plen = snprintf( lib, ODBX_PATHSIZE, LIBPATH );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, "/" );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBPREFIX );
-	len += snprintf( lib + len, ODBX_PATHSIZE - len, backend );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "%s", backend );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend" );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBSUFFIX );
 
@@ -247,7 +247,7 @@ static int _odbx_lib_open( struct odbx_t* handle, const char* backend )
 	len = plen = snprintf( lib, ODBX_PATHSIZE, PACKAGE );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, "\\" );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBPREFIX );
-	len += snprintf( lib + len, ODBX_PATHSIZE - len, backend );
+	len += snprintf( lib + len, ODBX_PATHSIZE - len, "%s", backend );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, "backend" );
 	len += snprintf( lib + len, ODBX_PATHSIZE - len, LIBSUFFIX );
 
