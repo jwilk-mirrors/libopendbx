@@ -766,7 +766,7 @@ namespace OpenDBX
 		 * Each statement object uses a reference counter to remember if the
 		 * internal variables are shared with other objects. If this isn't the
 		 * case or if this object is the last one referencing the variables,
-		 * the object is cleanup up and the allocated memory freed.
+		 * the object is cleaned up and the allocated memory freed.
 		 */
 		~Stmt() throw();
 
