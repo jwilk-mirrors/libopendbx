@@ -1,3 +1,7 @@
+2009-11-28 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Bugfix: Fixed wrong error severity in mssql backend when connection couldn't be established
+
 2009-09-30 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Change: Changed mysql_real_connect options so odbx_rows_affected() is in line with other backends
