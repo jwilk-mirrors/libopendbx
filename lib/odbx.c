@@ -345,6 +345,10 @@ int odbx_result( odbx_t* handle, odbx_result_t** result, struct timeval* timeout
 		{
 			if( *result ) { (*result)->handle = handle; }
 		}
+		else
+		{
+			*result = NULL;
+		}
 
 		return err;
 	}
