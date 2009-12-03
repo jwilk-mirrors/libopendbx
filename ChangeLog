@@ -1,5 +1,6 @@
 2009-11-28 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Bugfix: Removed ODBC connection attributes which don't work with Windows ODBC
 	* Bugfix: Fixed wrong error severity in mssql backend when connection couldn't be established
 
 2009-09-30 Norbert Sendetzky <norbert@linuxnetworks.de>
