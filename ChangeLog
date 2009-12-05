@@ -1,10 +1,13 @@
-2009-08-18 Norbert Sendetzky <norbert@linuxnetworks.de>
+2009-12-05 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Feature: Added odbx_field_isnull() and Result::fieldIsNull() functions to check for NULL values
 	* Feature: Fully compatible with Debian standard version 3.8.2.0
 	* Feature: Added ability to version symbols with ./configure --enable-versioned-symbols
 	* Feature: Added configurable logging possibility for debug output
 	* Change: Moved library handling functions to header file and declared them static
+	* Bugfix: Removed ODBC connection attributes which don't work with Windows ODBC
+	* Bugfix: Fixed wrong error severity in mssql backend when connection couldn't be established
+	* Bugfix: Fixed wild pointer in oracle backend that my lead to problems when error handling isn't implemented correctly
 
 2009-06-02 Norbert Sendetzky <norbert@linuxnetworks.de>
 

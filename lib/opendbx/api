@@ -779,7 +779,7 @@ namespace OpenDBX
 		 * Each statement object uses a reference counter to remember if the
 		 * internal variables are shared with other objects. If this isn't the
 		 * case or if this object is the last one referencing the variables,
-		 * the object is cleanup up and the allocated memory freed.
+		 * the object is cleaned up and the allocated memory freed.
 		 */
 		~Stmt() throw();
 
@@ -1281,8 +1281,8 @@ namespace OpenDBX
 		 * aren't stored in the database column so only the original string will
 		 * be written to the disk.
 		 *
-		 * A C++ reference of the third parameter containing the escaped string
-		 * afterwards is also returned by this method to providing the possibility
+		 * A C++ reference of the second parameter containing the escaped string
+		 * afterwards is also returned by this method too, providing the possibility
 		 * to write more elegant code.
 		 *
 		 * @param from Input string with which may contain dangerous characters

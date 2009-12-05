@@ -117,12 +117,13 @@ static int odbc_odbx_bind( odbx_t* handle, const char* database, const char* who
 		return -ODBX_ERR_BACKEND;
 	}
 
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_DEFAULT_TXN_ISOLATION, (SQLPOINTER) SQL_TXN_READ_COMMITTED, SQL_IS_UINTEGER );
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_TXN_ISOLATION, (SQLPOINTER) SQL_TXN_READ_COMMITTED, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
 	}
 
+/* Doesn't work with Windows ODBC
 	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_ASYNC_ENABLE, (SQLPOINTER) SQL_ASYNC_ENABLE_ON, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
@@ -134,7 +135,7 @@ static int odbc_odbx_bind( odbx_t* handle, const char* database, const char* who
 	{
 		return -ODBX_ERR_BACKEND;
 	}
-
+*/
 	gen->err = SQLConnect( gen->conn, (SQLCHAR*) gen->server, strlen( gen->server ), (SQLCHAR*) who, wlen, (SQLCHAR*) cred, clen );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
