@@ -163,8 +163,8 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 				handle->generic, host, who, cred, database, param->port, socket, param->flags );
 			)
 
-			if( mysql_real_connect( (MYSQL*) handle->generic, param->host,
-				who, cred, database, param->port, NULL, param->flags ) != NULL )
+			if( mysql_real_connect( (MYSQL*) handle->generic, host,
+				who, cred, database, param->port, socket, param->flags ) != NULL )
 			{
 				goto SUCCESS;
 			}
