@@ -59,7 +59,7 @@ int main( int argc, char* argv[] )
 
 	backend = host = port = db = user = pass = NULL;
 
-	while( ( param = getopt( argc, argv, "b:h:p:d:u:w:e:r:v" ) ) != -1 )
+	while( ( param = getopt( argc, argv, "b:h:p:d:u:w:r:ev" ) ) != -1 )
 	{
 		switch( param )
 		{
@@ -85,7 +85,7 @@ int main( int argc, char* argv[] )
 				verbose = 1;
 				break;
 			case 'e':
-				if( optarg != NULL ) { encrypt = (int) strtol( optarg, NULL, 10 ); }
+				encrypt = 1;
 				break;
 			case 'r':
 				if( optarg != NULL ) { runs = (int) strtol( optarg, NULL, 10 ); }
@@ -134,6 +134,46 @@ int main( int argc, char* argv[] )
 	for( j = 0; j < runs; j++ )
 	{
 		if( verbose ) { fprintf( stdout, "\n%d. Run:\n", j+1 ); }
+
+
+		odbx_t* handle2[10];
+
+		for( k = 0; k < 10; k++ )
+		{
+			handle2[k] = NULL;
+
+			if( verbose ) { fprintf( stdout, "  odbx_init()\n" ); }
+			if( ( err = odbx_init( &(handle2[k]), backend, host, port ) ) < 0 )
+			{
+				fprintf( stderr, "Error in odbx_init(): %s\n", odbx_error( handle2[k], err ) );
+				return err;
+			}
+		}
+
+		for( k = 0; k < 10; k++ )
+		{
+			if( verbose ) { fprintf( stdout, "  odbx_bind()\n" ); }
+			if( ( err = odbx_bind( handle2[k], db, user, pass, ODBX_BIND_SIMPLE ) ) < 0 )
+			{
+				fprintf( stderr, "Error in odbx_bind(): %s\n", odbx_error( handle2[k], err ) );
+				return err;
+			}
+
+			if( verbose ) { fprintf( stdout, "  odbx_unbind()\n" ); }
+			if( ( err = odbx_unbind( handle2[k] ) ) < 0 )
+			{
+				fprintf( stderr, "Error in odbx_unbind(): %s\n", odbx_error( handle2[k], err ) );
+				return err;
+			}
+
+			if( verbose ) { fprintf( stdout, "  odbx_finish()\n" ); }
+			if( handle[k] && ( err = odbx_finish( handle2[k] ) ) < 0 )
+			{
+				fprintf( stderr, "Error in odbx_finish(): %s\n", odbx_error( handle2[k], err ) );
+				return err;
+			}
+		}
+
 
 		for( k = 0; k < CONNMAX; k++ )
 		{
