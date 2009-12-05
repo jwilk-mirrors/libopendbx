@@ -485,8 +485,6 @@ static int mysql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 	if( ( res->aux = malloc( sizeof( struct myres ) ) ) == NULL )
 	{
 		free( res );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -502,11 +500,7 @@ static int mysql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		if( ( res->generic = (void*) mysql_store_result( conn ) ) == NULL )
 		{
 			free( res->aux );
-			res->aux = NULL;
-
 			free( res );
-			*result = NULL;
-
 			return -ODBX_ERR_BACKEND;
 		}
 	}
@@ -515,11 +509,7 @@ static int mysql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 		if( ( res->generic = (void*) mysql_use_result( conn ) ) == NULL )
 		{
 			free( res->aux );
-			res->aux = NULL;
-
 			free( res );
-			*result = NULL;
-
 			return -ODBX_ERR_BACKEND;
 		}
 	}

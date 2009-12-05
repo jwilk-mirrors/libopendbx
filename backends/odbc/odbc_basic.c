@@ -500,8 +500,6 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -511,8 +509,6 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 	if( ( (*result)->generic = malloc( cols * sizeof( struct odbcres ) ) ) == NULL )
 	{
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -522,8 +518,6 @@ static int odbc_odbx_result( odbx_t* handle, odbx_result_t** result, struct time
 	{
 		free( (*result)->generic );
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 

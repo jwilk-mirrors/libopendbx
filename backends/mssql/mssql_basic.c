@@ -393,8 +393,6 @@ static int mssql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 	{
 		free( (*result)->aux );
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 

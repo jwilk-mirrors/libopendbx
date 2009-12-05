@@ -372,8 +372,6 @@ static int sqlite_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 	if( ( sres = (struct sres*) malloc( sizeof( struct sres ) ) ) == NULL )
 	{
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 

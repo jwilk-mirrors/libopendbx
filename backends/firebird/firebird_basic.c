@@ -1,6 +1,6 @@
 /*
  *  OpenDBX - A simple but extensible database abstraction layer
- *  Copyright (C) 2005-2008 Norbert Sendetzky and others
+ *  Copyright (C) 2005-2009 Norbert Sendetzky and others
  *
  *  Distributed under the terms of the GNU Library General Public Licence
  * version 2 or (at your option) any later version.
@@ -414,7 +414,6 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 		if( ( err = firebird_priv_execute_stmt( handle, fbc ) ) != ODBX_ERR_SUCCESS )
 		{
 			firebird_priv_result_free( *result );
-			*result = NULL;
 			return err;
 		}
 
@@ -425,7 +424,6 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 	if( ( (*result)->generic = malloc( XSQLDA_LENGTH( fbc->qda->sqld ) ) ) == NULL )
 	{
 		firebird_priv_result_free( *result );
-		*result = NULL;
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -435,7 +433,6 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 	if( ( (*result)->aux = malloc( sizeof( struct fbaux ) ) ) == NULL )
 	{
 		firebird_priv_result_free( *result );
-		*result = NULL;
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -444,14 +441,12 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 	if( ( fba->nullind = (short*) malloc( fbc->qda->sqld * sizeof( short ) ) ) == NULL )
 	{
 		firebird_priv_result_free( *result );
-		*result = NULL;
 		return -ODBX_ERR_NOMEM;
 	}
 
 	if( isc_dsql_describe( fbc->status, &(fbc->stmt), SQL_DIALECT_V6, (XSQLDA*) (*result)->generic ) != 0 )
 	{
 		firebird_priv_result_free( *result );
-		*result = NULL;
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -464,7 +459,6 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 		{
 			while( --i >= 0 ) { free( var[i].sqldata ); }
 			firebird_priv_result_free( *result );
-			*result = NULL;
 			return -ODBX_ERR_NOMEM;
 		}
 
@@ -475,7 +469,6 @@ static int firebird_odbx_result( odbx_t* handle, odbx_result_t** result, struct 
 	{
 		while( i >= 0 ) { free( var[i--].sqldata ); }
 		firebird_priv_result_free( *result );
-		*result = NULL;
 		return -ODBX_ERR_BACKEND;
 	}
 

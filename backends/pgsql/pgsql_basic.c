@@ -384,8 +384,6 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 	{
 		PQclear( res );
 		free( *result );
-		*result = NULL;
-
 		return -ODBX_ERR_NOMEM;
 	}
 
@@ -421,7 +419,6 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 	}
 
 	pgsql_odbx_result_finish( *result );
-	*result = NULL;
 
 	return -ODBX_ERR_BACKEND;
 }

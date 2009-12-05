@@ -498,7 +498,6 @@ static int sybase_odbx_result( odbx_t* handle, odbx_result_t** result, struct ti
 		default:
 
 			free( *result );
-			*result = NULL;
 			return -ODBX_ERR_BACKEND;
 
 	}
