@@ -241,7 +241,7 @@ const char* odbx_error( odbx_t* handle, int error )
 		return dgettext( "opendbx", odbx_errmsg[ODBX_ERR_HANDLE] );
 	}
 
-	if( error <= ODBX_ERR_SUCCESS && error > -ODBX_MAX_ERRNO )
+	if( error <= ODBX_ERR_SUCCESS && error >= -ODBX_MAX_ERRNO )
 	{
 		return dgettext( "opendbx", odbx_errmsg[-error] );
 	}
