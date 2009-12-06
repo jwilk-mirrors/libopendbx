@@ -387,14 +387,20 @@ static int odbc_odbx_query( odbx_t* handle, const char* query, unsigned long len
 
 	if( gen->stmt != NULL )
 	{
-		gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt );
-		if( !SQL_SUCCEEDED( gen->err ) )
+		if( !SQL_SUCCEEDED( gen->err ) && gen->err != SQL_NO_DATA )
 		{
-			gen->stmt = NULL;
-			return -ODBX_ERR_BACKEND;
+			gen->err = SQLFreeHandle( SQL_HANDLE_STMT, gen->stmt );
+			if( !SQL_SUCCEEDED( gen->err ) )
+			{
+				gen->stmt = NULL;
+				return -ODBX_ERR_BACKEND;
+			}
+		}
+		else
+		{
+			return -ODBX_ERR_BUSY;
 		}
 	}
-	gen->stmt = NULL;
 
 	if( strncasecmp( "BEGIN TRAN", query, 10 ) == 0 )
 	{

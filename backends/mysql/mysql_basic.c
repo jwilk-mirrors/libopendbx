@@ -268,7 +268,7 @@ static int mysql_odbx_get_option( odbx_t* handle, unsigned int option, void* val
 			*((int*) value) = (int) mysql_thread_safe();
 			break;
 		case ODBX_OPT_MULTI_STATEMENTS:
-#ifdef HAVE_MYSQL_NEXT_RESULT
+#ifdef HAVE_MYSQL_MORENEXT_RESULT
 			*((int*) value) = ODBX_ENABLE;
 #else
 			*((int*) value) = ODBX_DISABLE;
@@ -315,7 +315,7 @@ static int mysql_odbx_set_option( odbx_t* handle, unsigned int option, void* val
 
 		case ODBX_OPT_MULTI_STATEMENTS:
 
-#ifdef HAVE_MYSQL_NEXT_RESULT
+#ifdef HAVE_MYSQL_MORENEXT_RESULT
 			if( *((int*) value) == ODBX_ENABLE )
 			{
 				aux->flags |= CLIENT_MULTI_STATEMENTS;
@@ -432,6 +432,13 @@ static int mysql_odbx_query( odbx_t* handle, const char* query, unsigned long le
 		return -ODBX_ERR_PARAM;
 	}
 
+#ifdef HAVE_MYSQL_MORENEXT_RESULT
+	if( mysql_more_results( (MYSQL*) handle->generic ) != 0 )
+	{
+		return -ODBX_ERR_BUSY;
+	}
+#endif
+
 	if( mysql_real_query( (MYSQL*) handle->generic, query, length ) != 0 )
 	{
 		return -ODBX_ERR_BACKEND;
@@ -458,7 +465,7 @@ static int mysql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 
 	if( aux->first == 0 )
 	{
-#ifdef HAVE_MYSQL_NEXT_RESULT
+#ifdef HAVE_MYSQL_MORENEXT_RESULT
 		switch( mysql_next_result( conn ) )
 		{
 			case -1:

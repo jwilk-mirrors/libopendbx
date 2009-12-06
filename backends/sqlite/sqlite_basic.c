@@ -81,6 +81,7 @@ static int sqlite_odbx_init( odbx_t* handle, const char* host, const char* port 
 
 	aux->pathlen = 0;
 	aux->path = NULL;
+	aux->stmt = NULL;
 	aux->errmsg = NULL;
 	handle->generic = NULL;
 
@@ -304,6 +305,11 @@ static int sqlite_odbx_query( odbx_t* handle, const char* query, unsigned long l
 	if( aux == NULL || query == NULL )
 	{
 		return -ODBX_ERR_PARAM;
+	}
+
+	if( aux->stmt != NULL )
+	{
+		return -ODBX_ERR_BUSY;
 	}
 
 	if( ( aux->stmt = malloc( length + 1 ) ) == NULL )

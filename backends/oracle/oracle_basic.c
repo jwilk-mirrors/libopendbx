@@ -85,6 +85,7 @@ static int oracle_odbx_init( odbx_t* handle, const char* host, const char* port 
 	conn->ctx = NULL;
 	conn->sess = NULL;
 	conn->mode = OCI_COMMIT_ON_SUCCESS;
+	conn->numstmt = 0;
 
 #if defined( HAVE_SETENV )
 	setenv( "NLS_LANG", ".AL32UTF8", 0 );
@@ -421,6 +422,11 @@ static int oracle_odbx_query( odbx_t* handle, const char* query, unsigned long l
 	if( conn == NULL )
 	{
 		return -ODBX_ERR_PARAM;
+	}
+
+	if( conn->numstmt != 0 )
+	{
+		return -ODBX_ERR_BUSY;
 	}
 
 	if( ( conn->errcode = OCIStmtPrepare( conn->stmt, conn->err, (text*) query, (ub4) length, OCI_NTV_SYNTAX, OCI_DEFAULT ) ) != OCI_SUCCESS )

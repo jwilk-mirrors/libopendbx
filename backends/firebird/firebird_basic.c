@@ -361,6 +361,11 @@ static int firebird_odbx_query( odbx_t* handle, const char* query, unsigned long
 		return -ODBX_ERR_PARAM;
 	}
 
+	if( fbc->numstmt != 0 )
+	{
+		return -ODBX_ERR_BUSY;
+	}
+
 	fbc->qda->sqld = 0;
 
 	fbc->stmt = NULL;

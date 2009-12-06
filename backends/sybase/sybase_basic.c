@@ -357,14 +357,21 @@ static int sybase_odbx_query( odbx_t* handle, const char* query, unsigned long l
 {
 	DEBUGLOG( handle->log.write( &(handle->log), 1, "sybase_odbx_query() called" ); )
 
-	if( ct_command( (CS_COMMAND*) handle->generic, CS_LANG_CMD, (CS_VOID*) query, (CS_INT) length, CS_UNUSED ) != CS_SUCCEED )
+	switch( ct_command( (CS_COMMAND*) handle->generic, CS_LANG_CMD, (CS_VOID*) query, (CS_INT) length, CS_UNUSED ) )
 	{
-		return -ODBX_ERR_BACKEND;
+		case CS_BUSY:
+			return -ODBX_ERR_BUSY;
+		case CS_FAIL:
+			return -ODBX_ERR_BACKEND;
 	}
 
-	if( ct_send( (CS_COMMAND*) handle->generic ) != CS_SUCCEED )
+	switch( ct_send( (CS_COMMAND*) handle->generic ) )
 	{
-		return -ODBX_ERR_BACKEND;
+		case CS_BUSY:
+			return -ODBX_ERR_BUSY;
+		case CS_CANCELED:
+		case CS_FAIL:
+			return -ODBX_ERR_BACKEND;
 	}
 
 	return ODBX_ERR_SUCCESS;

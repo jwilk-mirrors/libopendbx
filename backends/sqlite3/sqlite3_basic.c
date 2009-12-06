@@ -332,6 +332,11 @@ static int sqlite3_odbx_query( odbx_t* handle, const char* query, unsigned long 
 		return -ODBX_ERR_PARAM;
 	}
 
+	if( aux->res != NULL )
+	{
+		return -ODBX_ERR_BUSY;
+	}
+
 	if( ( aux->stmt = malloc( length + 1 ) ) == NULL )
 	{
 		return -ODBX_ERR_NOMEM;
