@@ -220,14 +220,14 @@ int main() { mysql_init( NULL ); return 0; }
 #endif
 #include <stddef.h>
 #include <mysql.h>
-int main() { mysql_next_result( NULL ); return 0; }
+int main() { mysql_more_results( NULL ); mysql_next_result( NULL ); return 0; }
 				],
 				[
-					AC_MSG_RESULT([checking for mysql_next_result in -l$LIBMYSQL... yes])
-					AC_DEFINE([HAVE_MYSQL_NEXT_RESULT], 1, [Have mysql_next_result])
+					AC_MSG_RESULT([checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... yes])
+					AC_DEFINE([HAVE_MYSQL_MORENEXT_RESULT], 1, [Have mysql_more_results and mysql_next_result])
 				],
 				[
-					AC_MSG_RESULT([checking for mysql_next_result in -l$LIBMYSQL... no])
+					AC_MSG_RESULT([checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... no])
 				]
  			)
 			LIBS=${odbx_saved_libs}

@@ -19605,21 +19605,21 @@ fi
 #endif
 #include <stddef.h>
 #include <mysql.h>
-int main() { mysql_next_result( NULL ); return 0; }
+int main() { mysql_more_results( NULL ); mysql_next_result( NULL ); return 0; }
 
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
 
-					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for mysql_next_result in -l$LIBMYSQL... yes" >&5
-$as_echo "checking for mysql_next_result in -l$LIBMYSQL... yes" >&6; }
+					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... yes" >&5
+$as_echo "checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... yes" >&6; }
 
-$as_echo "#define HAVE_MYSQL_NEXT_RESULT 1" >>confdefs.h
+$as_echo "#define HAVE_MYSQL_MORENEXT_RESULT 1" >>confdefs.h
 
 
 else
 
-					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for mysql_next_result in -l$LIBMYSQL... no" >&5
-$as_echo "checking for mysql_next_result in -l$LIBMYSQL... no" >&6; }
+					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... no" >&5
+$as_echo "checking for mysql_more_results and mysql_next_result in -l$LIBMYSQL... no" >&6; }
 
 
 fi
