@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libopendbx 1.5.0pre\n"
 "Report-Msgid-Bugs-To: norbert@linuxnetworks.de\n"
-"POT-Creation-Date: 2009-09-10 21:13+0200\n"
-"PO-Revision-Date: 2009-09-10 21:13+0200\n"
+"POT-Creation-Date: 2009-12-06 18:46+0100\n"
+"PO-Revision-Date: 2009-12-06 18:46+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -94,12 +94,11 @@ msgstr "Not supported"
 msgid "Invalid handle"
 msgstr "Invalid handle"
 
-#: lib/odbxlib.h:176
-#, c-format
-msgid "Loading backend library %s, %s or %s failed"
-msgstr "Loading backend library %s, %s or %s failed"
+#: lib/odbx.c:36
+msgid "Operation already in progress"
+msgstr "Operation already in progress"
 
-#: lib/odbxlib.h:263
+#: lib/odbxlib.h:176 lib/odbxlib.h:263
 #, c-format
 msgid "Loading backend library %s, %s or %s failed\n"
 msgstr "Loading backend library %s, %s or %s failed\n"
