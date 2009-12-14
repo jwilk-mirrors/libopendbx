@@ -128,8 +128,8 @@
 /* Define to 1 if you have the <mysql.h> header file. */
 #undef HAVE_MYSQL_H
 
-/* Have mysql_next_result */
-#undef HAVE_MYSQL_NEXT_RESULT
+/* Have mysql_more_results and mysql_next_result */
+#undef HAVE_MYSQL_MORENEXT_RESULT
 
 /* Define to 1 if you have OCILobWrite2 */
 #undef HAVE_OCILOBWRITE2

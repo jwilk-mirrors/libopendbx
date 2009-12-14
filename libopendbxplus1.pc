@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 Name: OpenDBX Plus
 Description: C++ Lightweight database abstraction layer
-Version: 1.5.0pre
+Version: 1.5.0
 Libs: -L${libdir} -lopendbxplus
 Cflags: -I${includedir}
 
