@@ -872,7 +872,7 @@ static void odbc_priv_cleanup( odbx_result_t* result, SQLSMALLINT cols )
 
 static int odbc_priv_setautocommit( struct odbcgen* gen, SQLUINTEGER mode )
 {
-	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) mode, SQL_IS_INTEGER );
+	gen->err = SQLSetConnectAttr( gen->conn, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) mode, SQL_IS_UINTEGER );
 	if( !SQL_SUCCEEDED( gen->err ) )
 	{
 		return -ODBX_ERR_BACKEND;
