@@ -90,8 +90,7 @@ libopendbx_la_OBJECTS = $(am_libopendbx_la_OBJECTS)
 libopendbx_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libopendbx_la_CFLAGS) \
 	$(CFLAGS) $(libopendbx_la_LDFLAGS) $(LDFLAGS) -o $@
-libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	.libs/libopendbx.la
+libopendbxplus_la_DEPENDENCIES = $(am__DEPENDENCIES_1) libopendbx.la
 am_libopendbxplus_la_OBJECTS = libopendbxplus_la-odbx_impl.lo \
 	libopendbxplus_la-odbx.lo
 libopendbxplus_la_OBJECTS = $(am_libopendbxplus_la_OBJECTS)
@@ -299,7 +298,7 @@ libopendbxplus_la_SOURCES = odbx_iface.hpp odbx_impl.hpp odbx_impl.cpp odbx.cpp
 libopendbxplus_la_CXXFLAGS = -DLIBVERSION=@LIBVERSION@
 libopendbxplus_la_LDFLAGS = -no-undefined -export-dynamic \
 	-version-info @APIPLUSVERSION@ $(am__append_2)
-libopendbxplus_la_LIBADD = $(LTLIBINTL) .libs/libopendbx.la
+libopendbxplus_la_LIBADD = $(LTLIBINTL) libopendbx.la
 all: all-am
 
 .SUFFIXES:

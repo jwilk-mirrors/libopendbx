@@ -294,7 +294,7 @@ Backend bazy danych ODBC dla biblioteki opendbx.
 %prep
 
 
-%setup -q
+%setup -n libopendbx-%{version}
 
 
 %build
@@ -362,8 +362,8 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 %{_includedir}/opendbx/api*
 %{_libdir}/libopendbx.so
 %{_libdir}/libopendbxplus.so
-%{_libdir}/pkgconfig/opendbx.pc
-%{_libdir}/pkgconfig/opendbxplus.pc
+%{_libdir}/pkgconfig/libopendbx1.pc
+%{_libdir}/pkgconfig/libopendbxplus1.pc
 #%{_mandir}/man3/*
 
 
