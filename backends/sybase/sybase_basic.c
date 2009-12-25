@@ -75,7 +75,7 @@ static int sybase_odbx_init( odbx_t* handle, const char* host, const char* port 
 		return err;
 	}
 
-	if( cs_config( aux->ctx, CS_SET, CS_USERDATA, (CS_VOID*) &aux, sizeof( void* ), NULL ) != CS_SUCCEED )
+	if( cs_config( aux->ctx, CS_SET, CS_USERDATA, (CS_VOID*) &aux, sizeof( CS_VOID* ), NULL ) != CS_SUCCEED )
 	{
 		sybase_priv_cleanup( handle );
 		return -ODBX_ERR_NOMEM;
