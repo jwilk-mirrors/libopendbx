@@ -296,13 +296,10 @@ Backend bazy danych ODBC dla biblioteki opendbx.
 %endif
 
 
-%debug_package
-
-
 %prep
 
 
-%setup -q
+%setup -q -n opendbx-%{version}
 
 
 %build
@@ -436,7 +433,7 @@ if test "%{buildroot}" != "/"; then rm -rf %{buildroot}; fi
 
 
 %changelog
-* wed Sep 30 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.4-1
+* Wed Sep 30 2009 Norbert Sendetzky <norbert@linuxnetworks.de> 1.4.4-1
 - Fixed included backends in main package
 - Fixed odbx package
 - Fixed builds on x86_64 platforms
