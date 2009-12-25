@@ -45,6 +45,7 @@ static int _odbx_log_write( struct odbx_log* log, int level, const char* message
 		va_end( ap );
 
 		fprintf( log->resource, "\n" );
+		fflush( log->resource );
 	}
 
 	return ODBX_ERR_SUCCESS;
