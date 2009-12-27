@@ -65,7 +65,7 @@ static const char* sybase_odbx_field_value( odbx_result_t* result, unsigned long
  *  Private functions
  */
 
-static int sybase_priv_init( struct sybconn* aux );
+static int sybase_priv_init( struct sybconn* aux, CS_INT version );
 
 static int sybase_priv_cleanup( odbx_t* handle );
 

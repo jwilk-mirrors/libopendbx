@@ -70,36 +70,29 @@ static int sybase_odbx_init( odbx_t* handle, const char* host, const char* port 
 	aux->host = NULL;
 	aux->hostlen = 0;
 
+#if defined( CS_VERSION_150 )
+	CS_INT version = CS_VERSION_150;
+#elif  defined( CS_VERSION_125 )
+	CS_INT version = CS_VERSION_125;
+#elif  defined( CS_VERSION_120 )
+	CS_INT version = CS_VERSION_120;
+#elif  defined( CS_VERSION_110 )
+	CS_INT version = CS_VERSION_110;
+#else
+	return -ODBX_ERR_NOTSUP;
+#endif
+
+	if( cs_ctx_alloc( version, &(aux->ctx) ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_NOMEM;
+	}
+
 	int err;
 
-	if( ( err = sybase_priv_init( aux ) ) < 0 )
+	if( ( err = sybase_priv_init( aux, version ) ) < ODBX_ERR_SUCCESS )
 	{
 		sybase_priv_cleanup( handle );
 		return err;
-	}
-
-	if( cs_config( aux->ctx, CS_SET, CS_USERDATA, (CS_VOID*) &aux, sizeof( void* ), NULL ) != CS_SUCCEED )
-	{
-		sybase_priv_cleanup( handle );
-		return -ODBX_ERR_NOMEM;
-	}
-
-	if( cs_config( aux->ctx, CS_SET, CS_MESSAGE_CB, (CS_VOID*) sybase_priv_csmsg_handler, CS_UNUSED, NULL ) != CS_SUCCEED )
-	{
-		sybase_priv_cleanup( handle );
-		return -ODBX_ERR_NOMEM;
-	}
-
-	if( ct_callback( aux->ctx, NULL, CS_SET, CS_CLIENTMSG_CB, (CS_VOID*) sybase_priv_ctmsg_handler ) != CS_SUCCEED )
-	{
-		sybase_priv_cleanup( handle );
-		return -ODBX_ERR_NOMEM;
-	}
-
-	if( ct_callback( aux->ctx, NULL, CS_SET, CS_SERVERMSG_CB, (CS_VOID*) sybase_priv_svmsg_handler ) != CS_SUCCEED )
-	{
-		sybase_priv_cleanup( handle );
-		return -ODBX_ERR_NOMEM;
 	}
 
 	aux->hostlen = strlen( host );
@@ -795,52 +788,46 @@ static const char* sybase_odbx_field_value( odbx_result_t* result, unsigned long
 
 
 
-static int sybase_priv_init( struct sybconn* aux )
+static int sybase_priv_init( struct sybconn* aux, CS_INT version )
 {
-
-#ifdef CS_VERSION_150
-	if( cs_ctx_alloc( CS_VERSION_150, &(aux->ctx) ) == CS_SUCCEED )
+	if( cs_config( aux->ctx, CS_SET, CS_MESSAGE_CB, (CS_VOID*) sybase_priv_csmsg_handler, CS_UNUSED, NULL ) != CS_SUCCEED )
 	{
-		if( ct_init( aux->ctx, CS_VERSION_150 ) == CS_SUCCEED )
-		{
-			return ODBX_ERR_SUCCESS;
-		}
-		cs_ctx_drop( aux->ctx );
+		return -ODBX_ERR_NOMEM;
+	}
+
+	if( ct_callback( aux->ctx, NULL, CS_SET, CS_CLIENTMSG_CB, (CS_VOID*) sybase_priv_ctmsg_handler ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	if( ct_callback( aux->ctx, NULL, CS_SET, CS_SERVERMSG_CB, (CS_VOID*) sybase_priv_svmsg_handler ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	if( cs_config( aux->ctx, CS_SET, CS_APPNAME, (CS_VOID*) "OpenDBX", 7, NULL ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+#ifdef CS_EXTERNAL_CONFIG
+	if( cs_config( aux->ctx, CS_SET, CS_EXTERNAL_CONFIG, (CS_VOID*) CS_TRUE, CS_UNUSED, NULL ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_BACKEND;
 	}
 #endif
 
-#ifdef CS_VERSION_125
-	if( cs_ctx_alloc( CS_VERSION_125, &(aux->ctx) ) == CS_SUCCEED )
+	if( ct_init( aux->ctx, version ) != CS_SUCCEED )
 	{
-		if( ct_init( aux->ctx, CS_VERSION_125 ) == CS_SUCCEED )
-		{
-			return ODBX_ERR_SUCCESS;
-		}
-		cs_ctx_drop( aux->ctx );
-	}
-#endif
-
-#ifdef CS_VERSION_110
-	if( cs_ctx_alloc( CS_VERSION_110, &(aux->ctx) ) == CS_SUCCEED )
-	{
-		if( ct_init( aux->ctx, CS_VERSION_110 ) == CS_SUCCEED )
-		{
-			return ODBX_ERR_SUCCESS;
-		}
-		cs_ctx_drop( aux->ctx );
-	}
-#endif
-
-	if( cs_ctx_alloc( CS_VERSION_100, &(aux->ctx) ) == CS_SUCCEED )
-	{
-		if( ct_init( aux->ctx, CS_VERSION_100 ) == CS_SUCCEED )
-		{
-			return ODBX_ERR_SUCCESS;
-		}
-		cs_ctx_drop( aux->ctx );
+		return -ODBX_ERR_BACKEND;
 	}
 
-	return -ODBX_ERR_NOTSUP;
+	if( cs_config( aux->ctx, CS_SET, CS_USERDATA, (CS_VOID*) &aux, sizeof( CS_VOID* ), NULL ) != CS_SUCCEED )
+	{
+		return -ODBX_ERR_BACKEND;
+	}
+
+	return ODBX_ERR_SUCCESS;
 }
 
 
@@ -1107,7 +1094,7 @@ static CS_RETCODE CS_PUBLIC sybase_priv_csmsg_handler( CS_CONTEXT* ctx, CS_CLIEN
 	struct sybconn* aux;
 
 
-	if( ( err = cs_config( ctx, CS_GET, CS_USERDATA, &aux, sizeof( void* ), NULL ) ) != CS_SUCCEED )
+	if( ( err = cs_config( ctx, CS_GET, CS_USERDATA, (CS_VOID*) &aux, sizeof( CS_VOID* ), NULL ) ) != CS_SUCCEED )
 	{
 		return CS_SUCCEED;
 	}
