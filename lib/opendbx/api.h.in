@@ -36,6 +36,10 @@ extern "C" {
 
 
 
+#define ODBX_LIB_VERSION @LIBVERSION@
+
+
+
 /*
  *  Extended capabilities supported by the backends
  *  0x0000-0x00ff: Well known capabilities

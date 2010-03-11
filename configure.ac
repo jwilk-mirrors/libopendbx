@@ -371,6 +371,7 @@ AC_CONFIG_FILES([
 	doc/Makefile
 	doc/Doxyfile
 	lib/Makefile
+	lib/opendbx/api.h
 	po/Makefile.in
 	test/Makefile
 	utils/Makefile
