@@ -136,9 +136,9 @@ int main( int argc, char* argv[] )
 		if( verbose ) { fprintf( stdout, "\n%d. Run:\n", j+1 ); }
 
 
-		odbx_t* handle2[10];
+		odbx_t* handle2[2];
 
-		for( k = 0; k < 10; k++ )
+		for( k = 0; k < 2; k++ )
 		{
 			handle2[k] = NULL;
 
@@ -150,7 +150,7 @@ int main( int argc, char* argv[] )
 			}
 		}
 
-		for( k = 0; k < 10; k++ )
+		for( k = 0; k < 2; k++ )
 		{
 			if( verbose ) { fprintf( stdout, "  odbx_bind()\n" ); }
 			if( ( err = odbx_bind( handle2[k], db, user, pass, ODBX_BIND_SIMPLE ) ) < 0 )
