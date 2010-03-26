@@ -118,10 +118,10 @@ if test "x${debuglog}" = xyes; then
 	AC_CHECK_FUNCS([localtime strftime time vfprintf])
 fi
 
-AC_ARG_ENABLE([test], [AS_HELP_STRING([--disable-test], [don't build OpenDBX test applications])], [test="${enableval}"], [test=yes])
+AC_ARG_ENABLE([test], [AS_HELP_STRING([--enable-test], [build OpenDBX test applications])], [test="${enableval}"], [test=no])
 AM_CONDITIONAL([ENABLETEST], [test "x${test}" = xyes])
 
-AC_ARG_ENABLE([utils], [AS_HELP_STRING([--disable-utils], [don't build OpenDBX utility applications])], [utils="${enableval}"], [utils=yes])
+AC_ARG_ENABLE([utils], [AS_HELP_STRING([--enalble-utils], [build OpenDBX utility applications])], [utils="${enableval}"], [utils=no])
 AM_CONDITIONAL([ENABLEUTILS], [test "x${utils}" = xyes])
 
 if test "x${utils}" = xyes; then
