@@ -70,7 +70,7 @@ AC_STRUCT_TM
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h stdlib.h string.h sys/time.h unistd.h windows.h windef.h winsock2.h])
+AC_CHECK_HEADERS([dlfcn.h getopt.h inttypes.h libintl.h pthread.h stdlib.h string.h sys/time.h unistd.h windows.h windef.h winsock2.h])
 
 
 # Checks for library functions.
@@ -87,6 +87,11 @@ AC_SUBST([MAINLIBS])
 ORIGLIBS=${LIBS}; LIBS=""
 AC_SEARCH_LIBS([dlopen], [dl], [AC_DEFINE([HAVE_LIBDL], 1, [Have -ldl])])
 MAINLIBS=${LIBS}; LIBS=${ORIGLIBS}
+
+AC_SUBST([THREADLIBS])
+ORIGLIBS=${LIBS}; LIBS=""
+AC_SEARCH_LIBS([pthread_create], [pthread], [AC_DEFINE([HAVE_LIBPTHREAD], 1, [Have -lpthread])])
+THREADLIBS=${LIBS}; LIBS=${ORIGLIBS}
 
 
 # Checks for additional programs
