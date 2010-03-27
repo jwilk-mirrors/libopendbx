@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <odbx.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -26,7 +25,7 @@
 
 
 
-int exec( odbx_t* handle[], struct odbxstmt qptr[], int verbose );
+int exec( odbx_t* handle[], struct odbxstmt qptr[], int locap, int verbose );
 int lob_read( odbx_t* handle, odbx_result_t* result, int pos );
 
 
@@ -239,7 +238,14 @@ int main( int argc, char* argv[] )
 			static char buffer[256];
 			static char escaped[128];
 			unsigned long len = 128;
-			int err;
+			int err, cap;
+			struct odbxstmt* qptr = queries;
+
+			if( ( cap = odbx_capabilities( handle[0], ODBX_CAP_LO ) ) < 0 )
+			{
+				fprintf( stderr, "Error in odbx_capabilities(): %s\n", odbx_error( handle[0], cap ) );
+				return cap;
+			}
 
 			if( ( err = odbx_escape( handle[0], value, strlen( value ), escaped, &len ) ) != 0 )
 			{
@@ -258,16 +264,27 @@ int main( int argc, char* argv[] )
 				{ -1, NULL }
 			};
 
-			if( ( err = exec( handle, malformed_stmt, verbose ) ) < 0 )
+			if( ( err = exec( handle, malformed_stmt, cap, verbose ) ) < 0 )
 			{
-				fprintf( stdout, "Error in exec(): Fatal error in malformed run %d\n", i );
-				break;
+				if( odbx_error_type( handle[qptr->num], err ) < 0 )
+				{
+					fprintf( stdout, "Error in exec(): Fatal error in malformed run %d\n", i );
+					break;
+				}
 			}
 
-			if( ( err = exec( handle, queries, verbose ) ) < 0 )
+			while( qptr->str != NULL )
 			{
-				fprintf( stdout, "Error in exec(): Fatal error in run %d\n", i );
-				break;
+				if( ( err = exec( handle, qptr, cap, verbose ) ) < 0 )
+				{
+					if( odbx_error_type( handle[qptr->num], err ) < 0 )
+					{
+						fprintf( stdout, "Error in exec(): Fatal error in run %d\n", i );
+						break;
+					}
+				}
+
+				qptr++;
 			}
 		}
 
@@ -296,146 +313,133 @@ ERROR:
 }
 
 
-int exec( odbx_t* handle[], struct odbxstmt* qptr, int verbose )
+int exec( odbx_t* handle[], struct odbxstmt* qptr, int locap, int verbose )
 {
 	char* tmp;
-	int i, cap, err = 0;
+	int i, err = 0;
 	unsigned long fields;
 	struct timeval tv;
 	odbx_result_t* result;
 
 
-	if( ( cap = odbx_capabilities( handle[qptr->num], ODBX_CAP_LO ) ) < 0 )
+	if( verbose ) { fprintf( stdout, "  odbx_query(%d): '%s'\n", qptr->num, qptr->str ); }
+	if( ( err = odbx_query( handle[qptr->num], qptr->str, 0 ) ) < 0 )
 	{
-		fprintf( stderr, "Error in odbx_capabilities(): %s\n", odbx_error( handle[qptr->num], cap ) );
-		return cap;
+		fprintf( stderr, "Error in odbx_query(): %s\n", odbx_error( handle[qptr->num], err ) );
+		return err;
 	}
 
-	while( qptr->str != NULL )
+	tv.tv_sec = 3;
+	tv.tv_usec = 0;
+
+	/* use values >1 for paged output (if supported) or 0 for all rows */
+	while( ( err = odbx_result( handle[qptr->num], &result, &tv, 5 ) ) != ODBX_RES_DONE )
 	{
-		if( verbose ) { fprintf( stdout, "  odbx_query(%d): '%s'\n", qptr->num, qptr->str ); }
-		if( ( err = odbx_query( handle[qptr->num], qptr->str, 0 ) ) < 0 )
-		{
-			fprintf( stderr, "Error in odbx_query(): %s\n", odbx_error( handle[qptr->num], err ) );
-			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
-			qptr++;
-			continue;
-		}
+		if( verbose ) { fprintf( stdout, "  odbx_result()\n" ); }
 
 		tv.tv_sec = 3;
 		tv.tv_usec = 0;
 
-		/* use values >1 for paged output (if supported) or 0 for all rows */
-		while( ( err = odbx_result( handle[qptr->num], &result, &tv, 5 ) ) != ODBX_RES_DONE )
+		if( err < 0 )
 		{
-			if( verbose ) { fprintf( stdout, "  odbx_result()\n" ); }
+			fprintf( stderr, "Error in odbx_result(): %s\n", odbx_error( handle[qptr->num], err ) );
+			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
+			continue;
+		}
 
-			tv.tv_sec = 3;
-			tv.tv_usec = 0;
+		switch( err )
+		{
+			case ODBX_RES_TIMEOUT:
+				fprintf( stdout, "    odbx_result(): Timeout\n" );
+				continue;
+			case ODBX_RES_NOROWS:
+				fprintf( stdout, "    Affected rows: %lld\n", odbx_rows_affected( result ) );
+				odbx_result_finish( result );
+				continue;
+		}
+
+		if( verbose ) { fprintf( stdout, "  odbx_column_count()\n" ); }
+		fields = odbx_column_count( result );
+
+		while( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
+		{
+			if( verbose ) { fprintf( stdout, "  odbx_row_fetch()\n" ); }
 
 			if( err < 0 )
 			{
-				fprintf( stderr, "Error in odbx_result(): %s\n", odbx_error( handle[qptr->num], err ) );
+				fprintf( stderr, "Error in odbx_row_fetch(): %s\n", odbx_error( handle[qptr->num], err ) );
 				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 				continue;
 			}
 
-			switch( err )
+			for( i = 0; i < fields; i++ )
 			{
-				case ODBX_RES_TIMEOUT:
-					fprintf( stdout, "    odbx_result(): Timeout\n" );
-					continue;
-				case ODBX_RES_NOROWS:
-					fprintf( stdout, "    Affected rows: %lld\n", odbx_rows_affected( result ) );
-					odbx_result_finish( result );
-					continue;
-			}
-
-			if( verbose ) { fprintf( stdout, "  odbx_column_count()\n" ); }
-			fields = odbx_column_count( result );
-
-			while( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
-			{
-				if( verbose ) { fprintf( stdout, "  odbx_row_fetch()\n" ); }
-
-				if( err < 0 )
+				if( ( err = odbx_column_type( result, i ) ) < 0 )
 				{
-					fprintf( stderr, "Error in odbx_row_fetch(): %s\n", odbx_error( handle[qptr->num], err ) );
-					if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
-					continue;
+					fprintf( stderr, "Error in odbx_column_type(): %s\n", odbx_error( handle[qptr->num], err ) );
+					return err;
 				}
+				fprintf( stdout, "    column %d (type %d): ", i, err );
 
-				for( i = 0; i < fields; i++ )
+				tmp = (char*) odbx_column_name( result, i );
+				if( tmp != NULL ) { fprintf( stdout, "%s = ", tmp ); }
+
+				switch( odbx_column_type( result, i ) )
 				{
-					if( ( err = odbx_column_type( result, i ) ) < 0 )
-					{
-						fprintf( stderr, "Error in odbx_column_type(): %s\n", odbx_error( handle[qptr->num], err ) );
-						return err;
-					}
-					fprintf( stdout, "    column %d (type %d): ", i, err );
+					case ODBX_TYPE_BLOB:
+					case ODBX_TYPE_CLOB:
 
-					tmp = (char*) odbx_column_name( result, i );
-					if( tmp != NULL ) { fprintf( stdout, "%s = ", tmp ); }
+						if( locap == ODBX_ENABLE )
+						{
+							if( ( err = lob_read( handle[qptr->num], result, i ) ) < 0 ) { return err; }
+							break;
+						}
 
-					switch( odbx_column_type( result, i ) )
-					{
-						case ODBX_TYPE_BLOB:
-						case ODBX_TYPE_CLOB:
+					default:
 
-							if( cap == ODBX_ENABLE )
-							{
-								if( ( err = lob_read( handle[qptr->num], result, i ) ) < 0 ) { return err; }
-								break;
-							}
+						if( ( err = odbx_field_isnull( result, i ) ) < 0 ) {
+							fprintf( stderr, "Error in odbx_field_isnull(): %s\n", odbx_error( handle[qptr->num], err ) );
+							return err;
+						} else if( err == 1 ) {
+							fprintf( stdout, "NULL\n" );
+							break;
+						}
 
-						default:
-
-							if( ( err = odbx_field_isnull( result, i ) ) < 0 ) {
-								fprintf( stderr, "Error in odbx_field_isnull(): %s\n", odbx_error( handle[qptr->num], err ) );
-								return err;
-							} else if( err == 1 ) {
-								fprintf( stdout, "NULL\n" );
-								break;
-							}
-
-							if( ( tmp = (char*) odbx_field_value( result, i ) ) == NULL ) {
-								fprintf( stderr, "Error in odbx_field_value()\n" );
-								return err;
-							} else {
-								fprintf( stdout, "'%s'\n", tmp );
-							}
-					}
+						if( ( tmp = (char*) odbx_field_value( result, i ) ) == NULL ) {
+							fprintf( stderr, "Error in odbx_field_value()\n" );
+							return err;
+						} else {
+							fprintf( stdout, "'%s'\n", tmp );
+						}
 				}
-			}
-
-			// Test case:  Calling odbx_row_fetch() more often must return ODBX_ROW_DONE
-			if( verbose ) { fprintf( stdout, "  odbx_row_fetch(n+1)\n" ); }
-			if( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
-			{
-				fprintf( stderr, "Error in odbx_row_fetch(): %s\n", odbx_error( handle[qptr->num], err ) );
-				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
-			}
-
-			if( verbose ) { fprintf( stdout, "  odbx_result_finish()\n" ); }
-			if( ( err = odbx_result_finish( result ) ) != ODBX_ERR_SUCCESS )
-			{
-				fprintf( stderr, "Error in odbx_result_finish(): %s\n", odbx_error( handle[qptr->num], err ) );
-				if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 			}
 		}
 
-		// Test case:  Calling odbx_result() more often must return ODBX_RES_DONE
-		if( verbose ) { fprintf( stdout, "  odbx_result(n+1)\n" ); }
-		if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != ODBX_RES_DONE )
+		// Test case:  Calling odbx_row_fetch() more often must return ODBX_ROW_DONE
+		if( verbose ) { fprintf( stdout, "  odbx_row_fetch(n+1)\n" ); }
+		if( ( err = odbx_row_fetch( result ) ) != ODBX_ROW_DONE )
 		{
-			fprintf( stderr, "Error in odbx_result(): %s\n", odbx_error( handle[qptr->num], err ) );
+			fprintf( stderr, "Error in odbx_row_fetch(): %s\n", odbx_error( handle[qptr->num], err ) );
 			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
 		}
 
-		qptr++;
+		if( verbose ) { fprintf( stdout, "  odbx_result_finish()\n" ); }
+		if( ( err = odbx_result_finish( result ) ) != ODBX_ERR_SUCCESS )
+		{
+			fprintf( stderr, "Error in odbx_result_finish(): %s\n", odbx_error( handle[qptr->num], err ) );
+			if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
+		}
 	}
 
-	return 0;
+	// Test case:  Calling odbx_result() more often must return ODBX_RES_DONE
+	if( verbose ) { fprintf( stdout, "  odbx_result(n+1)\n" ); }
+	if( ( err = odbx_result( handle[qptr->num], &result, NULL, 0 ) ) != ODBX_RES_DONE )
+	{
+		fprintf( stderr, "Error in odbx_result(): %s\n", odbx_error( handle[qptr->num], err ) );
+		if( odbx_error_type( handle[qptr->num], err ) < 0 ) { return err; }
+	}
+
+	return ODBX_ERR_SUCCESS;
 }
 
 

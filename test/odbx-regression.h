@@ -9,6 +9,7 @@
 
 
 #include <stddef.h>
+#include "opendbx/api.h"
 
 
 
