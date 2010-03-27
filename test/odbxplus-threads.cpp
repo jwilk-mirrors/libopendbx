@@ -177,6 +177,8 @@ int main( int argc, char* argv[] )
 
 	try
 	{
+#ifndef HAVE_LIBPTHREAD
+
 		if( set.verbose ) { cout << "  Conn::Conn()" << endl; }
 		conn = Conn( set.backend, set.host, set.port );
 
@@ -203,8 +205,6 @@ int main( int argc, char* argv[] )
 
 
 		int i;
-
-#ifdef HAVE_LIBPTHREAD
 		pthread_attr_t attr;
 		pthread_t threads[NUMTHREADS];
 
@@ -231,9 +231,6 @@ int main( int argc, char* argv[] )
 				return 1;
 			}
 		}
-#else
-	throw std::exception( "pthread library not available" );
-#endif
 
 
 		if( set.verbose ) { cout << "  Execute: DROP TABLE \"odbxthreadtest\"" << endl; }
@@ -241,6 +238,12 @@ int main( int argc, char* argv[] )
 
 		if( set.verbose ) { cout << "  Conn::unbind()" << endl; }
 		conn.unbind();
+
+#else
+
+		throw std::runtime_error( "pthread library not available. Please make sure it's installed and recompile the test application" );
+
+#endif
 	}
 	catch( OpenDBX::Exception& oe )
 	{
