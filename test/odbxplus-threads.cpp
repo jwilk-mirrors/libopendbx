@@ -177,7 +177,7 @@ int main( int argc, char* argv[] )
 
 	try
 	{
-#ifndef HAVE_LIBPTHREAD
+#ifdef HAVE_LIBPTHREAD
 
 		if( set.verbose ) { cout << "  Conn::Conn()" << endl; }
 		conn = Conn( set.backend, set.host, set.port );
