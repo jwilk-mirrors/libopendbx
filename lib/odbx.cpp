@@ -54,8 +54,6 @@ namespace OpenDBX
 	*  OpenDBX large object interface
 	*/
 
-
-
 	Lob::Lob( Lob_Iface* impl ) throw( std::exception )
 	{
 		m_impl = impl;
@@ -68,33 +66,25 @@ namespace OpenDBX
 
 	Lob::Lob( const Lob& ref ) throw()
 	{
-		if( --(*m_ref) == 0 )
-		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
-		}
-
 		m_impl = ref.m_impl;
 		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
 		++(*m_ref);
 	}
 
 
-
 	Lob::~Lob() throw()
 	{
-		if( --(*m_ref) == 0 )
+		if( m_ref != NULL && --(*m_ref) == 0 )
 		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
+			delete m_impl;
+			delete m_ref;
 		}
 	}
 
@@ -102,7 +92,22 @@ namespace OpenDBX
 
 	Lob& Lob::operator=( const Lob& ref ) throw()
 	{
-		if( this != &ref ) { Lob( ref ); }
+		if( m_ref != NULL && --(*m_ref) == 0 )
+		{
+			delete m_impl;
+			delete m_ref;
+		}
+
+		m_impl = ref.m_impl;
+		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
+		++(*m_ref);
 
 		return *this;
 	}
@@ -150,18 +155,15 @@ namespace OpenDBX
 
 	Result::Result( const Result& ref ) throw()
 	{
-		if( --(*m_ref) == 0 )
-		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
-		}
-
 		m_impl = ref.m_impl;
 		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
 		++(*m_ref);
 	}
 
@@ -169,14 +171,10 @@ namespace OpenDBX
 
 	Result::~Result() throw()
 	{
-		if( --(*m_ref) == 0 )
+		if( m_ref != NULL && --(*m_ref) == 0 )
 		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
+			delete m_impl;
+			delete m_ref;
 		}
 	}
 
@@ -184,7 +182,22 @@ namespace OpenDBX
 
 	Result& Result::operator=( const Result& ref ) throw()
 	{
-		if( this != &ref ) { Result( ref ); }
+		if( m_ref != NULL && --(*m_ref) == 0 )
+		{
+			delete m_impl;
+			delete m_ref;
+		}
+
+		m_impl = ref.m_impl;
+		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
+		++(*m_ref);
 
 		return *this;
 	}
@@ -294,18 +307,15 @@ namespace OpenDBX
 
 	Stmt::Stmt( const Stmt& ref ) throw()
 	{
-		if( --(*m_ref) == 0 )
-		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
-		}
-
 		m_impl = ref.m_impl;
 		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
 		++(*m_ref);
 	}
 
@@ -313,14 +323,10 @@ namespace OpenDBX
 
 	Stmt::~Stmt() throw()
 	{
-		if( --(*m_ref) == 0 )
+		if( m_ref != NULL && --(*m_ref) == 0 )
 		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
+			delete m_impl;
+			delete m_ref;
 		}
 	}
 
@@ -328,7 +334,22 @@ namespace OpenDBX
 
 	Stmt& Stmt::operator=( const Stmt& ref ) throw()
 	{
-		if( this != &ref ) { Stmt( ref ); }
+		if( m_ref != NULL && --(*m_ref) == 0 )
+		{
+			delete m_impl;
+			delete m_ref;
+		}
+
+		m_impl = ref.m_impl;
+		m_ref = ref.m_ref;
+
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
+		++(*m_ref);
 
 		return *this;
 	}
@@ -391,20 +412,16 @@ namespace OpenDBX
 
 	Conn::Conn( const Conn& ref ) throw()
 	{
-		if( m_ref != NULL && --(*m_ref) == 0 )
-		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
-		}
-
 		m_impl = ref.m_impl;
 		m_ref = ref.m_ref;
 
-		if( m_ref != NULL ) { ++(*m_ref); }
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
+		++(*m_ref);
 	}
 
 
@@ -413,12 +430,8 @@ namespace OpenDBX
 	{
 		if( m_ref != NULL && --(*m_ref) == 0 )
 		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
+			delete m_impl;
+			delete m_ref;
 		}
 	}
 
@@ -428,18 +441,20 @@ namespace OpenDBX
 	{
 		if( m_ref != NULL && --(*m_ref) == 0 )
 		{
-			try
-			{
-				delete m_impl;
-				delete m_ref;
-			}
-			catch( std::exception& e ) {}
+			delete m_impl;
+			delete m_ref;
 		}
 
 		m_impl = ref.m_impl;
 		m_ref = ref.m_ref;
 
-		if( m_ref != NULL ) { ++(*m_ref); }
+		if( m_ref == NULL )
+		{
+			m_ref = new int;
+			*m_ref = 0;
+		}
+
+		++(*m_ref);
 
 		return *this;
 	}
