@@ -1,7 +1,12 @@
-2009-11-28 Norbert Sendetzky <norbert@linuxnetworks.de>
+2010-04-18 Norbert Sendetzky <norbert@linuxnetworks.de>
 
+	* Change: Changed required autoconf version to 2.61
+	* Bugfix: Fixed reference counting of objects in libopendbxplus (thanks to Rodolfo Lima)
 	* Bugfix: Removed ODBC connection attributes which don't work with Windows ODBC
 	* Bugfix: Fixed wrong error severity in mssql backend when connection couldn't be established
+	* Bugfix: Fixed wild pointer in oracle backend that my lead to problems when error handling isn't implemented correctly
+	* Bugfix: Fixed checking for highest error constant so last error message will be displayed correctly
+	* Bugfix: Adapted spec file for OpenSUSE build service
 
 2009-09-30 Norbert Sendetzky <norbert@linuxnetworks.de>
 
