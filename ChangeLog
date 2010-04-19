@@ -1,6 +1,7 @@
-2010-04-18 Norbert Sendetzky <norbert@linuxnetworks.de>
+2010-04-19 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Change: Changed required autoconf version to 2.61
+	* Change: Modified spec file to build firebird, mssql and sybase backends on supported plattforms by default
 	* Bugfix: Fixed reference counting of objects in libopendbxplus (thanks to Rodolfo Lima)
 	* Bugfix: Removed ODBC connection attributes which don't work with Windows ODBC
 	* Bugfix: Fixed wrong error severity in mssql backend when connection couldn't be established
