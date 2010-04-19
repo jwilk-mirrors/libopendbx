@@ -167,6 +167,7 @@ int main() { isc_attach_database( NULL, 0, "", NULL, 0, NULL ); return 0; }
 				[AC_DEFINE([HAVE_LIBSYBDB], 1, [Have -lsybdb]) LIBMSSQL="sybdb"],
 				[AC_MSG_ERROR([mssql library (libsybdb) not found])]
 			)
+			AC_CHECK_MEMBER([struct dbdaterec.year], [AC_DEFINE([HAVE_LIBSYBDB_MSLIB], 1, [Have mslib type of "struct dbdaterec"])], [], [[#include <sybdb.h>]])
 		;;
 		mysql)
 			AC_CHECK_HEADERS([mysql.h], , [AC_MSG_ERROR([mysql header (mysql.h) not found])], [

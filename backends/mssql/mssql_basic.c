@@ -474,8 +474,13 @@ static int mssql_odbx_row_fetch( odbx_result_t* result )
 			case SYBDATETIMN:
 				if( dbdatecrack( dbproc, &di, (DBDATETIME*) data ) != FAIL )
 				{
+#ifdef HAVE_LIBSYBDB_MSLIB
+					gres[i].length = snprintf( (char*) gres[i].value, gres[i].mlen, "%.4ld-%.2ld-%.2ld %.2ld:%.2ld:%.2ld",
+						(long) di.year, (long) di.month+1, (long) di.day, (long) di.hour, (long) di.minute, (long) di.second );
+#else
 					gres[i].length = snprintf( (char*) gres[i].value, gres[i].mlen, "%.4ld-%.2ld-%.2ld %.2ld:%.2ld:%.2ld",
 						(long) di.dateyear, (long) di.datemonth+1, (long) di.datedmonth, (long) di.datehour, (long) di.dateminute, (long) di.datesecond );
+#endif
 				}
 				continue;
 		}

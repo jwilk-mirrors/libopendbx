@@ -103,6 +103,9 @@
 /* Have -lsybdb */
 #undef HAVE_LIBSYBDB
 
+/* Have mslib type of "struct dbdaterec" */
+#undef HAVE_LIBSYBDB_MSLIB
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
