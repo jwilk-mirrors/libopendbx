@@ -73,16 +73,6 @@ static int mysql_odbx_init( odbx_t* handle, const char* host, const char* port )
 		return -ODBX_ERR_NOMEM;
 	}
 
-	if( mysql_init( (MYSQL*) handle->generic ) == NULL )
-	{
-		free( handle->generic );
-		handle->generic = NULL;
-
-		return -ODBX_ERR_NOMEM;
-	}
-
-	mysql_counter++;
-
 	if( ( handle->aux = malloc( sizeof( struct myconn ) ) ) == NULL )
 	{
 		free( handle->generic );
@@ -134,10 +124,21 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 		return -ODBX_ERR_PARAM;
 	}
 
-	if( method != ODBX_BIND_SIMPLE ) { return -ODBX_ERR_NOTSUP; }
+	if( method != ODBX_BIND_SIMPLE )
+	{
+		return -ODBX_ERR_NOTSUP;
+	}
+
+	if( mysql_init( (MYSQL*) handle->generic ) == NULL )
+	{
+		return -ODBX_ERR_NOMEM;
+	}
+
+	mysql_counter++;
 
 	if( mysql_options( (MYSQL*) handle->generic, MYSQL_READ_DEFAULT_GROUP, "client" ) != 0 )
 	{
+		mysql_close( (MYSQL*) handle->generic );
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -175,6 +176,7 @@ static int mysql_odbx_bind( odbx_t* handle, const char* database, const char* wh
 	if( mysql_real_connect( (MYSQL*) handle->generic, host,
 		who, cred, database, param->port, socket, param->flags ) == NULL )
 	{
+		mysql_close( (MYSQL*) handle->generic );
 		return -ODBX_ERR_BACKEND;
 	}
 
@@ -225,7 +227,7 @@ static int mysql_odbx_finish( odbx_t* handle )
 		handle->generic = NULL;
 	}
 
-	if( --mysql_counter <= 0 )
+	if( --mysql_counter == 0 )
 	{
 		mysql_thread_end();
 		mysql_server_end();
