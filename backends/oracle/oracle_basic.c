@@ -181,6 +181,7 @@ static int oracle_odbx_bind( odbx_t* handle, const char* database, const char* w
 			"ADDRESS_LIST=("
 				"ADDRESS=(PROTOCOL=TCP)%s%s"
 			")"
+		"(ENABLE=BROKEN)"
 		")(CONNECT_DATA=(SERVICE_NAME=%s))"
 	")";
 
