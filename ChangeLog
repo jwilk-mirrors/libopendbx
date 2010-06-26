@@ -1,3 +1,8 @@
+2010-06-26 Norbert Sendetzky <norbert@linuxnetworks.de>
+
+	* Bugfix: Fixed memory leak in mysql backend when connecting to the server failed (thanks to Stefan Meinecke)
+	* Bugfix: Added ENABLE_BROKEN to Oracle descriptor for enabling keep-alive
+
 2010-04-19 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Change: Changed required autoconf version to 2.61
