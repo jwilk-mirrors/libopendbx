@@ -348,7 +348,7 @@
 			<funcsynopsisinfo>#include &lt;opendbx/api.h&gt;</funcsynopsisinfo>
 
 			<funcprototype>
-				<funcdef>char* <function>odbx_column_type</function></funcdef>
+				<funcdef>int <function>odbx_column_type</function></funcdef>
 				<paramdef>odbx_result_t* <parameter>result</parameter></paramdef>
 				<paramdef>unsigned long <parameter>pos</parameter></paramdef>
 			</funcprototype>
@@ -668,7 +668,7 @@
 				<paramdef>const char* <parameter>from</parameter></paramdef>
 				<paramdef>unsigned long <parameter>fromlen</parameter></paramdef>
 				<paramdef>char* <parameter>to</parameter></paramdef>
-				<paramdef>unsigned long <parameter>tolen</parameter></paramdef>
+				<paramdef>unsigned long* <parameter>tolen</parameter></paramdef>
 			</funcprototype>
 
 		</funcsynopsis>
