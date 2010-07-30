@@ -63,8 +63,10 @@ am__odbx_sql_SOURCES_DIST = argmap.cpp argmap.hpp commands.cpp \
 @ENABLEUTILS_TRUE@	odbx_sql-completion.$(OBJEXT) \
 @ENABLEUTILS_TRUE@	odbx_sql-odbx-sql.$(OBJEXT)
 odbx_sql_OBJECTS = $(am_odbx_sql_OBJECTS)
+am__DEPENDENCIES_1 =
 @ENABLEUTILS_TRUE@odbx_sql_DEPENDENCIES = ../lib/.libs/$(LIBPREFIX)opendbx$(LIBSUFFIX) \
-@ENABLEUTILS_TRUE@	../lib/.libs/$(LIBPREFIX)opendbxplus$(LIBSUFFIX)
+@ENABLEUTILS_TRUE@	../lib/.libs/$(LIBPREFIX)opendbxplus$(LIBSUFFIX) \
+@ENABLEUTILS_TRUE@	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -314,7 +316,7 @@ top_srcdir = @top_srcdir@
 @ENABLEUTILS_TRUE@INCLUDES = -I../lib
 @ENABLEUTILS_TRUE@odbx_sql_SOURCES = argmap.cpp argmap.hpp commands.cpp commands.hpp completion.cpp completion.hpp odbx-sql.hpp odbx-sql.cpp
 @ENABLEUTILS_TRUE@odbx_sql_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -DKEYWORDFILE=\"$(pkgdatadir)/keywords\"
-@ENABLEUTILS_TRUE@odbx_sql_LDADD = ../lib/.libs/$(LIBPREFIX)opendbx$(LIBSUFFIX) ../lib/.libs/$(LIBPREFIX)opendbxplus$(LIBSUFFIX) -lreadline -lncurses
+@ENABLEUTILS_TRUE@odbx_sql_LDADD = ../lib/.libs/$(LIBPREFIX)opendbx$(LIBSUFFIX) ../lib/.libs/$(LIBPREFIX)opendbxplus$(LIBSUFFIX) $(LTLIBINTL) -lreadline -lncurses
 @ENABLEUTILS_TRUE@EXTRA_DIST = keywords
 @ENABLEUTILS_TRUE@opendbxdatadir = $(datarootdir)/opendbx
 @ENABLEUTILS_TRUE@opendbxdata_DATA = keywords
