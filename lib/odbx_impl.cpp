@@ -512,6 +512,8 @@ namespace OpenDBX
 	{
 		int err;
 
+		if( m_unbind ) { odbx_unbind( m_handle ); }
+
 		if( ( err = odbx_finish( m_handle ) ) < 0 )
 		{
 			throw Exception( string( odbx_error( m_handle, err ) ), err, odbx_error_type( m_handle, err ) );
