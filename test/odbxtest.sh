@@ -18,7 +18,7 @@ ODBXAPP="./odbxtest ./odbxplustest"
 # compare results
 odbxcompare ()
 {
-	diff test.out ref/$1.ref > /dev/null
+	diff -b test.out ref/$1.ref > /dev/null
 
 	if test $? -eq 1
 	then
