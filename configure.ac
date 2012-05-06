@@ -320,6 +320,9 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 				[$LIBSQLITE3], [sqlite3_prepare_v2],
 				[AC_DEFINE([HAVE_SQLITE3_PREPARE_V2], 1, [Define to 1 if you have sqlite3_prepare_v2])]
 			)
+			odbx_saved_libs=${LIBS}; LIBS=""
+			AC_SEARCH_LIBS([dgettext], [intl], [LIBSQLITE3="$LIBSQLITE3 $LIBS"])
+			LIBS=${odbx_saved_libs}
 		;;
 		sybase)
 			AC_CHECK_HEADERS([ctpublic.h], , [AC_MSG_ERROR([sybase header (ctpublic.h) not found])])
