@@ -479,6 +479,11 @@ static const char* sqlite3_odbx_column_name( odbx_result_t* result, unsigned lon
 
 static int sqlite3_odbx_column_type( odbx_result_t* result, unsigned long pos )
 {
+#ifdef HAVE_SQLITE3_TABLE_COLUMN_METADATA
+	const char *type, *collation;
+	int notnull, primarykey, autoinc;
+#endif
+
 	switch( sqlite3_column_type( (sqlite3_stmt*) result->generic, pos ) )
 	{
 		case SQLITE_INTEGER:
@@ -490,7 +495,32 @@ static int sqlite3_odbx_column_type( odbx_result_t* result, unsigned long pos )
 		case SQLITE_TEXT:
 			return ODBX_TYPE_CLOB;
 		default:
+#ifdef HAVE_SQLITE3_TABLE_COLUMN_METADATA
+			if( sqlite3_table_column_metadata( (sqlite3*) result->handle->generic,
+				sqlite3_column_database_name( (sqlite3_stmt*) result->generic, pos ),
+				sqlite3_column_table_name( (sqlite3_stmt*) result->generic, pos ),
+				sqlite3_column_origin_name( (sqlite3_stmt*) result->generic, pos ),
+				&type, &collation, &notnull, &primarykey, &autoinc ) != SQLITE_OK )
+			{
+				return ODBX_TYPE_UNKNOWN;
+			}
+
+			if( strstr( type, "DOUBLE" ) != NULL || strcmp( type, "FLOAT" ) == 0 || strcmp( type, "REAL" ) == 0 ) {
+				return ODBX_TYPE_DOUBLE;
+			} else if( strstr( type, "INT" ) != NULL || strcmp( type, "BOOLEAN" ) == 0 ) {
+				return ODBX_TYPE_BIGINT;
+			} else if( strstr( type, "CHAR" ) != NULL || strcmp( type, "CLOB" ) == 0 || strcmp( type, "TEXT" ) == 0 ) {
+				return ODBX_TYPE_CLOB;
+			} else if( strstr( type, "DATE" ) != NULL || strstr( type, "TIME" ) != NULL || strstr( type, "DECIMAL" ) != NULL ) {
+				return ODBX_TYPE_CLOB;
+			} else if( strcmp( type, "BLOB" ) == 0 ) {
+				return ODBX_TYPE_BLOB;
+			} else {
+				return ODBX_TYPE_UNKNOWN;
+			}
+#else
 			return ODBX_TYPE_UNKNOWN;
+#endif
 	}
 }
 

@@ -20374,6 +20374,52 @@ $as_echo "#define HAVE_SQLITE3_PREPARE_V2 1" >>confdefs.h
 
 fi
 
+			as_ac_Lib=`$as_echo "ac_cv_lib_$LIBSQLITE3''_sqlite3_table_column_metadata" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sqlite3_table_column_metadata in -l$LIBSQLITE3" >&5
+$as_echo_n "checking for sqlite3_table_column_metadata in -l$LIBSQLITE3... " >&6; }
+if { as_var=$as_ac_Lib; eval "test \"\${$as_var+set}\" = set"; }; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-l$LIBSQLITE3  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char sqlite3_table_column_metadata ();
+int
+main ()
+{
+return sqlite3_table_column_metadata ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+eval as_val=\$$as_ac_Lib
+   if test "x$as_val" = x""yes; then :
+
+$as_echo "#define HAVE_SQLITE3_TABLE_COLUMN_METADATA 1" >>confdefs.h
+
+
+fi
+
 			odbx_saved_libs=${LIBS}; LIBS=""
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dgettext" >&5
 $as_echo_n "checking for library containing dgettext... " >&6; }

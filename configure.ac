@@ -79,7 +79,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS([getopt memmove memset select setenv snprintf strdup strncasecmp strtol strtoul strtoull])
+AC_CHECK_FUNCS([getopt memmove memset select setenv snprintf strdup strncasecmp strstr strtol strtoul strtoull])
 
 
 # Checks for additional libraries
@@ -319,6 +319,10 @@ int main() { SQLConnect( NULL, NULL, 0, NULL, 0, NULL, 0 ); return 0; }
 			AC_CHECK_LIB(
 				[$LIBSQLITE3], [sqlite3_prepare_v2],
 				[AC_DEFINE([HAVE_SQLITE3_PREPARE_V2], 1, [Define to 1 if you have sqlite3_prepare_v2])]
+			)
+			AC_CHECK_LIB(
+				[$LIBSQLITE3], [sqlite3_table_column_metadata],
+				[AC_DEFINE([HAVE_SQLITE3_TABLE_COLUMN_METADATA], 1, [Define to 1 if you have sqlite3_table_column_metadata])]
 			)
 			odbx_saved_libs=${LIBS}; LIBS=""
 			AC_SEARCH_LIBS([dgettext], [intl], [LIBSQLITE3="$LIBSQLITE3 $LIBS"])

@@ -1,21 +1,21 @@
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10200 
-    ODBX_OPT_THREAD_SAFE: 1 
-    ODBX_OPT_TLS: 0 
-    ODBX_OPT_CONNECT_TIMEOUT: 0 
+    ODBX_OPT_API_VERSION: 10200
+    ODBX_OPT_THREAD_SAFE: 1
+    ODBX_OPT_TLS: 0
+    ODBX_OPT_CONNECT_TIMEOUT: 0
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
-    ODBX_OPT_PAGED_RESULTS: 0 
-    ODBX_OPT_COMPRESS: 0 
+    ODBX_OPT_PAGED_RESULTS: 0
+    ODBX_OPT_COMPRESS: 0
     ODBX_CAP_BASIC: 1
     ODBX_CAP_LO: 0
-    ODBX_OPT_API_VERSION: 10200 
-    ODBX_OPT_THREAD_SAFE: 1 
-    ODBX_OPT_TLS: 0 
-    ODBX_OPT_CONNECT_TIMEOUT: 0 
+    ODBX_OPT_API_VERSION: 10200
+    ODBX_OPT_THREAD_SAFE: 1
+    ODBX_OPT_TLS: 0
+    ODBX_OPT_CONNECT_TIMEOUT: 0
     ODBX_OPT_MULTI_STATEMENTS: 1 (using)
-    ODBX_OPT_PAGED_RESULTS: 0 
-    ODBX_OPT_COMPRESS: 0 
+    ODBX_OPT_PAGED_RESULTS: 0
+    ODBX_OPT_COMPRESS: 0
     Affected rows: 0
     Affected rows: 1
     Affected rows: 1
@@ -39,7 +39,7 @@
     column 16 (type 32): timestmp = '1999-01-01 00:00:00'
     column 17 (type 32): timestmptz = '1999-01-01 00:00:00+06'
     column 18 (type 32): dateval = '1999-01-01'
-    column 0 (type 255): i1 = NULL
+    column 0 (type 3): i1 = NULL
     column 1 (type 3): i16 = '2'
     column 2 (type 3): i32 = '4'
     column 3 (type 3): i64 = '8'
@@ -49,7 +49,7 @@
     column 7 (type 9): f8 = '8.5'
     column 8 (type 32): c2 = 'FR'
     column 9 (type 32): nc12 = 'éçèéçè'
-    column 10 (type 255): str20 = NULL
+    column 10 (type 32): str20 = NULL
     column 11 (type 32): nstr24 = 'éçèéçèéçèéçè'
     column 12 (type 32): clob64k = 'text'
     column 13 (type 32): nclob64k = 'éçè very long national text éçè'
@@ -101,7 +101,7 @@
     column 16 (type 32): timestmp = '1999-01-01 00:00:00'
     column 17 (type 32): timestmptz = '1999-01-01 00:00:00+06'
     column 18 (type 32): dateval = '1999-01-01'
-    column 0 (type 255): i1 = NULL
+    column 0 (type 3): i1 = NULL
     column 1 (type 3): i16 = '2'
     column 2 (type 3): i32 = '4'
     column 3 (type 3): i64 = '8'
@@ -111,7 +111,7 @@
     column 7 (type 9): f8 = '8.5'
     column 8 (type 32): c2 = 'FR'
     column 9 (type 32): nc12 = 'éçèéçè'
-    column 10 (type 255): str20 = NULL
+    column 10 (type 32): str20 = NULL
     column 11 (type 32): nstr24 = 'éçèéçèéçèéçè'
     column 12 (type 32): clob64k = 'text'
     column 13 (type 32): nclob64k = 'éçè very long national text éçè'
