@@ -441,6 +441,8 @@ static int sqlite3_odbx_row_fetch( odbx_result_t* result )
 		case SQLITE_DONE:
 		case SQLITE_OK:
 		case SQLITE_MISUSE:   // Return DONE if function called more often afterwards
+			sqlite3_finalize( (sqlite3_stmt*) result->generic );
+			result->generic = NULL;
 			return ODBX_ROW_DONE;
 	}
 
