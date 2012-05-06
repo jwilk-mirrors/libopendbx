@@ -16,7 +16,7 @@ ODBXAPP="./odbxtest ./odbxplustest"
 
 
 # compare results
-function odbxcompare ()
+odbxcompare ()
 {
 	diff test.out ref/$1.ref > /dev/null
 

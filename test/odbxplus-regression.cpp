@@ -293,11 +293,15 @@ void exec( vector<Conn>& conn, struct odbxstmt* qptr, int verbose )
 				}
 
 				// Test case:  Calling getRow() more often must not result in error
-				result.getRow();
+				if( result.getRow() != ODBX_ROW_DONE ) {
+					throw std::runtime_error( string( "Sub-sequent calls to getRow() don't return ODBX_RES_DONE" ) );
+				}
 			}
 
 			// Test case:  Calling getResult() more often must not result in error
-			result.getResult();
+			if( result.getResult() != ODBX_RES_DONE ) {
+				throw std::runtime_error( string( "Sub-sequent calls to getResult() don't return ODBX_RES_DONE" ) );
+			}
 
 			result.finish();
 		}
