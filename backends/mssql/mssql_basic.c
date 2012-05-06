@@ -460,7 +460,12 @@ static int mssql_odbx_row_fetch( odbx_result_t* result )
 
 	for( i = 0; i < ares->cols; i++ )
 	{
-		if( ( data = dbdata( dbproc, i+1 ) ) == NULL )
+		if( ( dlen = dbdatlen( dbproc, i+1 ) ) == -1 )
+ 		{
+				return -ODBX_ERR_SIZE;
+		}
+
+		if( ( data = dbdata( dbproc, i+1 ) ) == NULL && dlen == 0 )
 		{
 			gres[i].ind = 1;   // column is NULL
 			gres[i].length = 0;
@@ -485,8 +490,6 @@ static int mssql_odbx_row_fetch( odbx_result_t* result )
 				continue;
 		}
 
-		dlen = dbdatlen( dbproc, i+1 );
-
 		if( gres[i].mlen < dlen + 1 )
 		{
 			if( ( gres[i].value = realloc( gres[i].value, dlen + 1 ) ) == NULL )
@@ -499,6 +502,7 @@ static int mssql_odbx_row_fetch( odbx_result_t* result )
 
 		gres[i].length = dbconvert( dbproc, dbcoltype( dbproc, i+1 ), data, dlen, SYBVARCHAR, gres[i].value, gres[i].mlen );
 		gres[i].value[gres[i].length] = 0;
+		gres[i].ind = 0;   // column is not NULL
 	}
 
 	return ODBX_ROW_NEXT;
