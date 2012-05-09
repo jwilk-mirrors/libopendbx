@@ -773,7 +773,7 @@ static SQLLEN odbc_priv_collength( struct odbcgen* gen, SQLSMALLINT col, SQLSMAL
 			return 9;
 		case SQL_TIMESTAMP:
 		case SQL_TYPE_TIMESTAMP:
-			return 20;
+			return 24;
 	}
 
 	SQLLEN len = 0;
