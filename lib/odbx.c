@@ -111,7 +111,7 @@ int odbx_bind( odbx_t* handle, const char* database, const char* who, const char
 
 
 
-/* Depricated: odbx_bind_simple() */
+/* Deprecated: odbx_bind_simple() */
 
 int odbx_bind_simple( odbx_t* handle, const char* database, const char* username, const char* password )
 {
