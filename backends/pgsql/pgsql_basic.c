@@ -384,6 +384,7 @@ static int pgsql_odbx_result( odbx_t* handle, odbx_result_t** result, struct tim
 			return ODBX_RES_ROWS;   /* result is available*/
 		case PGRES_FATAL_ERROR:
 
+			PQconsumeInput( (PGconn*) handle->generic );
 			if( PQstatus( (PGconn*) handle->generic ) != CONNECTION_OK )
 			{
 				conn->errtype = -1;
