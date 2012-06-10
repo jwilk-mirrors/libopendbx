@@ -512,7 +512,11 @@ namespace OpenDBX
 	{
 		int err;
 
-		if( m_unbind ) { odbx_unbind( m_handle ); }
+		if( m_unbind )
+		{
+			odbx_unbind( m_handle );
+			m_unbind = false;
+		}
 
 		if( ( err = odbx_finish( m_handle ) ) < 0 )
 		{
