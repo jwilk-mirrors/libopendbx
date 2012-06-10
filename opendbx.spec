@@ -73,7 +73,7 @@
 
 
 Name:    opendbx
-Version:    1.4.5
+Version:    1.4.6
 Release:    1
 Summary:    Unified database layer with a clean and lightweight interface
 Summary(de.UTF-8):    Bibliothek zum Zugriff auf Datenbanken über eine einheitliche Schnittstelle

@@ -165,6 +165,9 @@
 /* Define to 1 if you have sqlite3_prepare_v2 */
 #undef HAVE_SQLITE3_PREPARE_V2
 
+/* Define to 1 if you have sqlite3_table_column_metadata */
+#undef HAVE_SQLITE3_TABLE_COLUMN_METADATA
+
 /* Define to 1 if you have the <sqlite.h> header file. */
 #undef HAVE_SQLITE_H
 
@@ -191,6 +194,9 @@
 
 /* Define to 1 if you have the `strncasecmp' function. */
 #undef HAVE_STRNCASECMP
+
+/* Define to 1 if you have the `strstr' function. */
+#undef HAVE_STRSTR
 
 /* Define to 1 if you have the `strtol' function. */
 #undef HAVE_STRTOL

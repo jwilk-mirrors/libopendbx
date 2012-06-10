@@ -1,7 +1,16 @@
-2010-06-26 Norbert Sendetzky <norbert@linuxnetworks.de>
+2012-06-10 Norbert Sendetzky <norbert@linuxnetworks.de>
 
 	* Bugfix: Fixed memory leak in mysql backend when connecting to the server failed (thanks to Stefan Meinecke)
+	* Bugfix: Fixed handling of NULL indicator in MSSQL backend if NULL is returned in a row
+	* Bugfix: Added workaround for PostgreSQL in case of an error (e.g. if the server is gone) to give back a correct error status
+	* Bugfix: Return ODBX_ROW_DONE in sqlite3_odbx_row_fetch() when calling this function after no more rows are available (due to SQLite3 change)
+	* Bugfix: Added -lintl if required for fixing build problems when using MinGW on Windows platforms
 	* Bugfix: Added ENABLE_BROKEN to Oracle descriptor for enabling keep-alive
+	* Bugfix: Added unbind() to Conn::finish() if it's not called before
+	* Bugfix: Increased buffer for time stamps in ODBC backend to allow fractions of seconds to be stored without an error
+	* Feature: Enhanced determination of column types in SQLite3 backend when SQLite returns a NULL value
+	* Feature: Improved recovery from errors in odbx-sql utility
+	* Change: Updated libtool to 2.2.6b
 
 2010-04-19 Norbert Sendetzky <norbert@linuxnetworks.de>
 
