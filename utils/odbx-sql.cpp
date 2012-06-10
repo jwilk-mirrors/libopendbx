@@ -146,7 +146,7 @@ void loopstmts( Conn& conn, struct format* fparam, bool iactive )
 			{
 				len = strlen( line );
 				sql += "\n" + string( line, len );
-				free( line );
+				::free( line );
 
 				if( sql[sql.size()-1] == ';' ) { break; }
 			}
@@ -228,11 +228,16 @@ int main( int argc, char* argv[] )
 		rl_completion_entry_function = &complete;
 
 		Conn conn( A.asString( "backend" ), A.asString( "host" ), A.asString( "port" ) );
-		conn.bind( A.asString( "database" ), A.asString( "username" ), A.asString( "password" ) );
 
-		loopstmts( conn, &fparam, A.mustDo( "interactive" ) );
+		while( 1 )
+		{
+			conn.bind( A.asString( "database" ), A.asString( "username" ), A.asString( "password" ) );
 
-		conn.finish();
+			loopstmts( conn, &fparam, A.mustDo( "interactive" ) );
+
+			conn.unbind();
+		}
+
 		delete g_comp;
 	}
 	catch( std::runtime_error &e )
