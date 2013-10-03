@@ -7,7 +7,7 @@ nobase_include_HEADERS = opendbx/api.h opendbx/api
 
 lib_LTLIBRARIES = libopendbx.la libopendbxplus.la
 
-libopendbx_la_SOURCES =  odbx.c odbxdrv.h odbxlib.h odbxlog.h
+libopendbx_la_SOURCES =  odbx.c odbxdrv.h odbxlib.h odbxlog.h avl.h avl.c odbxpool.h odbxpool.c
 libopendbx_la_CFLAGS = -fno-strict-aliasing
 libopendbx_la_CPPFLAGS = -DLIBVERSION=@LIBVERSION@ -DLOCALEDIR=\"$(localedir)\"
 libopendbx_la_LDFLAGS = -no-undefined -export-dynamic -version-info @APIVERSION@
